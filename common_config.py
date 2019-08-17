@@ -13,6 +13,4 @@ cfgPath = {
     'svt': '/home/cxh/code/HM-16.1/cfg/encoder_intra_main.cfg'
 }
 
-encodeYuvPath = '/home/cxh/code/exec_py/data/'
-
-Qp = [22, 28, 34, 40]
+encodeYuvPath = '/home/cxh/code/codec-DBDR-analyzer-tool/data/'

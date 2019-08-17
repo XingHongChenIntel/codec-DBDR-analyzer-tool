@@ -7,6 +7,7 @@ import visual as tool
 import y4mconv as convtool
 import exec_method as codec_command
 import common_config as Path
+import OptionDictionary as option
 from exec_method import Codec
 
 hm_contain = []
@@ -59,7 +60,7 @@ def settleInfo():
 
 
 def setup_codec(CodecInfo):
-    for qp in Path.Qp:
+    for qp in option.Qp:
         for j in Codec:
             if j.name == 'HM':
                 hm_contain.append(codec_command.exec_HM(CodecInfo, qp))

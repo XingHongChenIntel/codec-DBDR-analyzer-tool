@@ -105,8 +105,14 @@ def Testally4m(TestSequence):
     return contain
 
 
+def checkdatadir():
+    dirs = os.listdir(Path.encodeYuvPath)
+    for i in dirs:
+        os.remove(Path.encodeYuvPath + i)
+
 def main():
     args = parse_args()
+    checkdatadir()
     TestSequence = Path.TestSequencePath
     contain = Testally4m(TestSequence)
     tool.plot_psnr_frames(contain)

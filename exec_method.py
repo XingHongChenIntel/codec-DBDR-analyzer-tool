@@ -4,7 +4,7 @@ import os
 import re
 from enum import Enum
 import OptionDictionary as option
-
+# from OptionDictionary import option
 
 class Codec(Enum):
     HM = 0
@@ -12,9 +12,11 @@ class Codec(Enum):
     SVT = 2
 
 def Modifycfg(opt, value):
-    f = open(common_config.cfgPath['HM'], 'r+')
+    f = open(common_config.cfgPath['HM'], 'r')
     line = f.read()
-    re.sub(r'%s[ ]*:[ ]*[0-9]*'%opt,'%s     : %d'%(opt, value))
+    f.close()
+    f = open(common_config.cfgPath['HM'], 'w')
+    line = re.sub(r'%s[ ]*:[ ]*[a-zA-Z0-9]*'%opt, '%s     : %s'%(opt, value), line)
     f.write(line)
     f.close()
 
@@ -23,11 +25,11 @@ def Addoptions(codec):
     arg = ''
     for opt in option.config:
         if codec == 'HM':
-            Modifycfg(opt[1][0], opt[2])
+            Modifycfg(opt[1][0], opt[2][0])
         elif codec == 'x265':
-            arg += ' '+opt[1][1]+' '+opt[2]
-        else:
-            arg += ' '+opt[1][2]+' '+opt[2]
+            arg += ' '+opt[1][1]+' '+opt[2][1]
+        elif codec == 'svt':
+            arg += ' '+opt[1][2]+' '+opt[2][2]
     return arg
 
 
@@ -39,6 +41,7 @@ def exec_HM(yuvInfo, configparam):
             yuvInfo['height'],yuvInfo['fps'], yuvInfo['frame_skip'], yuvInfo['frame_count'])
     encodeyuv = common_config.encodeYuvPath + 'HM_%s_'%(configparam) + yuvInfo['outputfile'].split('/')[-1]
     arg += ' -q %d -o %s'%(configparam, encodeyuv)
+    Addoptions('HM')
     print arg
     p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
     #TODO you have to get bitdepet and type

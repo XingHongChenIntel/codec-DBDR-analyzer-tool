@@ -31,6 +31,7 @@ def findbitrate(codecname, line):
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
     elif codecname == 'HM':
+        print line
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
 

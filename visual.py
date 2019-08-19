@@ -73,24 +73,65 @@ def sort_point(ind, point):
     return [ind, point]
 
 
+def calculate_distance(BD_contain):
+    celltext = []
+    rowname = []
+    tag = 0
+    while tag < len(BD_contain):
+        x265_rate = BD.BD_RATE(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+1][0], BD_contain[tag+1][1])
+        svt_rate = BD.BD_RATE(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+2][0], BD_contain[tag+2][1])
+        x265_psnr = BD.BD_PSNR(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+1][0], BD_contain[tag+1][1])
+        svt_psnr = BD.BD_PSNR(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+2][0], BD_contain[tag+2][1])
+        rowname.append(BD_contain[tag][3][0].split('/')[-1]+'_'+BD_contain[tag][2])
+        rowname.append(BD_contain[tag+1][3][0].split('/')[-1]+'_'+BD_contain[tag+1][2])
+        rowname.append(BD_contain[tag+2][3][0].split('/')[-1]+'_'+BD_contain[tag+2][2])
+        celltext.append(['HM base line', 'HM base line'])
+        celltext.append([x265_rate, x265_psnr])
+        celltext.append([svt_rate, svt_psnr])
+        tag += 3
+    return celltext,rowname
+
+def calculate_average(BD_contain):
+    celltext = []
+    rowname = []
+    tag = 0
+    while tag < len(BD_contain):
+        HM_rate = BD.BD_RATE_Average(BD_contain[tag][0],BD_contain[tag][1])
+        HM_psnr = BD.BD_PSNR_Average(BD_contain[tag][0],BD_contain[tag][1])
+        x265_rate = BD.BD_RATE_Average(BD_contain[tag+1][0], BD_contain[tag+1][1])
+        svt_rate = BD.BD_RATE_Average(BD_contain[tag+2][0], BD_contain[tag+2][1])
+        x265_psnr = BD.BD_PSNR_Average(BD_contain[tag+1][0], BD_contain[tag+1][1])
+        svt_psnr = BD.BD_PSNR_Average(BD_contain[tag+2][0], BD_contain[tag+2][1])
+        rowname.append(BD_contain[tag][3][0].split('/')[-1]+'_'+BD_contain[tag][2])
+        rowname.append(BD_contain[tag+1][3][0].split('/')[-1]+'_'+BD_contain[tag+1][2])
+        rowname.append(BD_contain[tag+2][3][0].split('/')[-1]+'_'+BD_contain[tag+2][2])
+        celltext.append([HM_rate, HM_psnr])
+        celltext.append([x265_rate, x265_psnr])
+        celltext.append([svt_rate, svt_psnr])
+        tag += 3
+    return celltext,rowname
+
 def plot_psnr_frames(contain):
     """
     PSNR, all planes
     """
     # ind = arg.Bit_rate  # the x locations for the groups
     fig = plt.figure(figsize=[16, 6], constrained_layout=True)
-    gs = GridSpec(1, 2, figure=fig)
+    gs = GridSpec(2, 2, figure=fig)
     plt.suptitle('yuv Quality plot')
     # frames_psnr = fig.add_subplot(gs[:, 0])
     bits_psnr = fig.add_subplot(gs[0, 0])
-    DBDR = fig.add_subplot(gs[0, 1])
+    DBDR_for_each = fig.add_subplot(gs[0, 1])
+    DBDR_for_each.set_axis_off()
+    DBDR_plot = fig.add_subplot(gs[1, 0])
+    DBDR = fig.add_subplot(gs[1, 1])
     DBDR.set_axis_off()
     # frames_psnr.set_title('Psnr-Y vs Frames')
     # frames_psnr.set_xlabel('frames')
     # frames_psnr.set_ylabel('Psnr-y')
     bits_psnr.set_title('Psnr vs Bitrate')
     bits_psnr.set_xlabel('bitrate')
-    bits_psnr.set_ylabel('psnr-y')
+    bits_psnr.set_ylabel('psnr')
     BD_contain = []
     for i in range(len(contain)):
         yuv = YCbCr(filename=contain[i][0], filename_diff=contain[i][1], width=int(contain[i][5]), height=int(contain[i][6]), yuv_format_in=contain[i][7], bitdepth=contain[i][4])
@@ -107,22 +148,10 @@ def plot_psnr_frames(contain):
             temp_sort = sort_point(xax, point)
             bits_psnr.plot(temp_sort[0], temp_sort[1], 'o-', label=contain[i][3])
             BD_contain.append([temp_sort[0], temp_sort[1], contain[i][3], contain[i][0]])
-    celltext = []
-    rowname = []
-    tag = 0
-    while tag < len(BD_contain):
-        x265_rate = BD.BD_RATE(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+1][0], BD_contain[tag+1][1])
-        svt_rate = BD.BD_RATE(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+2][0], BD_contain[tag+2][1])
-        x265_psnr = BD.BD_PSNR(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+1][0], BD_contain[tag+1][1])
-        svt_psnr = BD.BD_PSNR(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+2][0], BD_contain[tag+2][1])
-        rowname.append(BD_contain[tag][3][0].split('/')[-1]+'_'+BD_contain[tag][2])
-        rowname.append(BD_contain[tag+1][3][0].split('/')[-1]+'_'+BD_contain[tag+1][2])
-        rowname.append(BD_contain[tag+2][3][0].split('/')[-1]+'_'+BD_contain[tag+2][2])
-        celltext.append(['HM base line', 'HM base line'])
-        celltext.append([x265_rate, x265_psnr])
-        celltext.append([svt_rate, svt_psnr])
-        tag += 3
+    celltext, rowname = calculate_distance(BD_contain)
     DBDR.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
+    celltext, rowname = calculate_average(BD_contain)
+    DBDR_for_each.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
     # frames_psnr.legend()
     bits_psnr.legend()
     # fig.align_labels()

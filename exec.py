@@ -23,11 +23,11 @@ def signal_handler(signal, frame):
 
 
 # extract bitrate from output info
-def findbitrate(codecname, line):
-    if codecname == 'x265':
+def find_bitrate(codec_name, line):
+    if codec_name == 'x265':
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kb/s', line[1])
         return float(ss[-1])
-    elif codecname == 'SVT':
+    elif codec_name == 'SVT':
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
     elif codec_name == 'HM':
@@ -35,11 +35,11 @@ def findbitrate(codecname, line):
         return float(ss[-1])
 
 
-def addbitrate(codeccontain, codecname):
-    bitrate_buffer, outyuvpath_buffer = [], []
+def addbitrate(codec_contain, codec_name):
+    bitrate_buffer, output_yuv_path_buffer = [], []
     line, info, common, outputInfo = 0, 1, 0, ''
-    for comboInfo in codeccontain:
-        if codecname == 'HM':
+    for comboInfo in codec_contain:
+        if codec_name == 'HM':
             outputInfo = comboInfo[line].communicate()
         else:
             outputInfo = comboInfo[line]
@@ -48,7 +48,7 @@ def addbitrate(codeccontain, codecname):
     codec_contain[common][info][1] = output_yuv_path_buffer
     codec_contain[common][info].insert(2, bitrate_buffer)
     signal.signal(signal.SIGINT, signal_handler)
-    return codeccontain[common][info]
+    return codec_contain[common][info]
 
 
 def settleInfo():
@@ -83,11 +83,11 @@ def parse_args():
     return args
 
 
-def Testally4m(TestSequence):
+def Testally4m(test_sequence):
     y4mInfo = {'inputfile': '', 'outputfile': '', 'width': 0, 'height': 0, 'format': '',
                'fps': 0, 'frame_count': 0, 'frame_size': 0, 'frame_skip': 0}
     contain = []
-    dirs = os.listdir(TestSequence)
+    dirs = os.listdir(test_sequence)
     for file in dirs:
         if file.split('.')[-1] == 'y4m':
             y4mInfo['inputfile'] = test_sequence + file

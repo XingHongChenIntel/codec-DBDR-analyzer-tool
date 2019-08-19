@@ -42,7 +42,6 @@ def exec_HM(yuvInfo, configparam):
     encodeyuv = common_config.encodeYuvPath + 'HM_%s_'%(configparam) + yuvInfo['outputfile'].split('/')[-1]
     arg += ' -q %d -o %s'%(configparam, encodeyuv)
     Addoptions('HM')
-    print arg
     p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
     #TODO you have to get bitdepet and type
     info = [[yuvInfo['outputfile']], encodeyuv, 'HM', 8, yuvInfo['width'], yuvInfo['height'], 'YV12']
@@ -59,8 +58,6 @@ def exec_x265(yuvInfo,configparam):
     x265yuv = common_config.encodeYuvPath + 'x265_%s_'%(configparam) + yuvfile
     arg += ' -o %s'%(encodeyuv)
     arg += Addoptions('x265')
-    print arg
-
     p = subprocess.Popen(arg, shell=True, stderr=subprocess.PIPE)
     line = p.communicate()
     if line == None:
@@ -78,7 +75,6 @@ def exec_svt(yuvInfo,configparam):
     encodeyuv = common_config.encodeYuvPath + 'svt_%s_'%(configparam) + yuvInfo['outputfile'].split('/')[-1]
     arg += ' -o %s'%(encodeyuv)
     arg += Addoptions('svt')
-    print arg
     p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
     line = p.communicate()
     if line == None:

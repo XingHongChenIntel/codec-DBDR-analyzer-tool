@@ -31,7 +31,6 @@ def findbitrate(codecname, line):
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
     elif codecname == 'HM':
-        print line
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
 
@@ -48,9 +47,6 @@ def addbitrate(codeccontain, codecname):
         outyuvpath_buffer.append(comboInfo[info][1])
     codeccontain[common][info][1] = outyuvpath_buffer
     codeccontain[common][info].insert(2, bitrate_buffer)
-    print '\n'
-    print bitrate_buffer
-    print '\n'
     signal.signal(signal.SIGINT, signal_handler)
     return codeccontain[common][info]
 
@@ -97,7 +93,6 @@ def Testally4m(TestSequence):
             y4mInfo['inputfile'] = TestSequence + file
             y4mInfo['outputfile'] = TestSequence + file.split('.')[0] + '.yuv'
             CodecInfo = convtool.fromy4m2yuv(y4mInfo)
-            print CodecInfo
             contain.extend(setup_codec(CodecInfo))
             del hm_contain[:]
             del svt_contain[:]

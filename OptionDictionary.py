@@ -5,7 +5,7 @@ Qp = [22, 28, 34, 40]
 
 config = [
 #TargetBitrate
-            ['TargetBitrate', ['TargetBitrate', '--bitrate', '-tbr'], ['2000', '2000', '2000']],
+            # ['TargetBitrate', ['TargetBitrate', '--bitrate', '-tbr'], ['2000', '2000', '2000']],
 #preset
             ['EncoderBitDepth', ['InputBitDepth', '--input-depth', '-bit-depth'], ['8', '8', '8']],
 #Profile

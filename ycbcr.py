@@ -31,7 +31,7 @@ class Y:
             wh = width * height
         # start-stop
         #       y  y   cb  cb      cr      cr
-        return 0, wh, wh, wh / 4 * 5, wh / 4 * 5, wh / 2 * 3
+        return (0, wh, wh, wh/4*5, wh/4*5, wh/2*3)
 
     def get_422_partitioning(self, width=None, height=None):
         if not width:
@@ -40,7 +40,7 @@ class Y:
             wh = width * height
         # start-stop
         #       y  y   cb  cb      cr      cr
-        return 0, wh, wh, wh / 2 * 3, wh / 2 * 3, wh * 2
+        return (0, wh, wh, wh/2*3, wh/2*3, wh*2)
 
 
 class YV12(Y):
@@ -57,7 +57,7 @@ class YV12(Y):
         if not width:
             width = self.width
             height = self.height
-        return width * height * 3 / 2
+        return (width * height * 3 / 2)
 
     def get_layout(self, width=None, height=None):
         """
@@ -82,7 +82,7 @@ class IYUV(Y):
         if not width:
             width = self.width
             height = self.height
-        return width * height * 3 / 2
+        return (width * height * 3 / 2)
 
     def get_layout(self, width=None, height=None):
         """
@@ -108,7 +108,7 @@ class NV12(Y):
         if not width:
             width = self.width
             height = self.height
-        return width * height * 3 / 2
+        return (width * height * 3 / 2)
 
     def get_layout(self, width=None, height=None):
         """
@@ -133,7 +133,7 @@ class UYVY(Y):
         if not width:
             width = self.width
             height = self.height
-        return width * height * 2
+        return (width * height * 2)
 
     def get_layout(self, width=None, height=None):
         """
@@ -157,7 +157,7 @@ class YVYU(Y):
         if not width:
             width = self.width
             height = self.height
-        return width * height * 2
+        return (width * height * 2)
 
     def get_layout(self, width=None, height=None):
         """
@@ -181,7 +181,7 @@ class YUY2(Y):
         if not width:
             width = self.width
             height = self.height
-        return width * height * 2
+        return (width * height * 2)
 
     def get_layout(self, width=None, height=None):
         """
@@ -205,7 +205,7 @@ class Y422(Y):
         if not width:
             width = self.width
             height = self.height
-        return width * height * 2
+        return (width * height * 2)
 
     def get_layout(self, width=None, height=None):
         """

@@ -17,17 +17,17 @@ svt_contain = []
 
 def signal_handler(signal, frame):
     for comboInfo in hm_contain:
-        if comboInfo[0].poll() is None:
+        if comboInfo[0].poll() == None:
             comboInfo[0].terminate()
     sys.exit(0)
 
 
 # extract bitrate from output info
-def find_bitrate(codec_name, line):
-    if codec_name == 'x265':
+def findbitrate(codecname, line):
+    if codecname == 'x265':
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kb/s', line[1])
         return float(ss[-1])
-    elif codec_name == 'SVT':
+    elif codecname == 'SVT':
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
     elif codec_name == 'HM':
@@ -35,11 +35,11 @@ def find_bitrate(codec_name, line):
         return float(ss[-1])
 
 
-def add_bitrate(codec_contain, codec_name):
-    bitrate_buffer, output_yuv_path_buffer = [], []
+def addbitrate(codeccontain, codecname):
+    bitrate_buffer, outyuvpath_buffer = [], []
     line, info, common, outputInfo = 0, 1, 0, ''
-    for comboInfo in codec_contain:
-        if codec_name == 'HM':
+    for comboInfo in codeccontain:
+        if codecname == 'HM':
             outputInfo = comboInfo[line].communicate()
         else:
             outputInfo = comboInfo[line]
@@ -48,25 +48,25 @@ def add_bitrate(codec_contain, codec_name):
     codec_contain[common][info][1] = output_yuv_path_buffer
     codec_contain[common][info].insert(2, bitrate_buffer)
     signal.signal(signal.SIGINT, signal_handler)
-    return codec_contain[common][info]
+    return codeccontain[common][info]
 
 
-def settle_info():
+def settleInfo():
     signal.signal(signal.SIGINT, signal_handler)
-    return [add_bitrate(hm_contain, 'HM'), add_bitrate(x265_contain, 'x265'), add_bitrate(svt_contain, 'SVT')]
+    return [addbitrate(hm_contain, 'HM'), addbitrate(x265_contain, 'x265'), addbitrate(svt_contain, 'SVT')]
 
 
-def setup_codec(codec_info):
+def setup_codec(CodecInfo):
     for qp in option.Qp:
         for j in Codec:
             if j.name == 'HM':
-                hm_contain.append(codec_command.exec_HM(codec_info, qp))
+                hm_contain.append(codec_command.exec_HM(CodecInfo, qp))
             if j.name == 'x265':
-                x265_contain.append(codec_command.exec_x265(codec_info, qp))
+                x265_contain.append(codec_command.exec_x265(CodecInfo, qp))
             if j.name == 'SVT':
-                svt_contain.append(codec_command.exec_svt(codec_info, qp))
+                svt_contain.append(codec_command.exec_svt(CodecInfo, qp))
     signal.signal(signal.SIGINT, signal_handler)
-    return settle_info()
+    return settleInfo()
 
 
 # execute all those codec to encode
@@ -83,11 +83,11 @@ def parse_args():
     return args
 
 
-def test_all_y4m(test_sequence):
+def Testally4m(TestSequence):
     y4mInfo = {'inputfile': '', 'outputfile': '', 'width': 0, 'height': 0, 'format': '',
                'fps': 0, 'frame_count': 0, 'frame_size': 0, 'frame_skip': 0}
     contain = []
-    dirs = os.listdir(test_sequence)
+    dirs = os.listdir(TestSequence)
     for file in dirs:
         if file.split('.')[-1] == 'y4m':
             y4mInfo['inputfile'] = test_sequence + file
@@ -100,17 +100,16 @@ def test_all_y4m(test_sequence):
     return contain
 
 
-def check_data_dir():
+def checkdatadir():
     dirs = os.listdir(Path.encodeYuvPath)
     for i in dirs:
         os.remove(Path.encodeYuvPath + i)
 
-
 def main():
     args = parse_args()
-    check_data_dir()
+    checkdatadir()
     TestSequence = Path.TestSequencePath
-    contain = test_all_y4m(TestSequence)
+    contain = Testally4m(TestSequence)
     tool.plot_psnr_frames(contain)
 
 

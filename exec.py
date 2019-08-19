@@ -79,6 +79,7 @@ def parse_args():
     parser.add_argument('-H', '--SourceHeight', help='picture Source Width', type=int)
     parser.add_argument('-r', '--framerate', help='give a frame rate for encode', type=int)
     parser.add_argument('-f', '--frames', help='encoded frames numbers', type=int)
+    parser.add_argument('-s', '--svt', help='turn on svt mode', type=int)
     args = parser.parse_args()
     return args
 
@@ -93,7 +94,8 @@ def Testally4m(test_sequence):
             y4mInfo['inputfile'] = test_sequence + file
             y4mInfo['outputfile'] = test_sequence + file.split('.')[0] + '.yuv'
             CodecInfo = convtool.from_y4m_to_yuv(y4mInfo)
-            contain.extend(setup_codec(CodecInfo))
+            tool.plot_psnr_frames(setup_codec(CodecInfo))
+            # contain.extend(setup_codec(CodecInfo))
             del hm_contain[:]
             del svt_contain[:]
             del x265_contain[:]
@@ -105,12 +107,13 @@ def checkdatadir():
     for i in dirs:
         os.remove(Path.encodeYuvPath + i)
 
+
 def main():
     args = parse_args()
     checkdatadir()
     TestSequence = Path.TestSequencePath
     contain = Testally4m(TestSequence)
-    tool.plot_psnr_frames(contain)
+    # tool.plot_psnr_frames(contain)
 
 
 if __name__ == '__main__':

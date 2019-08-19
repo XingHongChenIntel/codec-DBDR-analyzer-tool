@@ -30,7 +30,7 @@ def find_bitrate(codec_name, line):
     elif codec_name == 'SVT':
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
-    elif codecname == 'HM':
+    elif codec_name == 'HM':
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
 
@@ -43,10 +43,10 @@ def add_bitrate(codec_contain, codec_name):
             outputInfo = comboInfo[line].communicate()
         else:
             outputInfo = comboInfo[line]
-        bitrate_buffer.append(findbitrate(codecname, outputInfo))
-        outyuvpath_buffer.append(comboInfo[info][1])
-    codeccontain[common][info][1] = outyuvpath_buffer
-    codeccontain[common][info].insert(2, bitrate_buffer)
+        bitrate_buffer.append(find_bitrate(codec_name, outputInfo))
+        output_yuv_path_buffer.append(comboInfo[info][1])
+    codec_contain[common][info][1] = output_yuv_path_buffer
+    codec_contain[common][info].insert(2, bitrate_buffer)
     signal.signal(signal.SIGINT, signal_handler)
     return codec_contain[common][info]
 
@@ -90,9 +90,9 @@ def test_all_y4m(test_sequence):
     dirs = os.listdir(test_sequence)
     for file in dirs:
         if file.split('.')[-1] == 'y4m':
-            y4mInfo['inputfile'] = TestSequence + file
-            y4mInfo['outputfile'] = TestSequence + file.split('.')[0] + '.yuv'
-            CodecInfo = convtool.fromy4m2yuv(y4mInfo)
+            y4mInfo['inputfile'] = test_sequence + file
+            y4mInfo['outputfile'] = test_sequence + file.split('.')[0] + '.yuv'
+            CodecInfo = convtool.from_y4m_to_yuv(y4mInfo)
             contain.extend(setup_codec(CodecInfo))
             del hm_contain[:]
             del svt_contain[:]

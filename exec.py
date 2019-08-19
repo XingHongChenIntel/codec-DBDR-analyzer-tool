@@ -17,60 +17,60 @@ svt_contain = []
 
 def signal_handler(signal, frame):
     for comboInfo in hm_contain:
-        if comboInfo[0].poll() == None:
+        if comboInfo[0].poll() is None:
             comboInfo[0].terminate()
     sys.exit(0)
 
 
 # extract bitrate from output info
-def findbitrate(codecname, line):
-    if codecname == 'x265':
+def find_bitrate(codec_name, line):
+    if codec_name == 'x265':
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kb/s', line[1])
         return float(ss[-1])
-    elif codecname == 'SVT':
+    elif codec_name == 'SVT':
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
-    elif codecname == 'HM':
+    elif codec_name == 'HM':
         print line
         ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return float(ss[-1])
 
 
-def addbitrate(codeccontain, codecname):
-    bitrate_buffer, outyuvpath_buffer = [], []
+def add_bitrate(codec_contain, codec_name):
+    bitrate_buffer, output_yuv_path_buffer = [], []
     line, info, common, outputInfo = 0, 1, 0, ''
-    for comboInfo in codeccontain:
-        if codecname == 'HM':
+    for comboInfo in codec_contain:
+        if codec_name == 'HM':
             outputInfo = comboInfo[line].communicate()
         else:
             outputInfo = comboInfo[line]
-        bitrate_buffer.append(findbitrate(codecname, outputInfo))
-        outyuvpath_buffer.append(comboInfo[info][1])
-    codeccontain[common][info][1] = outyuvpath_buffer
-    codeccontain[common][info].insert(2, bitrate_buffer)
+        bitrate_buffer.append(find_bitrate(codec_name, outputInfo))
+        output_yuv_path_buffer.append(comboInfo[info][1])
+    codec_contain[common][info][1] = output_yuv_path_buffer
+    codec_contain[common][info].insert(2, bitrate_buffer)
     print '\n'
     print bitrate_buffer
     print '\n'
     signal.signal(signal.SIGINT, signal_handler)
-    return codeccontain[common][info]
+    return codec_contain[common][info]
 
 
-def settleInfo():
+def settle_info():
     signal.signal(signal.SIGINT, signal_handler)
-    return [addbitrate(hm_contain, 'HM'), addbitrate(x265_contain, 'x265'), addbitrate(svt_contain, 'SVT')]
+    return [add_bitrate(hm_contain, 'HM'), add_bitrate(x265_contain, 'x265'), add_bitrate(svt_contain, 'SVT')]
 
 
-def setup_codec(CodecInfo):
+def setup_codec(codec_info):
     for qp in option.Qp:
         for j in Codec:
             if j.name == 'HM':
-                hm_contain.append(codec_command.exec_HM(CodecInfo, qp))
+                hm_contain.append(codec_command.exec_HM(codec_info, qp))
             if j.name == 'x265':
-                x265_contain.append(codec_command.exec_x265(CodecInfo, qp))
+                x265_contain.append(codec_command.exec_x265(codec_info, qp))
             if j.name == 'SVT':
-                svt_contain.append(codec_command.exec_svt(CodecInfo, qp))
+                svt_contain.append(codec_command.exec_svt(codec_info, qp))
     signal.signal(signal.SIGINT, signal_handler)
-    return settleInfo()
+    return settle_info()
 
 
 # execute all those codec to encode
@@ -87,16 +87,16 @@ def parse_args():
     return args
 
 
-def Testally4m(TestSequence):
+def test_all_y4m(test_sequence):
     y4mInfo = {'inputfile': '', 'outputfile': '', 'width': 0, 'height': 0, 'format': '',
                'fps': 0, 'frame_count': 0, 'frame_size': 0, 'frame_skip': 0}
     contain = []
-    dirs = os.listdir(TestSequence)
+    dirs = os.listdir(test_sequence)
     for file in dirs:
         if file.split('.')[-1] == 'y4m':
-            y4mInfo['inputfile'] = TestSequence + file
-            y4mInfo['outputfile'] = TestSequence + file.split('.')[0] + '.yuv'
-            CodecInfo = convtool.fromy4m2yuv(y4mInfo)
+            y4mInfo['inputfile'] = test_sequence + file
+            y4mInfo['outputfile'] = test_sequence + file.split('.')[0] + '.yuv'
+            CodecInfo = convtool.from_y4m_to_yuv(y4mInfo)
             print CodecInfo
             contain.extend(setup_codec(CodecInfo))
             del hm_contain[:]
@@ -105,16 +105,17 @@ def Testally4m(TestSequence):
     return contain
 
 
-def checkdatadir():
+def check_data_dir():
     dirs = os.listdir(Path.encodeYuvPath)
     for i in dirs:
         os.remove(Path.encodeYuvPath + i)
 
+
 def main():
     args = parse_args()
-    checkdatadir()
+    check_data_dir()
     TestSequence = Path.TestSequencePath
-    contain = Testally4m(TestSequence)
+    contain = test_all_y4m(TestSequence)
     tool.plot_psnr_frames(contain)
 
 

@@ -61,10 +61,10 @@ def sort_point(ind, point):
     for i in range(len(ind)):
         contain.append([ind[i], point[i]])
 
-    def takefirst(ele):
+    def take_first(ele):
         return ele[0]
 
-    contain.sort(key=takefirst)
+    contain.sort(key=take_first)
     ind = []
     point = []
     for i in range(len(contain)):
@@ -107,79 +107,79 @@ def plot_psnr_frames(contain):
             temp_sort = sort_point(xax, point)
             bits_psnr.plot(temp_sort[0], temp_sort[1], 'o-', label=contain[i][3])
             BD_contain.append([temp_sort[0], temp_sort[1], contain[i][3], contain[i][0]])
-    celltext = []
-    rowname = []
+    cell_text = []
+    row_name = []
     tag = 0
     while tag < len(BD_contain):
-        x265_rate = BD.BD_RATE(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+1][0], BD_contain[tag+1][1])
-        svt_rate = BD.BD_RATE(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+2][0], BD_contain[tag+2][1])
-        x265_psnr = BD.BD_PSNR(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+1][0], BD_contain[tag+1][1])
-        svt_psnr = BD.BD_PSNR(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag+2][0], BD_contain[tag+2][1])
-        rowname.append(BD_contain[tag][3][0].split('/')[-1]+'_'+BD_contain[tag][2])
-        rowname.append(BD_contain[tag+1][3][0].split('/')[-1]+'_'+BD_contain[tag+1][2])
-        rowname.append(BD_contain[tag+2][3][0].split('/')[-1]+'_'+BD_contain[tag+2][2])
-        celltext.append(['HM base line', 'HM base line'])
-        celltext.append([x265_rate, x265_psnr])
-        celltext.append([svt_rate, svt_psnr])
+        x265_rate = BD.bd_rate(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag + 1][0], BD_contain[tag + 1][1])
+        svt_rate = BD.bd_rate(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag + 2][0], BD_contain[tag + 2][1])
+        x265_psnr = BD.bd_psnr(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag + 1][0], BD_contain[tag + 1][1])
+        svt_psnr = BD.bd_psnr(BD_contain[tag][0], BD_contain[tag][1], BD_contain[tag + 2][0], BD_contain[tag + 2][1])
+        row_name.append(BD_contain[tag][3][0].split('/')[-1]+'_'+BD_contain[tag][2])
+        row_name.append(BD_contain[tag+1][3][0].split('/')[-1]+'_'+BD_contain[tag+1][2])
+        row_name.append(BD_contain[tag+2][3][0].split('/')[-1]+'_'+BD_contain[tag+2][2])
+        cell_text.append(['HM base line', 'HM base line'])
+        cell_text.append([x265_rate, x265_psnr])
+        cell_text.append([svt_rate, svt_psnr])
         tag += 3
-    DBDR.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
+    DBDR.table(cellText=cell_text, colLabels=['BDBR', 'BD-PSNR'], rowLabels=row_name, loc='center', colWidths=[0.2, 0.2])
     # frames_psnr.legend()
     bits_psnr.legend()
     # fig.align_labels()
     plt.show()
 
 
-def find_all_yuv_fromdir(arg, inputfile,grouptag):
+def find_all_yuv_from_dir(arg, inputfile, grouptag):
     path = arg.inputpath
     dirs = os.listdir(path)
-    Originalyuvpath = []
-    for file in dirs:
-        if file == inputfile:
-            Originalyuvpath.append(os.path.join(path, file))
+    original_yuv_path = []
+    for my_file in dirs:
+        if my_file == inputfile:
+            original_yuv_path.append(os.path.join(path, my_file))
             break
-    encodeyuvpath = []
+    encode_yuv_path = []
     for tag in range(len(grouptag)):
-        for file in dirs:
-            if file == grouptag[tag]:
-                encodeyuvpath.append(os.path.join(path, file))
+        for my_file in dirs:
+            if my_file == grouptag[tag]:
+                encode_yuv_path.append(os.path.join(path, my_file))
                 break
-    return [Originalyuvpath, encodeyuvpath, arg.Bit_rate, inputfile]
+    return [original_yuv_path, encode_yuv_path, arg.Bit_rate, inputfile]
 
 
-def find_all_yuv(arg, inputfile, grouptag):
+def find_all_yuv(arg, input_file, group_tag):
     workbook = xlrd.open_workbook(arg.inputpath)
     worksheet = workbook.sheet_by_index(0)
     y = 0
-    titlename = {}
+    title_name = {}
     while y < worksheet.ncols:
-        titlename[str(worksheet.cell(0, y).value)] = y
+        title_name[str(worksheet.cell(0, y).value)] = y
         y += 1
     order = 0
     while order < worksheet.nrows:
-        if worksheet.cell(order, 0).value == inputfile:
+        if worksheet.cell(order, 0).value == input_file:
             break
         order = order+1
-    Originalyuvpath = [str(worksheet.cell(order, 3).value)]
-    encodeyuvpath = []
-    encodeyuvbitrate = []
-    encodeyuvbitdepth = 8
+    original_yuv_path = [str(worksheet.cell(order, 3).value)]
+    encode_yuv_path = []
+    encode_yuv_bitrate = []
+    encode_yuv_bitdepth = 8
     width = 1
     height = 1
-    type = 'YU12'
-    linetag = 'haha'
+    yuv_type = 'YU12'
+    line_tag = 'haha'
     order = 0
     while order < worksheet.nrows:
-        if worksheet.cell(order, 7).value == inputfile and worksheet.cell(order, 8).value == grouptag:
-            encodeyuvpath.append(str(worksheet.cell(order, 3).value))
-            encodeyuvbitrate.append(worksheet.cell(order, 6).value)
-            linetag = str(worksheet.cell(order, 8).value)
-            # linetag = str(worksheet.cell(order, 8).value + '_' + worksheet.cell(order, 7).value)
-            encodeyuvbitdepth = int(worksheet.cell(order, 5).value)
+        if worksheet.cell(order, 7).value == input_file and worksheet.cell(order, 8).value == group_tag:
+            encode_yuv_path.append(str(worksheet.cell(order, 3).value))
+            encode_yuv_bitrate.append(worksheet.cell(order, 6).value)
+            line_tag = str(worksheet.cell(order, 8).value)
+            # line_tag = str(worksheet.cell(order, 8).value + '_' + worksheet.cell(order, 7).value)
+            encode_yuv_bitdepth = int(worksheet.cell(order, 5).value)
             width = int(worksheet.cell(order, 1).value)
             height = int(worksheet.cell(order, 2).value)
-            type = str(worksheet.cell(order, 4).value)
+            yuv_type = str(worksheet.cell(order, 4).value)
         order = order+1
-    return [Originalyuvpath, encodeyuvpath, encodeyuvbitrate, linetag, encodeyuvbitdepth, width, height, type]
+    return [original_yuv_path, encode_yuv_path, encode_yuv_bitrate, line_tag, encode_yuv_bitdepth, width, height, yuv_type]
 
 
 def main():

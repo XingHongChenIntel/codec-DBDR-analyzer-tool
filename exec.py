@@ -69,6 +69,14 @@ def setup_codec(CodecInfo):
     return settleInfo()
 
 
+def setup_svt(CodecInfo):
+    svt_codec_contain = []
+    for svt in option.svt_Qp:
+        for mode in option.mode:
+            for qp in svt[0]:
+                svt_codec_contain.append(codec_command.exec_svt_config(CodecInfo, qp, svt[1], mode))
+    return addbitrate(svt_codec_contain, 'SVT')
+
 # execute all those codec to encode
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -79,23 +87,32 @@ def parse_args():
     parser.add_argument('-H', '--SourceHeight', help='picture Source Width', type=int)
     parser.add_argument('-r', '--framerate', help='give a frame rate for encode', type=int)
     parser.add_argument('-f', '--frames', help='encoded frames numbers', type=int)
-    parser.add_argument('-s', '--svt', help='turn on svt mode', type=int)
+    parser.add_argument('-s', '--svt', help='turn on svt mode', type=int,default=0)
     args = parser.parse_args()
     return args
 
 
-def Testally4m(test_sequence):
+def Testally4m(test_sequence, arg):
     y4mInfo = {'inputfile': '', 'outputfile': '', 'width': 0, 'height': 0, 'format': '',
                'fps': 0, 'frame_count': 0, 'frame_size': 0, 'frame_skip': 0}
     contain = []
     dirs = os.listdir(test_sequence)
+    case_num, case_count = 0, 0
     for file in dirs:
         if file.split('.')[-1] == 'y4m':
+            case_num += 1
+    for file in dirs:
+        if file.split('.')[-1] == 'y4m':
+            case_count += 1
+            if case_count is case_num:
+                case_count = 0
             y4mInfo['inputfile'] = test_sequence + file
             y4mInfo['outputfile'] = test_sequence + file.split('.')[0] + '.yuv'
             CodecInfo = convtool.from_y4m_to_yuv(y4mInfo)
-            tool.plot_psnr_frames(setup_codec(CodecInfo))
-            # contain.extend(setup_codec(CodecInfo))
+            if arg.svt is 0:
+                tool.plot_psnr_frames(setup_codec(CodecInfo), case_count)
+            else:
+                tool.plot_psnr_svt(setup_svt(CodecInfo))
             del hm_contain[:]
             del svt_contain[:]
             del x265_contain[:]
@@ -112,7 +129,7 @@ def main():
     args = parse_args()
     checkdatadir()
     TestSequence = Path.TestSequencePath
-    contain = Testally4m(TestSequence)
+    contain = Testally4m(TestSequence, args)
     # tool.plot_psnr_frames(contain)
 
 

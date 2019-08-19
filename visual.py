@@ -111,7 +111,7 @@ def calculate_average(BD_contain):
         tag += 3
     return celltext,rowname
 
-def plot_psnr_frames(contain):
+def plot_psnr_frames(contain, case_count):
     """
     PSNR, all planes
     """
@@ -157,9 +157,18 @@ def plot_psnr_frames(contain):
     DBDR_for_each.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
     # frames_psnr.legend()
     bits_psnr.legend()
+    bits_psnr.grid(True)
     # fig.align_labels()
-    plt.show()
+    if case_count is 0:
+        plt.show()
+    else:
+        plt.pause(10)
 
+def plot_psnr_svt(contain):
+    #TODO finish svt config psnr
+    fig = plt.figure(figsize=[16, 6], constrained_layout=True)
+    gs = GridSpec(2, 2, figure=fig)
+    plt.suptitle('yuv Quality plot')
 
 def find_all_yuv_fromdir(arg, inputfile,grouptag):
     path = arg.inputpath

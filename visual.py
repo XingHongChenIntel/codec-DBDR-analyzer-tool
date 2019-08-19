@@ -142,14 +142,17 @@ def plot_psnr_frames(contain):
                 temp = [p for p in yuv.psnr_all(diff_file, infile)]
                 ind = np.arange(len(temp))
                 frame = [frame_order[0] for frame_order in temp]
-                point.append(temp[-1][0])
+                point.append(temp[-1])
                 xax.append(contain[i][2][diff_file])
                 # frames_psnr.plot(ind[0:-1], frame[0:-1], 'o-', label=contain[i][3]+'_'+str(contain[i][2][diff_file]))
             temp_sort = sort_point(xax, point)
-            bits_psnr.plot(temp_sort[0], temp_sort[1], 'o-', label=contain[i][3])
-            BD_contain.append([temp_sort[0], temp_sort[1], contain[i][3], contain[i][0]])
+            db_psnr_contain = []
+            for db_psnr in temp_sort[1]:
+                db_psnr_contain.append(db_psnr[-1])
+            bits_psnr.plot(temp_sort[0], db_psnr_contain, 'o-', label=contain[i][3])
+            BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1]])
     celltext, rowname = calculate_distance(BD_contain)
-    DBDR.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
+    DBDR.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.3])
     celltext, rowname = calculate_average(BD_contain)
     DBDR_for_each.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
     # frames_psnr.legend()

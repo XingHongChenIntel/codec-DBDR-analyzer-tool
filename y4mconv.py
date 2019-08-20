@@ -13,7 +13,7 @@ def from_y4m_to_yuv(options):
     width = (re.compile("W(\d+)").findall(header))[0]
     height = (re.compile("H(\d+)").findall(header))[0]
     (fpsnum, fpsden) = (re.compile("F(\d+):(\d+)").findall(header))[0]
-
+    bitdepth = re.findall(r'XYSCSS=([0-9]*)JPEG', header)
     framesize = int(width)*int(height)*3/2
 
     options['width'] = width
@@ -22,6 +22,10 @@ def from_y4m_to_yuv(options):
     fpsden = int(fpsden)*(int(options['frame_skip'])+int(1))
     options['fps'] = int(fpsnum)/fpsden
     options['format'] = '420P'
+    if bitdepth:
+        options['bitdepth'] = 8
+    else:
+        options['bitdepth'] = 10
 
     if options['outputfile'] is None:
         in_file.close()

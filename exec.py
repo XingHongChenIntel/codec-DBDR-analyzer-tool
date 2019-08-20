@@ -96,7 +96,7 @@ def parse_args():
 
 def Testally4m(test_sequence, arg):
     y4mInfo = {'inputfile': '', 'outputfile': '', 'width': 0, 'height': 0, 'format': '',
-               'fps': 0, 'frame_count': 0, 'frame_size': 0, 'frame_skip': 0}
+               'fps': 0, 'frame_count': 0, 'frame_size': 0, 'frame_skip': 0, 'bitdepth': 0}
     contain = []
     dirs = os.listdir(test_sequence)
     case_num, case_count = 0, 0

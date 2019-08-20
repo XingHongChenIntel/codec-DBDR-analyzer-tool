@@ -7,7 +7,7 @@ config = [
     # TargetBitrate
     # ['TargetBitrate', ['TargetBitrate', '--bitrate', '-tbr'], ['2000', '2000', '2000']],
     # preset
-    ['EncoderBitDepth', ['InputBitDepth', '--input-depth', '-bit-depth'], ['8', '8', '8']],
+    # ['EncoderBitDepth', ['InputBitDepth', '--input-depth', '-bit-depth'], ['8', '8', '8']],
     # Profile
     ['Profile', ['Profile', '--profile', '-profile'], ['main', 'main', '1']],
     # #IntraPeriod

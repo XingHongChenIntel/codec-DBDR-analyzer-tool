@@ -82,3 +82,21 @@ def exec_svt(yuvInfo,configparam):
     #TODO you have to get bitdepet and type
     info = [[yuvInfo['outputfile']], encodeyuv, 'svt', 8, yuvInfo['width'], yuvInfo['height'], 'YV12']
     return [line, info]
+
+
+def exec_svt_config(yuvInfo, configparam, cfg, mode):
+    os.chdir(common_config.exec_path['svt'])
+    arg = './SvtHevcEncApp -c %s -i %s -w %s -h %s -fps %s -n %s -q %d -encMode %d'\
+          %(cfg, yuvInfo['outputfile'], yuvInfo['width'], yuvInfo['height'], yuvInfo['fps'],
+            yuvInfo['frame_count'], configparam, mode)
+    encodeyuv = common_config.encodeYuvPath + 'svt_%s_%d'%(configparam, mode) + yuvInfo['outputfile'].split('/')[-1]
+    arg += ' -o %s'%(encodeyuv)
+    # arg += Addoptions('svt')
+    print arg
+    p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
+    line = p.communicate()
+    if line == None:
+        print '\ni am svt\n'
+    #TODO you have to get bitdepet and type
+    info = [[yuvInfo['outputfile']], encodeyuv, 'svt_%d'%(mode), 8, yuvInfo['width'], yuvInfo['height'], 'YV12']
+    return [line, info]

@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 from ycbcr import YCbCr
 from matplotlib.gridspec import GridSpec
 import bjontegaard_metric as BD
+import OptionDictionary as config
 
 
 def create_title_string(title, subtitle):
@@ -111,6 +112,32 @@ def calculate_average(BD_contain):
         tag += 3
     return celltext,rowname
 
+def get_psnr_value(contain, bits_psnr=0):
+    BD_contain = []
+    for i in range(len(contain)):
+        yuv = YCbCr(filename=contain[i][0], filename_diff=contain[i][1], width=int(contain[i][5]), height=int(contain[i][6]), yuv_format_in=contain[i][7], bitdepth=contain[i][4])
+        for infile in range(len(contain[i][0])):
+            point = []
+            xax = []
+            for diff_file in range(len(contain[i][1])):
+                temp = [p for p in yuv.psnr_all(diff_file, infile)]
+                ind = np.arange(len(temp))
+                frame = [frame_order[0] for frame_order in temp]
+                point.append(temp[-1])
+                xax.append(contain[i][2][diff_file])
+                # frames_psnr.plot(ind[0:-1], frame[0:-1], 'o-', label=contain[i][3]+'_'+str(contain[i][2][diff_file]))
+            temp_sort = sort_point(xax, point)
+            db_psnr_contain = []
+            for db_psnr in temp_sort[1]:
+                db_psnr_contain.append(db_psnr[-1])
+            if bits_psnr is 0:
+                BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1]])
+            else:
+                bits_psnr.plot(temp_sort[0], db_psnr_contain, 'o-', label=contain[i][3])
+                BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1]])
+    return BD_contain
+
+
 def plot_psnr_frames(contain, case_count):
     """
     PSNR, all planes
@@ -132,27 +159,9 @@ def plot_psnr_frames(contain, case_count):
     bits_psnr.set_title('Psnr vs Bitrate')
     bits_psnr.set_xlabel('bitrate')
     bits_psnr.set_ylabel('psnr')
-    BD_contain = []
-    for i in range(len(contain)):
-        yuv = YCbCr(filename=contain[i][0], filename_diff=contain[i][1], width=int(contain[i][5]), height=int(contain[i][6]), yuv_format_in=contain[i][7], bitdepth=contain[i][4])
-        for infile in range(len(contain[i][0])):
-            point = []
-            xax = []
-            for diff_file in range(len(contain[i][1])):
-                temp = [p for p in yuv.psnr_all(diff_file, infile)]
-                ind = np.arange(len(temp))
-                frame = [frame_order[0] for frame_order in temp]
-                point.append(temp[-1])
-                xax.append(contain[i][2][diff_file])
-                # frames_psnr.plot(ind[0:-1], frame[0:-1], 'o-', label=contain[i][3]+'_'+str(contain[i][2][diff_file]))
-            temp_sort = sort_point(xax, point)
-            db_psnr_contain = []
-            for db_psnr in temp_sort[1]:
-                db_psnr_contain.append(db_psnr[-1])
-            bits_psnr.plot(temp_sort[0], db_psnr_contain, 'o-', label=contain[i][3])
-            BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1]])
+    BD_contain = get_psnr_value(contain, bits_psnr)
     celltext, rowname = calculate_distance(BD_contain)
-    DBDR.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.3])
+    DBDR.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
     celltext, rowname = calculate_average(BD_contain)
     DBDR_for_each.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
     # frames_psnr.legend()
@@ -164,11 +173,74 @@ def plot_psnr_frames(contain, case_count):
     else:
         plt.pause(10)
 
-def plot_psnr_svt(contain):
+
+def calculate_JustOne_distance(Baseline, svt_diff):
+    return BD.BD_RATE(Baseline[0], Baseline[1], svt_diff[0], svt_diff[1])
+
+def calculate_svt_distance(BD_contain):
+    BDRate_Container = []
+    Baseline = BD_contain[0]
+    mode_sum = len(config.svt_mode)
+    for mode_num in range(mode_sum):
+        for svt_diff in range(len(config.svt_Qp)):
+            BDRate = calculate_JustOne_distance(Baseline, BD_contain[svt_diff*mode_sum+mode_num])
+            BDRate_Container.append(BDRate)
+    return BDRate_Container
+
+def get_Xaxis_value():
+    mode_sum = len(config.svt_mode)
+    compare_sum = len(config.svt_Qp)
+    Xaxis_name = []
+    for i in range(1, compare_sum):
+        for j in range(mode_sum):
+            name = '%sM%d vs %s_M%d'%(config.svt_Qp[i][2], j, config.svt_Qp[0][2], j)
+            Xaxis_name.append(name)
+    return Xaxis_name
+
+def get_celltext(BDRate_Container):
+    mode_sum = len(config.svt_mode)
+    codec_sum = len(config.svt_Qp)
+    BDRate_table = []
+    for j in range(mode_sum):
+        row_value = []
+        for i in range(codec_sum):
+            row_value.append(BDRate_Container[i*mode_sum+j])
+        BDRate_table.append(row_value)
+    return BDRate_table
+
+def get_collable():
+    collable = []
+    for i in config.svt_Qp:
+        collable.append(i[2])
+    return collable
+
+def plot_psnr_svt(contain, case_count):
     #TODO finish svt config psnr
     fig = plt.figure(figsize=[16, 6], constrained_layout=True)
-    gs = GridSpec(2, 2, figure=fig)
-    plt.suptitle('yuv Quality plot')
+    gs = GridSpec(1, 2, figure=fig)
+    plt.suptitle('PSNR BDRate')
+    chart = fig.add_subplot(gs[0, 0])
+    table = fig.add_subplot(gs[0, 1])
+    table.set_axis_off()
+    chart.set_title('BDRate vs Mode')
+    chart.set_xlabel('Mode')
+    chart.set_ylabel('BDRate')
+    BD_contain = get_psnr_value(contain)
+    BDRate_Container = calculate_svt_distance(BD_contain)
+    celltext = get_celltext(BDRate_Container)
+    Xaxis_name = get_Xaxis_value()
+    collable = get_collable()
+    table.table(cellText=celltext, colLabels=collable, rowLabels=Xaxis_name, loc='center',colWidths=[0.2, 0.2])
+    mode_sum = len(config.svt_mode)
+    codec_sum = len(config.svt_Qp)
+    for codec in range(codec_sum):
+        chart.plot(config.svt_mode,BDRate_Container[codec*mode_sum:(codec+1)*mode_sum],label=config.svt_Qp[codec][2])
+    chart.legend()
+    chart.grid(True)
+    if case_count is 0:
+        plt.show()
+    else:
+        plt.pause(10)
 
 def find_all_yuv_fromdir(arg, inputfile,grouptag):
     path = arg.inputpath

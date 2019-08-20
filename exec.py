@@ -70,12 +70,14 @@ def setup_codec(CodecInfo):
 
 
 def setup_svt(CodecInfo):
-    svt_codec_contain = []
+    svt_contain = []
     for svt in option.svt_Qp:
-        for mode in option.mode:
+        for mode in option.svt_mode:
+            svt_oneplot_contain = []
             for qp in svt[0]:
-                svt_codec_contain.append(codec_command.exec_svt_config(CodecInfo, qp, svt[1], mode))
-    return addbitrate(svt_codec_contain, 'SVT')
+                svt_oneplot_contain.append(codec_command.exec_svt_config(CodecInfo, qp, svt[1], mode))
+            svt_contain.append(addbitrate(svt_oneplot_contain, 'SVT'))
+    return svt_contain
 
 # execute all those codec to encode
 def parse_args():
@@ -112,7 +114,7 @@ def Testally4m(test_sequence, arg):
             if arg.svt is 0:
                 tool.plot_psnr_frames(setup_codec(CodecInfo), case_count)
             else:
-                tool.plot_psnr_svt(setup_svt(CodecInfo))
+                tool.plot_psnr_svt(setup_svt(CodecInfo), case_count)
             del hm_contain[:]
             del svt_contain[:]
             del x265_contain[:]

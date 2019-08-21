@@ -121,20 +121,16 @@ def calculate_average(BD_contain):
     celltext = []
     rowname = []
     tag = 0
-    while tag < len(BD_contain):
-        HM_rate = BD.BD_RATE_Average(BD_contain[tag][0],BD_contain[tag][1])
-        HM_psnr = BD.BD_PSNR_Average(BD_contain[tag][0],BD_contain[tag][1])
-        x265_rate = BD.BD_RATE_Average(BD_contain[tag+1][0], BD_contain[tag+1][1])
-        svt_rate = BD.BD_RATE_Average(BD_contain[tag+2][0], BD_contain[tag+2][1])
+    while tag < len(config.svt_mode):
+        # HM_rate = BD.BD_RATE_Average(BD_contain[0][0],BD_contain[0][1])
+        HM_psnr = BD.BD_PSNR_Average(BD_contain[0][0],BD_contain[0][1])
+        # x265_rate = BD.BD_RATE_Average(BD_contain[tag+1][0], BD_contain[tag+1][1])
+        # svt_rate = BD.BD_RATE_Average(BD_contain[tag+2][0], BD_contain[tag+2][1])
         x265_psnr = BD.BD_PSNR_Average(BD_contain[tag+1][0], BD_contain[tag+1][1])
-        svt_psnr = BD.BD_PSNR_Average(BD_contain[tag+2][0], BD_contain[tag+2][1])
-        rowname.append(BD_contain[tag][3][0].split('/')[-1]+'_'+BD_contain[tag][2])
-        rowname.append(BD_contain[tag+1][3][0].split('/')[-1]+'_'+BD_contain[tag+1][2])
-        rowname.append(BD_contain[tag+2][3][0].split('/')[-1]+'_'+BD_contain[tag+2][2])
-        celltext.append([HM_rate, HM_psnr])
-        celltext.append([x265_rate, x265_psnr])
-        celltext.append([svt_rate, svt_psnr])
-        tag += 3
+        svt_psnr = BD.BD_PSNR_Average(BD_contain[tag+11][0], BD_contain[tag+11][1])
+        rowname.append(BD_contain[0][3][0].split('/')[-1]+'_'+'mode_%d'%tag)
+        celltext.append([HM_psnr, x265_psnr, svt_psnr])
+        tag += 1
     return celltext,rowname
 
 def get_psnr_value(contain, bits_psnr=0):
@@ -158,7 +154,7 @@ def get_psnr_value(contain, bits_psnr=0):
             if bits_psnr is 0:
                 BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1], contain[i][8]])
             else:
-                # bits_psnr.plot(temp_sort[0], db_psnr_contain, 'o-', label=contain[i][3])
+                bits_psnr.plot(temp_sort[0], db_psnr_contain, 'o-', label=contain[i][3])
                 BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1], contain[i][8]])
     return BD_contain
 
@@ -228,7 +224,7 @@ def get_fps_svt(BD_contain):
     return fps_svt
 
 def plot_psnr_svt(contain, case_count):
-    fig = plt.figure(figsize=[16, 6], constrained_layout=True)
+    fig = plt.figure(figsize=[16, 10], constrained_layout=True)
     gs = GridSpec(1, 2, figure=fig)
     plt.suptitle('PSNR BDRate')
     chart = fig.add_subplot(gs[0, 0])
@@ -269,21 +265,15 @@ def plot_psnr_frames(contain, case_count):
     """
     PSNR, all planes
     """
-    fig = plt.figure(figsize=[16, 6], constrained_layout=True)
-    gs = GridSpec(1, 2, figure=fig)
+    fig = plt.figure(figsize=[16, 10], constrained_layout=True)
+    gs = GridSpec(2, 2, figure=fig)
     plt.suptitle('yuv Quality plot')
-    # bits_psnr = fig.add_subplot(gs[0, 0])
-    # # DBDR_for_each = fig.add_subplot(gs[0, 1])
-    # DBDR_for_each.set_axis_off()
     DBDR_plot = fig.add_subplot(gs[0, 0])
     DBDR = fig.add_subplot(gs[0, 1])
     DBDR.set_axis_off()
-    # bits_psnr.set_title('Psnr vs Bitrate')
-    # bits_psnr.set_xlabel('bitrate')
-    # bits_psnr.set_ylabel('psnr')
+
     DBDR_plot.set_ylabel('BDRate base HM')
     DBDR_plot.set_xlabel('Speed(fps)')
-
     DBDR_plot.grid(True)
     DBDR_plot.set_xlim(0,None,True,True)
     DBDR_plot.set_ylim(0, 100, True, True)
@@ -292,7 +282,15 @@ def plot_psnr_frames(contain, case_count):
     DBDR_plot.yaxis.set_major_locator(MultipleLocator(10))
     DBDR_plot.yaxis.set_major_formatter(FuncFormatter(persent))
 
-    BD_contain = get_psnr_value(contain)
+    bits_psnr = fig.add_subplot(gs[1, 0])
+    DBDR_for_each = fig.add_subplot(gs[1, 1])
+    DBDR_for_each.set_title('BD_PSNR')
+    DBDR_for_each.set_axis_off()
+    bits_psnr.set_title('Psnr vs Bitrate')
+    bits_psnr.set_xlabel('bitrate')
+    bits_psnr.set_ylabel('psnr')
+
+    BD_contain = get_psnr_value(contain, bits_psnr)
     BDRate_contain,BD_PSNR_contain = calculate_hm_distance(BD_contain)
     x265_fps, svt_fps = get_fps(BD_contain)
     DBDR_plot.plot(x265_fps, BDRate_contain[:len(config.svt_mode)], 'o-', label=contain[len(config.svt_mode)][3])
@@ -300,10 +298,10 @@ def plot_psnr_frames(contain, case_count):
     celltext = get_celltext(BDRate_contain)
     rowname = get_Xaxis_value()
     DBDR.table(cellText=celltext, colLabels=['x265', 'svt'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
-    celltext, rowname = calculate_average(BD_contain)
+    text, name = calculate_average(BD_contain)
+    DBDR_for_each.table(cellText=text, colLabels=['HM', 'x265', 'svt'], rowLabels=name, loc='center',colWidths=[0.1, 0.1])
     # bits_psnr.legend()
-    # bits_psnr.grid(True)
-    # fig.align_labels()
+    bits_psnr.grid(True)
     #TODO we should store our data ,and when we get a lot of case, we need to get average number
     # it means just for a one plot
     DBDR_plot.legend()

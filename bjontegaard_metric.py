@@ -62,7 +62,7 @@ def BD_PSNR_Average(R1, PSNR1, piecewise=0):
     # find avg diff
     avg_diff = int1/(max_int-min_int)
 
-    return avg_diff
+    return round(avg_diff, 2)
 
 
 def BD_RATE(R1, PSNR1, R2, PSNR2, piecewise=0):
@@ -97,6 +97,7 @@ def BD_RATE(R1, PSNR1, R2, PSNR2, piecewise=0):
     # find avg diff
     avg_exp_diff = (int2-int1)/(max_int-min_int)
     avg_diff = (np.exp(avg_exp_diff)-1)*100
+    # avg_diff = np.power(10, avg_exp_diff) - 1
     return round(avg_diff, 2)
 
 

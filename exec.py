@@ -87,7 +87,7 @@ def setup_codec(CodecInfo):
             else:
                 for mode in option.svt_mode:
                     if j.name == 'x265':
-                        x265_contain.append(codec_command.exec_x265(CodecInfo, qp, mode))
+                        x265_contain.append(codec_command.exec_x265(CodecInfo, qp, 9-mode))
                     if j.name == 'SVT':
                         svt_contain.append(codec_command.exec_svt(CodecInfo, qp, mode))
     signal.signal(signal.SIGINT, signal_handler)

@@ -518,7 +518,7 @@ class YCbCr:
 
             #yield ['-', '-', '-', '-', '-']
             # yield [sum(yy)/len(yy), sum(cb)/len(cb), sum(cr)/len(cr), sum(bd)/len(bd)]
-            yield [sum(yy)/len(yy), sum(cb)/len(cb), sum(cr)/len(cr), sum(bd)/len(bd)]
+            yield [round(sum(yy)/len(yy), 2), sum(cb)/len(cb), sum(cr)/len(cr), round(sum(bd)/len(bd), 2)]
 
     def get_accout_diff(self):
         return len(self.filename_diff)

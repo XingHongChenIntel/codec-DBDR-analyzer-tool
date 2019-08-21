@@ -13,11 +13,14 @@ import xlrd
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FuncFormatter
 from ycbcr import YCbCr
 from matplotlib.gridspec import GridSpec
 import bjontegaard_metric as BD
 import OptionDictionary as config
 
+bdrate_contain = []
+fps_contain = []
 
 def create_title_string(title, subtitle):
     """
@@ -73,6 +76,28 @@ def sort_point(ind, point):
         point.append(contain[i][1])
     return [ind, point]
 
+
+def calculate_hm_distance(BD_contain):
+    BDRate_contain = []
+    BD_PSNR_contain = []
+    mode_sum = len(config.svt_mode)
+    for i in range(1,len(BD_contain)):
+        BDRate = BD.BD_RATE(BD_contain[0][0], BD_contain[0][1], BD_contain[i][0], BD_contain[i][1])
+        BD_PSNR = BD.BD_PSNR(BD_contain[0][0], BD_contain[0][1], BD_contain[i][0], BD_contain[i][1])
+        BDRate_contain.append(BDRate)
+        BD_PSNR_contain.append(BD_PSNR)
+    return BDRate_contain,BD_PSNR_contain
+
+def calculate_hm_average(BD_contain):
+    BDRate_contain = []
+    BD_PSNR_contain = []
+    mode_sum = len(config.svt_mode)
+    for i in range(1,len(BD_contain)):
+        BDRate = BD.BD_RATE_Average(BD_contain[0][0], BD_contain[0][1], BD_contain[i][0], BD_contain[i][1])
+        BD_PSNR = BD.BD_PSNR_Average(BD_contain[0][0], BD_contain[0][1], BD_contain[i][0], BD_contain[i][1])
+        BDRate_contain.append(BDRate)
+        BD_PSNR_contain.append(BD_PSNR)
+    return BDRate_contain,BD_PSNR_contain
 
 def calculate_distance(BD_contain):
     celltext = []
@@ -131,49 +156,11 @@ def get_psnr_value(contain, bits_psnr=0):
             for db_psnr in temp_sort[1]:
                 db_psnr_contain.append(db_psnr[-1])
             if bits_psnr is 0:
-                BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1]])
+                BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1], contain[i][8]])
             else:
-                bits_psnr.plot(temp_sort[0], db_psnr_contain, 'o-', label=contain[i][3])
-                BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1]])
+                # bits_psnr.plot(temp_sort[0], db_psnr_contain, 'o-', label=contain[i][3])
+                BD_contain.append([temp_sort[0], db_psnr_contain, contain[i][3], contain[i][0], temp_sort[1], contain[i][8]])
     return BD_contain
-
-
-def plot_psnr_frames(contain, case_count):
-    """
-    PSNR, all planes
-    """
-    # ind = arg.Bit_rate  # the x locations for the groups
-    fig = plt.figure(figsize=[16, 6], constrained_layout=True)
-    gs = GridSpec(2, 2, figure=fig)
-    plt.suptitle('yuv Quality plot')
-    # frames_psnr = fig.add_subplot(gs[:, 0])
-    bits_psnr = fig.add_subplot(gs[0, 0])
-    DBDR_for_each = fig.add_subplot(gs[0, 1])
-    DBDR_for_each.set_axis_off()
-    DBDR_plot = fig.add_subplot(gs[1, 0])
-    DBDR = fig.add_subplot(gs[1, 1])
-    DBDR.set_axis_off()
-    # frames_psnr.set_title('Psnr-Y vs Frames')
-    # frames_psnr.set_xlabel('frames')
-    # frames_psnr.set_ylabel('Psnr-y')
-    bits_psnr.set_title('Psnr vs Bitrate')
-    bits_psnr.set_xlabel('bitrate')
-    bits_psnr.set_ylabel('psnr')
-    BD_contain = get_psnr_value(contain, bits_psnr)
-    celltext, rowname = calculate_distance(BD_contain)
-    DBDR.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
-    celltext, rowname = calculate_average(BD_contain)
-    DBDR_for_each.table(cellText=celltext, colLabels=['BDBR', 'BD-PSNR'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
-    # frames_psnr.legend()
-    bits_psnr.legend()
-    bits_psnr.grid(True)
-    # fig.align_labels()
-    #TODO we should store our data ,and when we get a lot of case, we need to get average number
-    # it means just for a one plot
-    if case_count is 0:
-        plt.show()
-    else:
-        plt.pause(10)
 
 
 def calculate_JustOne_distance(Baseline, svt_diff):
@@ -183,8 +170,8 @@ def calculate_svt_distance(BD_contain):
     BDRate_Container = []
     Baseline = BD_contain[0]
     mode_sum = len(config.svt_mode)
-    for mode_num in range(mode_sum):
-        for svt_diff in range(len(config.svt_Qp)):
+    for svt_diff in range(len(config.svt_Qp)):
+        for mode_num in range(mode_sum):
             BDRate = calculate_JustOne_distance(Baseline, BD_contain[svt_diff*mode_sum+mode_num])
             BDRate_Container.append(BDRate)
     return BDRate_Container
@@ -193,10 +180,9 @@ def get_Xaxis_value():
     mode_sum = len(config.svt_mode)
     compare_sum = len(config.svt_Qp)
     Xaxis_name = []
-    for i in range(1, compare_sum):
-        for j in range(mode_sum):
-            name = '%sM%d vs %s_M%d'%(config.svt_Qp[i][2], j, config.svt_Qp[0][2], j)
-            Xaxis_name.append(name)
+    for j in range(mode_sum):
+        name = 'M%d vs %s_M%d'%(j, config.svt_Qp[0][2], j)
+        Xaxis_name.append(name)
     return Xaxis_name
 
 def get_celltext(BDRate_Container):
@@ -216,8 +202,32 @@ def get_collable():
         collable.append(i[2])
     return collable
 
+def average_fps(fps):
+    sum = 0
+    for i in fps:
+        sum += i
+    return sum/len(fps)
+
+def get_fps(BD_contain):
+    x265, svt = [], []
+    mode_sum = len(config.svt_mode)
+    for i in range(1, 1+mode_sum):
+        x265.append(average_fps(BD_contain[i][5]))
+        svt.append(average_fps(BD_contain[i+mode_sum][5]))
+    return x265, svt
+
+def get_fps_svt(BD_contain):
+    mode_sum = len(config.svt_mode)
+    codec_sum = len(config.svt_Qp)
+    fps_svt = [None]*codec_sum
+    for i in range(codec_sum):
+        fps_svt[i] = []
+    for i in range(mode_sum):
+        for j in range(codec_sum):
+            fps_svt[j].append(average_fps(BD_contain[mode_sum*j+i][5]))
+    return fps_svt
+
 def plot_psnr_svt(contain, case_count):
-    #TODO finish svt config psnr
     fig = plt.figure(figsize=[16, 6], constrained_layout=True)
     gs = GridSpec(1, 2, figure=fig)
     plt.suptitle('PSNR BDRate')
@@ -227,6 +237,13 @@ def plot_psnr_svt(contain, case_count):
     chart.set_title('BDRate vs Mode')
     chart.set_xlabel('Mode')
     chart.set_ylabel('BDRate')
+    chart.set_xlim(0,None,True,True)
+    chart.set_ylim(-20, 100, True, False)
+    def persent(temp, position):
+        return '%1.1f' % (temp) + '%'
+    chart.yaxis.set_major_locator(MultipleLocator(10))
+    chart.yaxis.set_major_formatter(FuncFormatter(persent))
+
     BD_contain = get_psnr_value(contain)
     BDRate_Container = calculate_svt_distance(BD_contain)
     celltext = get_celltext(BDRate_Container)
@@ -235,13 +252,61 @@ def plot_psnr_svt(contain, case_count):
     table.table(cellText=celltext, colLabels=collable, rowLabels=Xaxis_name, loc='center',colWidths=[0.2, 0.2])
     mode_sum = len(config.svt_mode)
     codec_sum = len(config.svt_Qp)
+    svt_fps = get_fps_svt(BD_contain)
     for codec in range(codec_sum):
-        chart.plot(config.svt_mode,BDRate_Container[codec*mode_sum:(codec+1)*mode_sum], 'o-', label=config.svt_Qp[codec][2])
-    chart.xlim(-100, 100)
+        chart.plot(svt_fps[codec],BDRate_Container[codec*mode_sum:(codec+1)*mode_sum], 'o-', label=config.svt_Qp[codec][2])
     chart.legend()
     chart.grid(True)
     #TODO we should store our data ,and when we get a lot of case, we need to get average number
     # it means just for a one plot
+    if case_count is 0:
+        plt.show()
+    else:
+        plt.pause(10)
+
+
+def plot_psnr_frames(contain, case_count):
+    """
+    PSNR, all planes
+    """
+    fig = plt.figure(figsize=[16, 6], constrained_layout=True)
+    gs = GridSpec(1, 2, figure=fig)
+    plt.suptitle('yuv Quality plot')
+    # bits_psnr = fig.add_subplot(gs[0, 0])
+    # # DBDR_for_each = fig.add_subplot(gs[0, 1])
+    # DBDR_for_each.set_axis_off()
+    DBDR_plot = fig.add_subplot(gs[0, 0])
+    DBDR = fig.add_subplot(gs[0, 1])
+    DBDR.set_axis_off()
+    # bits_psnr.set_title('Psnr vs Bitrate')
+    # bits_psnr.set_xlabel('bitrate')
+    # bits_psnr.set_ylabel('psnr')
+    DBDR_plot.set_ylabel('BDRate base HM')
+    DBDR_plot.set_xlabel('Speed(fps)')
+
+    DBDR_plot.grid(True)
+    DBDR_plot.set_xlim(0,None,True,True)
+    DBDR_plot.set_ylim(0, 100, True, True)
+    def persent(temp, position):
+        return '%1.1f' % (temp) + '%'
+    DBDR_plot.yaxis.set_major_locator(MultipleLocator(10))
+    DBDR_plot.yaxis.set_major_formatter(FuncFormatter(persent))
+
+    BD_contain = get_psnr_value(contain)
+    BDRate_contain,BD_PSNR_contain = calculate_hm_distance(BD_contain)
+    x265_fps, svt_fps = get_fps(BD_contain)
+    DBDR_plot.plot(x265_fps, BDRate_contain[:len(config.svt_mode)], 'o-', label=contain[len(config.svt_mode)][3])
+    DBDR_plot.plot(svt_fps, BDRate_contain[len(config.svt_mode):], 'v-', label=contain[-1][3])
+    celltext = get_celltext(BDRate_contain)
+    rowname = get_Xaxis_value()
+    DBDR.table(cellText=celltext, colLabels=['x265', 'svt'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
+    celltext, rowname = calculate_average(BD_contain)
+    # bits_psnr.legend()
+    # bits_psnr.grid(True)
+    # fig.align_labels()
+    #TODO we should store our data ,and when we get a lot of case, we need to get average number
+    # it means just for a one plot
+    DBDR_plot.legend()
     if case_count is 0:
         plt.show()
     else:

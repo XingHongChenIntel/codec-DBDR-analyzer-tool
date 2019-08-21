@@ -37,8 +37,20 @@ def find_bitrate(codec_name, line):
         return float(ss[-1])
 
 
+def find_fps(codec_name, line):
+    if codec_name == 'x265':
+        ss = re.findall(r'\(([\.0-9]*)[\r\n\t ]*fps\)', line[1])
+        return float(ss[-1])
+    elif codec_name == 'SVT':
+        ss = re.findall(r'Average Speed:[\r\n\t ]*([\.0-9]*)[\r\n\t ]*fps', line[0])
+        return float(ss[-1])
+    elif codec_name == 'HM':
+        ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+        return float(ss[-1])
+
+
 def addbitrate(codec_contain, codec_name):
-    bitrate_buffer, output_yuv_path_buffer = [], []
+    bitrate_buffer, output_yuv_path_buffer, fps_buffer = [], [], []
     line, info, common, outputInfo = 0, 1, 0, ''
     for comboInfo in codec_contain:
         if codec_name == 'HM':
@@ -47,8 +59,10 @@ def addbitrate(codec_contain, codec_name):
             outputInfo = comboInfo[line]
         bitrate_buffer.append(find_bitrate(codec_name, outputInfo))
         output_yuv_path_buffer.append(comboInfo[info][1])
+        fps_buffer.append(find_fps(codec_name, outputInfo))
     codec_contain[common][info][1] = output_yuv_path_buffer
     codec_contain[common][info].insert(2, bitrate_buffer)
+    codec_contain[common][info].append(fps_buffer)
     signal.signal(signal.SIGINT, signal_handler)
     return codec_contain[common][info]
 

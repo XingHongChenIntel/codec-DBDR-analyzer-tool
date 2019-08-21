@@ -90,7 +90,6 @@ def exec_svt_config(yuvInfo, configparam, cfg, mode):
     encodeyuv = common_config.encodeYuvPath + 'svt_%s_%d'%(configparam, mode) + yuvInfo['outputfile'].split('/')[-1]
     arg += ' -o %s'%(encodeyuv)
     # arg += Addoptions('svt')
-    print arg
     p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
     line = p.communicate()
     if line == None:

@@ -10,6 +10,8 @@ import common_config as Path
 import OptionDictionary as option
 from exec_method import Codec
 
+#TODO we need make map about codec buffer and codec name
+# hm_contain , 'HM'
 hm_contain = []
 x265_contain = []
 svt_contain = []
@@ -52,8 +54,15 @@ def addbitrate(codec_contain, codec_name):
 
 
 def settleInfo():
+    line_contain = []
+    mode_sum = len(option.svt_mode)
+    line_contain.append(addbitrate(hm_contain, 'HM'))
+    for mode in option.svt_mode:
+        line_contain.append(addbitrate(x265_contain[mode::mode_sum], 'x265'))
+    for mode in option.svt_mode:
+        line_contain.append(addbitrate(svt_contain[mode::mode_sum], 'SVT'))
     signal.signal(signal.SIGINT, signal_handler)
-    return [addbitrate(hm_contain, 'HM'), addbitrate(x265_contain, 'x265'), addbitrate(svt_contain, 'SVT')]
+    return line_contain
 
 
 def setup_codec(CodecInfo):
@@ -61,10 +70,12 @@ def setup_codec(CodecInfo):
         for j in Codec:
             if j.name == 'HM':
                 hm_contain.append(codec_command.exec_HM(CodecInfo, qp))
-            if j.name == 'x265':
-                x265_contain.append(codec_command.exec_x265(CodecInfo, qp))
-            if j.name == 'SVT':
-                svt_contain.append(codec_command.exec_svt(CodecInfo, qp))
+            else:
+                for mode in option.svt_mode:
+                    if j.name == 'x265':
+                        x265_contain.append(codec_command.exec_x265(CodecInfo, qp, mode))
+                    if j.name == 'SVT':
+                        svt_contain.append(codec_command.exec_svt(CodecInfo, qp, mode))
     signal.signal(signal.SIGINT, signal_handler)
     return settleInfo()
 

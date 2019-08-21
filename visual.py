@@ -237,6 +237,7 @@ def plot_psnr_svt(contain, case_count):
     codec_sum = len(config.svt_Qp)
     for codec in range(codec_sum):
         chart.plot(config.svt_mode,BDRate_Container[codec*mode_sum:(codec+1)*mode_sum], 'o-', label=config.svt_Qp[codec][2])
+    chart.xlim(-100, 100)
     chart.legend()
     chart.grid(True)
     #TODO we should store our data ,and when we get a lot of case, we need to get average number

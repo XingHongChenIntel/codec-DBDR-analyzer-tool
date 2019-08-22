@@ -204,6 +204,12 @@ def average_fps(fps):
         sum += i
     return sum/len(fps)
 
+def average_psnr(psnr):
+    sum = psnr[0]
+    for p in psnr:
+        sum = [sum[i]+p[i] for i in range(0,len(p))]
+    return [sum[i]/(len(psnr)+1) for i in range(0,len(sum))]
+
 def get_fps(BD_contain):
     x265, svt = [], []
     mode_sum = len(config.svt_mode)
@@ -225,10 +231,11 @@ def get_fps_svt(BD_contain):
 
 def plot_psnr_svt(contain, case_count):
     fig = plt.figure(figsize=[16, 10], constrained_layout=True)
-    gs = GridSpec(1, 2, figure=fig)
+    gs = GridSpec(2, 2, figure=fig)
     plt.suptitle('PSNR BDRate')
     chart = fig.add_subplot(gs[0, 0])
     table = fig.add_subplot(gs[0, 1])
+    chart2 = fig.add_subplot(gs[1, 0])
     table.set_axis_off()
     chart.set_title('BDRate vs Mode')
     chart.set_xlabel('Mode')
@@ -249,8 +256,12 @@ def plot_psnr_svt(contain, case_count):
     mode_sum = len(config.svt_mode)
     codec_sum = len(config.svt_Qp)
     svt_fps = get_fps_svt(BD_contain)
+    chart2.set_yticks(range(mode_sum),Xaxis_name)
     for codec in range(codec_sum):
         chart.plot(svt_fps[codec],BDRate_Container[codec*mode_sum:(codec+1)*mode_sum], 'o-', label=config.svt_Qp[codec][2])
+        chart2.plot(range(mode_sum),BDRate_Container[codec*mode_sum:(codec+1)*mode_sum], 'o-', label=config.svt_Qp[codec][2])
+    for line in chart2.xaxis.get_ticklabels():
+        line.set_rotation(45)
     chart.legend()
     chart.grid(True)
     #TODO we should store our data ,and when we get a lot of case, we need to get average number
@@ -299,7 +310,10 @@ def plot_psnr_frames(contain, case_count):
     rowname = get_Xaxis_value()
     DBDR.table(cellText=celltext, colLabels=['x265', 'svt'], rowLabels=rowname, loc='center',colWidths=[0.2, 0.2])
     text, name = calculate_average(BD_contain)
-    DBDR_for_each.table(cellText=text, colLabels=['HM', 'x265', 'svt'], rowLabels=name, loc='center',colWidths=[0.1, 0.1])
+    DBDR_for_each.table(cellText=text, colLabels=['HM', 'x265', 'svt'], rowLabels=name, loc='center')
+    # bits_psnr.plot(BDRate_contain[0][0],BDRate_contain[0][1], 'o-', lable='HM')
+    # bits_psnr.plot(average_psnr(BDRate_contain[1:11][0]),average_psnr(BDRate_contain[1:11][1]))
+    # bits_psnr.plot()
     # bits_psnr.legend()
     bits_psnr.grid(True)
     #TODO we should store our data ,and when we get a lot of case, we need to get average number

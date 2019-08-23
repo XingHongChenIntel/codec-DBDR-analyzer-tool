@@ -9,7 +9,7 @@ import argparse
 import time
 import os
 import xlrd
-# import xlwt
+from Data_struct import Line, LineContain, CaseDate
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -136,6 +136,18 @@ def calculate_average(BD_contain):
         celltext.append([HM_psnr, x265_psnr, svt_psnr])
         tag += 1
     return celltext, rowname
+
+
+def get_psnr(line):
+    yuv = YCbCr(filename=line.input_url, filename_diff=line.output, width=line.width,
+                height=line.height, yuv_format_in=line.type, bitdepth=line.bit_depth)
+    for infile in range(line.input_url):
+        for diff_file in range(line.output):
+            psnr_frame = [p for p in yuv.psnr_all(diff_file, infile)]
+            line.add_psnr(psnr_frame[-1])
+        line.sort()
+        line.set_average_fps()
+        line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr))
 
 
 def get_psnr_value(contain, bits_psnr=0):

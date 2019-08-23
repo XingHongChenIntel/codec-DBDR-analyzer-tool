@@ -5,6 +5,9 @@
 Qp = [22, 28, 34, 40]
 svt_mode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+svt_Qp = [[[25, 29, 34, 38], '/home/cxh/code/SVT-HEVC/Config/Sample.cfg', 'HEVC'],
+          [[29, 35, 42, 48], '/home/cxh/code/SVT-HEVC/Config/Sample.cfg', 'svt1']]
+
 config = [
     # TargetBitrate
     # ['TargetBitrate', ['TargetBitrate', '--bitrate', '-tbr'], ['2000', '2000', '2000']],
@@ -19,10 +22,6 @@ config = [
 ]
 
 # those for the svt with different  configure
-
-
-svt_Qp = [[[25, 29, 34, 38], '/home/cxh/code/SVT-HEVC/Config/Sample.cfg', 'HEVC'],
-          [[29, 35, 42, 48], '/home/cxh/code/SVT-HEVC/Config/Sample.cfg', 'svt1']]
 
 svt_cfgpath = ['/home/cxh/code/SVT-HEVC/Config/Sample.cfg',
                '/home/cxh/code/SVT-HEVC/Config/Sample.cfg']

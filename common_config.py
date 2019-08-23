@@ -1,5 +1,5 @@
 
-TestSequencePath = '/home/cxh/code/testfile/'
+TestSequencePath = '/home/cxh/code/test720/'
 
 exec_path = {
     'HM': '/home/cxh/code/HM-16.1/bin/',

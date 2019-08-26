@@ -150,6 +150,10 @@ def get_psnr(line):
         line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr))
 
 
+def get_bd_rate(baseline, line):
+    return BD.BD_RATE(baseline.bit_rate, baseline.psnr, line.bit_rate, line.psnr)
+
+
 def get_psnr_value(contain, bits_psnr=0):
     BD_contain = []
     for i in range(len(contain)):

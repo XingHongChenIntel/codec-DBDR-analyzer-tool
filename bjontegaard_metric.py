@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.interpolate
 
+
 def BD_PSNR(R1, PSNR1, R2, PSNR2, piecewise=0):
     lR1 = np.log(R1)
     lR2 = np.log(R2)
@@ -31,7 +32,7 @@ def BD_PSNR(R1, PSNR1, R2, PSNR2, piecewise=0):
         int2 = np.trapz(v2, dx=interval)
 
     # find avg diff
-    avg_diff = (int2-int1)/(max_int-min_int)
+    avg_diff = (int2 - int1) / (max_int - min_int)
 
     return round(avg_diff, 2)
 
@@ -60,7 +61,7 @@ def BD_PSNR_Average(R1, PSNR1, piecewise=0):
         int1 = np.trapz(v1, dx=interval)
 
     # find avg diff
-    avg_diff = int1/(max_int-min_int)
+    avg_diff = int1 / (max_int - min_int)
 
     return round(avg_diff, 2)
 
@@ -95,8 +96,8 @@ def BD_RATE(R1, PSNR1, R2, PSNR2, piecewise=0):
         int2 = np.trapz(v2, dx=interval)
 
     # find avg diff
-    avg_exp_diff = (int2-int1)/(max_int-min_int)
-    avg_diff = (np.exp(avg_exp_diff)-1)*100
+    avg_exp_diff = (int2 - int1) / (max_int - min_int)
+    avg_diff = (np.exp(avg_exp_diff) - 1) * 100
     # avg_diff = np.power(10, avg_exp_diff) - 1
     return round(avg_diff, 2)
 
@@ -125,7 +126,6 @@ def BD_RATE_Average(R1, PSNR1, piecewise=0):
         int1 = np.trapz(v1, dx=interval)
 
     # find avg diff
-    avg_exp_diff = int1/(max_int-min_int)
-    avg_diff = (np.exp(avg_exp_diff)-1)*100
+    avg_exp_diff = int1 / (max_int - min_int)
+    avg_diff = (np.exp(avg_exp_diff) - 1) * 100
     return avg_exp_diff
-

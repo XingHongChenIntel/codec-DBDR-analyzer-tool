@@ -12,6 +12,7 @@ class yuvInfo:
         self.color_format = None
         self.yuv_name = None
         self.suffix_type = None
+        self.type = None
 
     def parse_yuv_type(self, str):
         yuv_info = str.split(' ')

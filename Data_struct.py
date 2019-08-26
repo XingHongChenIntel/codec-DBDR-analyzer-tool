@@ -1,5 +1,7 @@
 import re
-from y4mconv import yuvInfo
+import csv
+from ycbcr import YCbCr
+import bjontegaard_metric as BD
 
 
 class Line:
@@ -15,18 +17,26 @@ class Line:
         self.bit_rate = []
         self.fps = []
         self.psnr = []
+        self.psnr_luam_chro = []
         self.bd_psnr = None
         self.average_fps = None
+        self.bd_rate = None
+        self.qp = []
+        self.ref = None
+        self.instance_name = None
 
     def parse_fps(self, line):
         if self.codec_name == 'x265':
             ss = re.findall(r'\(([\.0-9]*)[\r\n\t ]*fps\)', line[1])
             return float(ss[-1])
-        elif self.codec_name == 'SVT':
+        elif self.codec_name == 'svt':
             ss = re.findall(r'Average Speed:[\r\n\t ]*([\.0-9]*)[\r\n\t ]*fps', line[0])
             return float(ss[-1])
         elif self.codec_name == 'HM':
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+            return float(ss[-1])
+        else:
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[0])
             return float(ss[-1])
 
     def parse_bit_rate(self, line):
@@ -39,6 +49,9 @@ class Line:
         elif self.codec_name == 'HM':
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
             return float(ss[-1])
+        else:
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+            return float(ss[-1])
 
     def check_info(self, line):
         if self.codec_name == 'x265':
@@ -47,17 +60,27 @@ class Line:
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         elif self.codec_name == 'HM':
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+        else:
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
         return ss
 
-    def add_info(self, line):
+    def add_info(self, line, codec):
         self.bit_rate.append(self.parse_bit_rate(line))
         self.fps.append(self.parse_fps(line))
+        self.ref = codec[3]
+        self.instance_name = codec[4]
 
     def add_output(self, output):
         self.output.append(output)
 
     def add_psnr(self, psnr):
         self.psnr.append(psnr)
+
+    def add_lucha_psnr(self, psnr):
+        self.psnr_luam_chro.append(psnr)
+
+    def add_qp(self, qp):
+        self.qp.append(qp)
 
     def sort(self):
         print "do we really need sort?"
@@ -75,6 +98,11 @@ class LineContain:
         self.codec_num = codec_num
         self.group = {}
         self.group_tag = {}
+        self.group_bdrate = {}
+        self.yuv_info = None
+
+    def set_data_type(self, yuv_info):
+        self.yuv_info = yuv_info
 
     def set_baseline(self, line):
         self.baseline = line
@@ -82,6 +110,7 @@ class LineContain:
     def build_group(self, codec):
         for encode in codec:
             self.group[encode[2]] = []
+            self.group_bdrate[encode[2]] = []
             self.group_tag[encode[2]] = 1
 
     def add_group_ele(self, codec_name, line):
@@ -97,10 +126,81 @@ class LineContain:
     def set_group_tag(self, codec_name):
         self.group_tag[codec_name] = 0
 
+    def get_psnr(self, line):
+        yuv = YCbCr(filename=line.input_url, filename_diff=line.output, width=int(line.width),
+                    height=int(line.height), yuv_format_in=line.type, bitdepth=int(line.bit_depth))
+        for infile in range(len(line.input_url)):
+            for diff_file in range(len(line.output)):
+                psnr_frame = [p for p in yuv.psnr_all(diff_file, infile)]
+                line.add_psnr(psnr_frame[-1])
+                line.add_lucha_psnr(psnr_frame[-1][-1])
+            line.sort()
+            line.set_average_fps()
+            line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
+
+    def get_bd_rate(self, baseline, line):
+        return BD.BD_RATE(baseline.bit_rate, baseline.psnr_luam_chro, line.bit_rate, line.psnr_luam_chro)
+
+    def calculate_psnr(self):
+        for pool in self.group.values():
+            for line in pool:
+                self.get_psnr(line)
+
+    def calculate_bd_rate(self):
+        for pool in self.group.values():
+            for line in pool:
+                bd_rate = self.get_bd_rate(self.baseline, line)
+                line.bd_rate = bd_rate
+                self.group_bdrate[line.codec_name].append(bd_rate)
+
+    def calculate(self):
+        self.calculate_psnr()
+        self.calculate_bd_rate()
+
 
 class CaseDate:
-    def __init__(self):
+    def __init__(self, path):
         self.case = []
+        self.case_group = {'360': [], '480': [], '720': [], '1080': [],
+                           '1152': [], '2304': [], '3840': [], }
+        self.case_num = None
+        self.datafile = None
+        self.path = path
 
-    def add_case(self, case):
+    def add_case(self, case, yuv_info):
         self.case.append(case)
+        self.case_group[yuv_info.height].append(case)
+
+    def set_case_num(self):
+        self.case_num = len(self.case)
+
+    def write_pool_info(self, line_pool, file_line):
+        mode = 0
+        for encode in line_pool.group.values():
+            for line in encode:
+                for i in range(len(line.output)):
+                    file_line[0] = line.yuv_info.yuv_name
+                    file_line[1] = line.height + 'p'
+                    file_line[2] = line.codec_name
+                    file_line[3] = mode
+                    file_line[4] = line.qp[i]
+                    file_line[5] = line.psnr_luam_chro[i]
+                    file_line[6] = line.bit_rate[i]
+                    file_line[7] = line.fps[i]
+                    file_line[8] = line.bd_rate
+                    file_line[9] = line.bd_psnr
+                    yield file_line
+            mode += 1
+
+    def setup_file(self):
+        header = ['yuv name', 'type', 'encode', 'mode', 'qp', 'psnr', 'bit_rate', 'fps', 'BD_rate', 'Bd_psnr']
+        file_contain = []
+        with open(self.path, 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            for pic in self.case:
+                for p in self.write_pool_info(pic, header):
+                    print p
+                    file_contain.append(p)
+            for l in file_contain:
+                writer.writerow(l)

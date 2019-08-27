@@ -25,7 +25,7 @@ because this tool will use HM/X265/SVT_HEVC， so you have to garentee your envi
 
 ## **Prepare configure**
 before you start to surf the tool, you have to do some prepare work.
-open common_config.py, then change the execute path to your locate path.
+open OptionDictionary.py, then change the execute path to your locate path.
 
 for example:
 
@@ -47,18 +47,23 @@ then you will get the DBDR diagram
 for test different encoders quality , you may need to modify their encode paramters.you can modify them on the OptionDictionary.py file
  for example:       
         
-    # IntraPeriod
-        ['IntraPeriod', ['IntraPeriod', '--keyint','-intra-period'], ['32', '32', '32']]
+    # codec
+    codec = [[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 60' % HM_cfg_Path, 'HM', '265', 'instance name'],
+         [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'instance name'],
+         [[25, 29, 34, 38], './SvtHevcEncApp', 'svt', '265', 'instance name'],
+         ]
+        
 
-IntraPeriod is a common encode paramter for HM/X265/SVT-HEVC, on the list, first index is paramter's name, second is option's name for  HM/X265/SVT-HEVC. then third is paramter value
+you can add more test encode here, and their command line with your perfer parameter
 
 Ps:because HM encode paramter is writen on .cfg file, so you have to sure this option is match to .cfg file.
 
 ### **example**
 
-based on myself environment,test three y4m file:
+based on myself environment,test one y4m file:
 
 	$ python exec.py
 result show:
 
-![testshoot](codec_tool.png)
+![testshoot](_360_BDrate.png)
+![test](_360_bit_rate.png)

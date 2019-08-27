@@ -97,7 +97,7 @@ def clean_data_dir():
 
 def parse_resolution(resolution):
     resolution_dict = {'360p': 360, '480p': 480, '720p': 720, '1080p': 1080,
-                       '2K': 1152, '4K': 2304, '8K': 3840, 'all': None}
+                       '2K': 1440, '4K': 2160, '8K': 3840, 'all': None}
     return resolution_dict[resolution]
 
 

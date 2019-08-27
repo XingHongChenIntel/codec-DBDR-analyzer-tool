@@ -12,7 +12,7 @@ class yuvInfo:
         self.color_format = None
         self.yuv_name = None
         self.suffix_type = None
-        self.type = None
+        self.type = 0
 
     def parse_yuv_type(self, str):
         yuv_info = str.split(' ')
@@ -60,7 +60,7 @@ class yuvInfo:
             fs += 1
             if fs >= 1:
                 out_file.write(frame)
-                sys.stdout.write("\r{0}".format(c));
+                sys.stdout.write("\r{0}".format(c))
                 sys.stdout.flush()
                 c += 1
                 fs = 0

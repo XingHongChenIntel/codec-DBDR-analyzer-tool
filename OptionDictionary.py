@@ -3,15 +3,15 @@ HM_cfg_Path = '/home/cxh/code/HM-16.1/cfg/encoder_randomaccess_main.cfg'
 
 # choose the test sample type, for example 360p 720p 1080p 2k 4k 8k
 # if you want to test all sample use 'all
-Test_data_type = '360p'
+Test_data_type = 'all'
 
 # encode mode for different encoder
 mode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 # test encoder and command line. it will be  QP, command line, encoder name, codec name, instance name
-codec = [[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 60' % HM_cfg_Path, 'HM', '265', 'instance name'],
-         [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'instance name'],
-         [[25, 29, 34, 38], './SvtHevcEncApp', 'svt', '265', 'instance name'],
+codec = [[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 60' % HM_cfg_Path, 'HM', '265', 'instance_name'],
+         [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'instance_name'],
+         [[25, 29, 34, 38], './SvtHevcEncApp', 'svt', '265', 'instance_name'],
          ]
 
 # encoder command line parameter about yuv info, if test new encoder, need to add information here
@@ -41,7 +41,9 @@ encodeYuvPath = '/home/cxh/code/codec-DBDR-analyzer-tool/data/'
 
 # calculate psnr bd_rate
 calculate_data = '/home/cxh/code/data.csv'
-
+# when you use this data to draw plot,
+# you have to sure you got same codec information when you run them
+calculate_serialize_data = '/home/cxh/code/file_test'
 # the path to save the plot picture
 plot_path = '/home/cxh/code/pictures/'
 

@@ -6,6 +6,8 @@ from y4mconv import yuvInfo
 import OptionDictionary as option
 from Data_struct import Line, LineContain, CaseDate
 from UI import UI
+import pickle
+import argparse
 
 
 def decode(codec_name, bit_stream, yuv):
@@ -114,7 +116,27 @@ def read_csv():
     return target_yuv_contain
 
 
-def main():
+def serialize_date(data):
+    f = open(option.calculate_serialize_data, 'wb')
+    pickle.dump(data, f)
+    f.close()
+
+
+def deserialize_data():
+    f = open(option.calculate_serialize_data, 'rb')
+    data = pickle.load(f)
+    f.close()
+    return data
+
+
+def parse_arg():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-u', '--plot', help='if already got data we can just plot', default=0, type=int)
+    args = parser.parse_args()
+    return args
+
+
+def run_command():
     clean_data_dir()
     yuv_contain = read_csv()
     case_data = CaseDate(option.calculate_data)
@@ -124,8 +146,23 @@ def main():
         case_data.add_case(case, yuv)
     case_data.set_case_num()
     case_data.setup_file()
+    serialize_date(case_data)
     ui = UI(case_data)
     ui.show()
+
+
+def draw_ui():
+    case_data = deserialize_data()
+    ui = UI(case_data)
+    ui.show()
+
+
+def main():
+    args = parse_arg()
+    if args.plot is 0:
+        run_command()
+    else:
+        draw_ui()
 
 
 if __name__ == '__main__':

@@ -104,7 +104,8 @@ class UI:
         chart.yaxis.set_major_formatter(FuncFormatter(persent))
         for i in range(len(bdrate)):
             xrow = len(bdrate[i])
-            chart.plot(fps[i], bdrate[i], '-o', label=lab[i])
+            if lab[i] != 'HM':
+                chart.plot(fps[i], bdrate[i], '-o', label=lab[i])
             chart2.plot(range(xrow), bdrate[i], '-x', label=lab[i])
         chart.legend()
         for line in chart2.xaxis.get_ticklabels():
@@ -129,7 +130,7 @@ class UI:
         plt.pause(10)
         info = ''
         for code in option.codec:
-            info += '_' + code[4]
+            info += '_' + code[4] + '_'
         fig.savefig(option.plot_path + '_' + str(resolution) + '_' + info + '_BDrate')
 
     def fix_arr(self, bdrate):
@@ -145,9 +146,9 @@ class UI:
 
     def bitrate_plot(self, encdoe_bitrate, encode_psnr, encode_name, resolution, encode_bdpsnr):
         fig = plt.figure(figsize=[16, 8], constrained_layout=True)
-        gs = GridSpec(1, 2, figure=fig)
-        chart = fig.add_subplot(gs[0, 0])
-        biao = fig.add_subplot(gs[0, 1])
+        gs = GridSpec(1, 3, figure=fig)
+        chart = fig.add_subplot(gs[0, :2])
+        biao = fig.add_subplot(gs[0, 2])
         biao.set_axis_off()
         chart.set_title('%s' % resolution + 'p')
         chart.set_xlabel('bit_rate')

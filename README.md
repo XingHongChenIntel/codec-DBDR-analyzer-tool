@@ -8,6 +8,7 @@ this tool can help you to analysis different codec encode Quality
         sudo apt upgrade
         #installing python 2.7 and pip for it
         sudo apt install python2.7 python-pip
+	(or sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose)
         pip install numpy
         pip install <other missing moduel>
 

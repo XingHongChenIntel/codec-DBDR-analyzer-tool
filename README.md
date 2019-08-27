@@ -65,5 +65,5 @@ based on myself environment,test one y4m file:
 	$ python exec.py
 result show:
 
-![testshoot](_360_BDrate.png)
-![test](_360_bit_rate.png)
+![testshoot](_720__instance_name__instance_name__instance_name__BDrate.png)
+![test](_720_instance_name_instance_name_instance_name_bit_rate.png)

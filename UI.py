@@ -60,12 +60,12 @@ class UI:
             if len(case_) > 0:
                 encdoe_bitrate = []
                 encode_psnr = []
-                ave_psnr = []
-                ave_bitrate = []
                 encode_name = []
-                ave_bd_psnr = []
                 encode_bdpsnr = []
                 for name in [i[2] for i in option.codec]:
+                    ave_psnr = []
+                    ave_bitrate = []
+                    ave_bd_psnr = []
                     for case in case_:
                         ave_psnr.append([line.psnr_luam_chro for line in case.group[name]])
                         ave_bitrate.append([line.bit_rate for line in case.group[name]])

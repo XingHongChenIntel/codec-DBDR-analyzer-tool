@@ -127,7 +127,10 @@ class UI:
         biao.table(cellText=trans_bdrate, colLabels=lab, rowLabels=rowlabel, loc='center',
                    colWidths=[0.1 for i in range(len(lab))])
         plt.pause(10)
-        fig.savefig(option.plot_path + '_' + str(resolution) + '_BDrate')
+        info = ''
+        for code in option.codec:
+            info += '_' + code[4]
+        fig.savefig(option.plot_path + '_' + str(resolution) + '_' + info + '_BDrate')
 
     def fix_arr(self, bdrate):
         max = 0
@@ -160,7 +163,10 @@ class UI:
         biao.table(cellText=trans_psnr, colLabels=encode_name, rowLabels=rowlabel, loc='center',
                    colWidths=[0.1 for i in range(len(encode_name))])
         plt.pause(10)
-        fig.savefig(option.plot_path + '_' + str(resolution) + '_bit_rate')
+        info = ''
+        for code in option.codec:
+            info += '_' + code[4]
+        fig.savefig(option.plot_path + '_' + str(resolution) + info + '_bit_rate')
 
     def show(self):
         self.bd_data_choose()

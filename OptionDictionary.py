@@ -26,7 +26,7 @@ decode_dict = {
     '265': './TAppDecoderStatic -b %s -o %s'
 }
 
-# path to save encode information
+# file path which got test yuv or y4m information
 TestSequencePath = '/home/cxh/code/codec-DBDR-analyzer-tool/test.csv'
 
 # encoder path
@@ -42,5 +42,6 @@ encodeYuvPath = '/home/cxh/code/codec-DBDR-analyzer-tool/data/'
 # calculate psnr bd_rate
 calculate_data = '/home/cxh/code/data.csv'
 
+# the path to save the plot picture
 plot_path = '/home/cxh/code/pictures/'
 

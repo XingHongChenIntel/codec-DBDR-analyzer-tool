@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
@@ -46,13 +47,13 @@ class UI:
             encode_fps = []
             encode_name = []
             if len(case_) > 0:
-                for name in [i[2] for i in option.codec]:
+                for name, tag in [[i[2], i[4]] for i in option.codec]:
                     ave_bdrate = []
                     ave_fps = []
                     for case in case_:
                         ave_bdrate.append([line.bd_rate for line in case.group[name]])
                         ave_fps.append([line.average_fps for line in case.group[name]])
-                    encode_name.append(name)
+                    encode_name.append(name + '_' + tag)
                     encdoe_bdrate.append(self.average_list(ave_bdrate))
                     encode_fps.append(self.average_list(ave_fps))
                 self.bd_rate_plot(encdoe_bdrate, encode_fps, encode_name, resolution)
@@ -64,7 +65,7 @@ class UI:
                 encode_psnr = []
                 encode_name = []
                 encode_bdpsnr = []
-                for name in [i[2] for i in option.codec]:
+                for name, tag in [[i[2], i[4]] for i in option.codec]:
                     ave_psnr = []
                     ave_bitrate = []
                     ave_bd_psnr = []
@@ -72,7 +73,7 @@ class UI:
                         ave_psnr.append([line.psnr_luam_chro for line in case.group[name]])
                         ave_bitrate.append([line.bit_rate for line in case.group[name]])
                         ave_bd_psnr.append([line.bd_psnr for line in case.group[name]])
-                    encode_name.append(name)
+                    encode_name.append(name + '_' + tag)
                     encode_psnr.append(self.average_contain(ave_psnr))
                     encdoe_bitrate.append(self.average_contain(ave_bitrate))
                     encode_bdpsnr.append(self.average_list(ave_bd_psnr))
@@ -128,7 +129,7 @@ class UI:
         chart2.legend()
         trans_bdrate = self.trans_list(self.fix_arr(bdrate))
         biao.table(cellText=trans_bdrate, colLabels=lab, rowLabels=rowlabel, loc='center',
-                   colWidths=[0.1 for i in range(len(lab))])
+                   colWidths=[0.2 for i in range(len(lab))])
         plt.pause(10)
         info = ''
         for code in option.codec:
@@ -164,7 +165,7 @@ class UI:
         trans_psnr = self.trans_list(self.fix_arr(encode_bdpsnr))
         rowlabel = ['mode 0', 'mode 1', 'mode 2', 'mode 3', 'mode 4', 'mode 5', 'mode 6', 'mode 7', 'mode 8', 'mode 9']
         biao.table(cellText=trans_psnr, colLabels=encode_name, rowLabels=rowlabel, loc='center',
-                   colWidths=[0.1 for i in range(len(encode_name))])
+                   colWidths=[0.3 for i in range(len(encode_name))])
         plt.pause(10)
         info = ''
         for code in option.codec:

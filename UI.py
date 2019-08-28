@@ -108,27 +108,23 @@ class UI:
         for i in range(len(bdrate)):
             xrow = len(bdrate[i])
             if lab[i][0] != 'HM':
-                chart.plot(fps[i], bdrate[i], '-o', label=lab[i][0]+'_'+lab[i][1])
-            chart2.plot(range(xrow), bdrate[i], '-x', label=lab[i][0]+'_'+lab[i][1])
+                chart.plot(fps[i], bdrate[i], '-o', label=lab[i][0] + '_' + lab[i][1])
+            chart2.plot(range(xrow), bdrate[i], '-x', label=lab[i][0] + '_' + lab[i][1])
         chart.legend()
         for line in chart2.xaxis.get_ticklabels():
             line.set_rotation(45)
         chart2.yaxis.set_major_locator(MultipleLocator(10))
         chart2.yaxis.set_major_formatter(FuncFormatter(persent))
-        chart2.set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        chart2.set_xticks(range(self.max_len(bdrate)))
         if 'HM' in [code[2] for code in option.codec]:
             baseline = 'HM'
         else:
             baseline = 'svt'
-        rowlabel = ['vs %s mode 0' % baseline, 'vs %s mode 1' % baseline, 'vs %s mode 2' % baseline,
-                    'vs %s mode 3' % baseline,
-                    'vs %s mode 4' % baseline, 'vs %s mode 5' % baseline, 'vs %s mode 6' % baseline,
-                    'vs %s mode 7' % baseline,
-                    'vs %s mode 8' % baseline, 'vs %s mode 9' % baseline]
+        rowlabel = self.label_len(bdrate, 'bd', baseline)
         chart2.set_xticklabels(rowlabel)
         chart2.legend()
         trans_bdrate = self.trans_list(self.fix_arr(bdrate))
-        biao.table(cellText=trans_bdrate, colLabels=lab, rowLabels=rowlabel, loc='center',
+        biao.table(cellText=trans_bdrate, colLabels=[col[1] for col in lab], rowLabels=rowlabel, loc='center',
                    colWidths=[0.2 for i in range(len(lab))])
         plt.pause(10)
         info = ''
@@ -136,16 +132,30 @@ class UI:
             info += '_' + code[4] + '_'
         fig.savefig(option.plot_path + '_' + str(resolution) + '_' + info + '_BDrate')
 
-    def fix_arr(self, bdrate):
+    def max_len(self, bd):
         max = 10
-        for rate in bdrate:
+        for rate in bd:
             if max < len(rate):
                 max = len(rate)
+        return max
+
+    def fix_arr(self, bdrate):
+        max = self.max_len(bdrate)
         for rate in bdrate:
             if len(rate) < max:
                 for i in range(max - len(rate)):
-                    rate.append(rate[-1])
+                    rate.append('0')
         return bdrate
+
+    def label_len(self, bdrate, tag, baseline=None):
+        max = self.max_len(bdrate)
+        row_label = []
+        for i in range(max):
+            if tag == 'bd':
+                row_label.append('vs %s mode %s' % (baseline, i))
+            elif tag == 'bit':
+                row_label.append('mode %s' % i)
+        return row_label
 
     def bitrate_plot(self, encdoe_bitrate, encode_psnr, encode_name, resolution, encode_bdpsnr):
         fig = plt.figure(figsize=[16, 8])
@@ -163,7 +173,7 @@ class UI:
                            label=encode_name[encode] + '_' + str(mode))
         chart.legend(loc='right')
         trans_psnr = self.trans_list(self.fix_arr(encode_bdpsnr))
-        rowlabel = ['mode 0', 'mode 1', 'mode 2', 'mode 3', 'mode 4', 'mode 5', 'mode 6', 'mode 7', 'mode 8', 'mode 9']
+        rowlabel = self.label_len(encode_bdpsnr, 'bit')
         biao.table(cellText=trans_psnr, colLabels=encode_name, rowLabels=rowlabel, loc='center',
                    colWidths=[0.3 for i in range(len(encode_name))])
         plt.pause(10)

@@ -9,8 +9,8 @@ Test_data_type = 'all'
 mode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 # test encoder and command line. it will be  QP, command line, encoder name, codec name, instance name
-codec = [[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 60' % HM_cfg_Path, 'HM', '265', 'instance'],
-         [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'instance'],
+codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 60' % HM_cfg_Path, 'HM', '265', 'instance'],
+         #[[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'instance'],
          [[25, 29, 34, 38], './SvtHevcEncApp', 'svt', '265', 'instance'],
          ]
 

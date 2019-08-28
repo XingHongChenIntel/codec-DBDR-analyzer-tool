@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import MultipleLocator, FuncFormatter
@@ -77,8 +79,8 @@ class UI:
                 self.bitrate_plot(encdoe_bitrate, encode_psnr, encode_name, resolution, encode_bdpsnr)
 
     def bd_rate_plot(self, bdrate, fps, lab, resolution):
-        fig = plt.figure(figsize=[18, 10], constrained_layout=True, num=resolution)
-        gs = GridSpec(2, 2, figure=fig)
+        fig = plt.figure(figsize=[18, 10])
+        gs = GridSpec(2, 2)
         chart = fig.add_subplot(gs[0, 0])
         chart2 = fig.add_subplot(gs[1, 0])
         biao = fig.add_subplot(gs[:, 1])
@@ -145,8 +147,8 @@ class UI:
         return bdrate
 
     def bitrate_plot(self, encdoe_bitrate, encode_psnr, encode_name, resolution, encode_bdpsnr):
-        fig = plt.figure(figsize=[16, 8], constrained_layout=True)
-        gs = GridSpec(1, 3, figure=fig)
+        fig = plt.figure(figsize=[16, 8])
+        gs = GridSpec(1, 3)
         chart = fig.add_subplot(gs[0, :2])
         biao = fig.add_subplot(gs[0, 2])
         biao.set_axis_off()

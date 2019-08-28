@@ -47,13 +47,13 @@ class UI:
             encode_fps = []
             encode_name = []
             if len(case_) > 0:
-                for name, tag in [[i[2], i[4]] for i in option.codec]:
+                for name in [[i[2], i[4]] for i in option.codec]:
                     ave_bdrate = []
                     ave_fps = []
                     for case in case_:
-                        ave_bdrate.append([line.bd_rate for line in case.group[name]])
-                        ave_fps.append([line.average_fps for line in case.group[name]])
-                    encode_name.append(name + '_' + tag)
+                        ave_bdrate.append([line.bd_rate for line in case.group[name[0]]])
+                        ave_fps.append([line.average_fps for line in case.group[name[0]]])
+                    encode_name.append(name)
                     encdoe_bdrate.append(self.average_list(ave_bdrate))
                     encode_fps.append(self.average_list(ave_fps))
                 self.bd_rate_plot(encdoe_bdrate, encode_fps, encode_name, resolution)
@@ -107,9 +107,9 @@ class UI:
         chart.yaxis.set_major_formatter(FuncFormatter(persent))
         for i in range(len(bdrate)):
             xrow = len(bdrate[i])
-            if lab[i] != 'HM':
-                chart.plot(fps[i], bdrate[i], '-o', label=lab[i])
-            chart2.plot(range(xrow), bdrate[i], '-x', label=lab[i])
+            if lab[i][0] != 'HM':
+                chart.plot(fps[i], bdrate[i], '-o', label=lab[i][0]+'_'+lab[i][1])
+            chart2.plot(range(xrow), bdrate[i], '-x', label=lab[i][0]+'_'+lab[i][1])
         chart.legend()
         for line in chart2.xaxis.get_ticklabels():
             line.set_rotation(45)

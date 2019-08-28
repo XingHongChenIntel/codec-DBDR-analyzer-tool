@@ -80,6 +80,7 @@ class Pipeline:
         if not self.drop_tag:
             for pro in self.pro:
                 os.remove(pro.yuv)
+                os.remove(pro.output)
 
     def security(self):
         for pro in self.pro:
@@ -172,7 +173,6 @@ def read_csv():
         reader = csv.reader(f)
         for row in reader:
             if row[0][0] == '#':
-                print "\nhhahahah\n"
                 continue
             yuv_info = yuvInfo()
             yuv_info.parse_yuv_type(row[0])

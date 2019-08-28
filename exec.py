@@ -171,6 +171,9 @@ def read_csv():
     with open(option.TestSequencePath, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
+            if row[0][0] == '#':
+                print "\nhhahahah\n"
+                continue
             yuv_info = yuvInfo()
             yuv_info.parse_yuv_type(row[0])
             if target_yuv is None:

@@ -3,7 +3,7 @@ HM_cfg_Path = '/home/cxh/code/HM-16.1/cfg/encoder_randomaccess_main.cfg'
 
 # choose the test sample type, for example 360p 720p 1080p 2k 4k 8k
 # if you want to test all sample use 'all
-Test_data_type = 'all'
+Test_data_type = '360p'
 
 # encode mode for different encoder
 mode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]

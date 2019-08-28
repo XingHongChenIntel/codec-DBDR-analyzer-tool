@@ -134,7 +134,7 @@ class UI:
         fig.savefig(option.plot_path + '_' + str(resolution) + '_' + info + '_BDrate')
 
     def fix_arr(self, bdrate):
-        max = 0
+        max = 10
         for rate in bdrate:
             if max < len(rate):
                 max = len(rate)

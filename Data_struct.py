@@ -25,33 +25,39 @@ class Line:
         self.ref = None
         self.instance_name = None
 
+    def check_blank(self, ss):
+        if len(ss):
+            return ss[-1]
+        else:
+            return 0
+
     def parse_fps(self, line):
         if self.codec_name == 'x265':
             ss = re.findall(r'\(([\.0-9]*)[\r\n\t ]*fps\)', line[1])
-            return float(ss[-1])
+            return float(self.check_blank(ss))
         elif self.codec_name == 'svt':
             ss = re.findall(r'Average Speed:[\r\n\t ]*([\.0-9]*)[\r\n\t ]*fps', line[0])
-            return float(ss[-1])
+            return float(self.check_blank(ss))
         elif self.codec_name == 'HM':
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
-            return float(ss[-1])
+            return float(self.check_blank(ss))
         else:
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[0])
-            return float(ss[-1])
+            return float(self.check_blank(ss))
 
     def parse_bit_rate(self, line):
         if self.codec_name == 'x265':
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]kb/s', line[1])
-            return float(ss[-1])
+            return float(self.check_blank(ss))
         elif self.codec_name == 'svt':
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
-            return float(ss[-1])
+            return float(self.check_blank(ss))
         elif self.codec_name == 'HM':
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
-            return float(ss[-1])
+            return float(self.check_blank(ss))
         else:
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
-            return float(ss[-1])
+            return float(self.check_blank(ss))
 
     def check_info(self, line):
         if self.codec_name == 'x265':
@@ -91,6 +97,18 @@ class Line:
     def set_average_fps(self):
         self.average_fps = sum(self.fps) / len(self.fps)
 
+    def get_psnr(self, line):
+        yuv = YCbCr(filename=line.input_url, filename_diff=line.output, width=int(line.width),
+                    height=int(line.height), yuv_format_in=line.type, bitdepth=int(line.bit_depth))
+        for infile in range(len(line.input_url)):
+            for diff_file in range(len(line.output)):
+                psnr_frame = [p for p in yuv.psnr_all(diff_file, infile)]
+                line.add_psnr(psnr_frame[-1])
+                line.add_lucha_psnr(psnr_frame[-1][-1])
+            line.sort()
+            line.set_average_fps()
+            line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
+
 
 class LineContain:
     def __init__(self, codec_num):
@@ -120,8 +138,13 @@ class LineContain:
         codec_contain = [codec_name[2] for codec_name in codec]
         if 'HM' in codec_contain:
             self.set_baseline(self.group['HM'][0])
-        else:
+        elif 'svt' in codec_contain:
             self.set_baseline(self.group['svt'][0])
+        else:
+            print "there is no baseline encode"
+            for i in self.group:
+                self.set_baseline(self.group[i][0])
+                break
 
     def set_group_tag(self, codec_name):
         self.group_tag[codec_name] = 0
@@ -154,7 +177,7 @@ class LineContain:
                 self.group_bdrate[line.codec_name].append(bd_rate)
 
     def calculate(self):
-        self.calculate_psnr()
+        # self.calculate_psnr()
         self.calculate_bd_rate()
 
 
@@ -169,7 +192,11 @@ class CaseDate:
 
     def add_case(self, case, yuv_info):
         self.case.append(case)
-        self.case_group[yuv_info.height].append(case)
+        if yuv_info.height in self.case_group:
+            self.case_group[yuv_info.height].append(case)
+        else:
+            self.case_group[yuv_info.height] = []
+            self.case_group[yuv_info.height].append(case)
 
     def set_case_num(self):
         self.case_num = len(self.case)

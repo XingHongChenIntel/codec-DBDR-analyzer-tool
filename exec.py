@@ -9,6 +9,7 @@ from UI import UI
 import pickle
 import argparse
 import signal
+import time
 
 
 def decode(codec_name, bit_stream, yuv):
@@ -205,8 +206,10 @@ def parse_arg():
 
 def run_command():
     clean_data_dir()
+    time_b = time.time()
     yuv_contain = read_csv()
     case_data = CaseDate(option.calculate_data)
+    print "\ntest case number is %d\n" % len(yuv_contain)
     for yuv in yuv_contain:
         case = setup_codec(yuv)
         case.calculate()
@@ -216,6 +219,10 @@ def run_command():
     serialize_date(case_data)
     ui = UI(case_data)
     ui.show()
+    elapsed = (time.time() - time_b)
+    m, s = divmod(elapsed, 60)
+    h, m = divmod(m, 60)
+    print("time used : %d:%02d:%02d" % (h, m, s))
 
 
 def draw_ui():

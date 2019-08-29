@@ -89,7 +89,7 @@ class Line:
         self.qp.append(qp)
 
     def sort(self):
-        print "do we really need sort?"
+        print("bit_rate info:", self.bd_psnr, self.psnr_luam_chro, self.bit_rate)
 
     def set_bd_psnr(self, bd_psnr):
         self.bd_psnr = bd_psnr
@@ -105,9 +105,9 @@ class Line:
                 psnr_frame = [p for p in yuv.psnr_all(diff_file, infile)]
                 line.add_psnr(psnr_frame[-1])
                 line.add_lucha_psnr(psnr_frame[-1][-1])
-            line.sort()
             line.set_average_fps()
             line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
+            line.sort()
 
 
 class LineContain:

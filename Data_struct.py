@@ -127,19 +127,20 @@ class LineContain:
 
     def build_group(self, codec):
         for encode in codec:
-            self.group[encode[2]] = []
-            self.group_bdrate[encode[2]] = []
-            self.group_tag[encode[2]] = 1
+            self.group[encode[2] + '_' + encode[4]] = []
+            self.group_bdrate[encode[2] + '_' + encode[4]] = []
+            self.group_tag[encode[2] + '_' + encode[4]] = 1
 
     def add_group_ele(self, codec_name, line):
         self.group[codec_name].append(line)
 
     def check_baseline(self, codec):
         codec_contain = [codec_name[2] for codec_name in codec]
+        instance_contain = [instance_name[4] for instance_name in codec]
         if 'HM' in codec_contain:
-            self.set_baseline(self.group['HM'][0])
+            self.set_baseline(self.group['HM_' + instance_contain[codec_contain.index('HM')]][0])
         elif 'svt' in codec_contain:
-            self.set_baseline(self.group['svt'][0])
+            self.set_baseline(self.group['svt_' + instance_contain[codec_contain.index('svt')]][0])
         else:
             print "there is no baseline encode"
             for i in self.group:
@@ -174,7 +175,7 @@ class LineContain:
             for line in pool:
                 bd_rate = self.get_bd_rate(self.baseline, line)
                 line.bd_rate = bd_rate
-                self.group_bdrate[line.codec_name].append(bd_rate)
+                self.group_bdrate[line.codec_name + '_' + line.instance_name].append(bd_rate)
 
     def calculate(self):
         # self.calculate_psnr()
@@ -208,7 +209,7 @@ class CaseDate:
                 for i in range(len(line.output)):
                     file_line[0] = line.yuv_info.yuv_name
                     file_line[1] = line.height + 'p'
-                    file_line[2] = line.codec_name
+                    file_line[2] = line.codec_name + '_' + line.instance_name
                     file_line[3] = mode
                     file_line[4] = line.qp[i]
                     file_line[5] = line.psnr_luam_chro[i]

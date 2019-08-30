@@ -51,8 +51,8 @@ class UI:
                     ave_bdrate = []
                     ave_fps = []
                     for case in case_:
-                        ave_bdrate.append([line.bd_rate for line in case.group[name[0]]])
-                        ave_fps.append([line.average_fps for line in case.group[name[0]]])
+                        ave_bdrate.append([line.bd_rate for line in case.group[name[0] + '_' + name[1]]])
+                        ave_fps.append([line.average_fps for line in case.group[name[0] + '_' + name[1]]])
                     encode_name.append(name)
                     encdoe_bdrate.append(self.average_list(ave_bdrate))
                     encode_fps.append(self.average_list(ave_fps))
@@ -70,9 +70,9 @@ class UI:
                     ave_bitrate = []
                     ave_bd_psnr = []
                     for case in case_:
-                        ave_psnr.append([line.psnr_luam_chro for line in case.group[name]])
-                        ave_bitrate.append([line.bit_rate for line in case.group[name]])
-                        ave_bd_psnr.append([line.bd_psnr for line in case.group[name]])
+                        ave_psnr.append([line.psnr_luam_chro for line in case.group[name + '_' + tag]])
+                        ave_bitrate.append([line.bit_rate for line in case.group[name + '_' + tag]])
+                        ave_bd_psnr.append([line.bd_psnr for line in case.group[name + '_' + tag]])
                     encode_name.append(name + '_' + tag)
                     encode_psnr.append(self.average_contain(ave_psnr))
                     encdoe_bitrate.append(self.average_contain(ave_bitrate))
@@ -124,7 +124,8 @@ class UI:
         chart2.set_xticklabels(rowlabel)
         chart2.legend()
         trans_bdrate = self.trans_list(self.fix_arr(bdrate))
-        biao.table(cellText=trans_bdrate, colLabels=[col[1] for col in lab], rowLabels=rowlabel, loc='center',
+        biao.table(cellText=trans_bdrate, colLabels=[col[0] + '_' + col[1] for col in lab], rowLabels=rowlabel,
+                   loc='center',
                    colWidths=[0.2 for i in range(len(lab))])
         plt.pause(10)
         info = ''

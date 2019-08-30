@@ -93,8 +93,8 @@ def hm_execute(yuv_info, codec_index, line_pool):
     line = Line([yuv_info.url], 'HM', yuv_info.bit_depth, yuv_info.width, yuv_info.height, 'YV12', yuv_info)
     pipe = Pipeline(line)
     for qp in codec_index[0]:
-        output = option.encodeYuvPath + 'HM_%s_' % (qp) + yuv_info.yuv_name + '.' + codec_index[3]
-        yuv = option.encodeYuvPath + 'HM_%s_' % (qp) + yuv_info.yuv_name + '.' + yuv_info.suffix_type
+        output = option.encodeYuvPath + 'HM_%s_%s_' % (codec_index[4], qp) + yuv_info.yuv_name + '.' + codec_index[3]
+        yuv = option.encodeYuvPath + 'HM_%s_%s_' % (codec_index[4], qp) + yuv_info.yuv_name + '.' + yuv_info.suffix_type
         arg = codec_index[1] + ' ' + option.codec_dict['HM'] % (yuv_info.url, yuv_info.width,
                                                                 yuv_info.height, qp, output)
         print arg
@@ -107,20 +107,21 @@ def hm_execute(yuv_info, codec_index, line_pool):
         pipe.security()
 
     signal.signal(signal.SIGINT, signal_handler)
-    line_pool.add_group_ele('HM', pipe.pop_pro_hm())
+    line_pool.add_group_ele('HM_' + codec_index[4], pipe.pop_pro_hm())
     pipe.clear()
 
 
 def codec_execute(yuv_info, codec_index, line_pool):
     codec_name = codec_index[2]
+    instance_name = codec_index[4]
     for mode in option.mode:
         line = Line([yuv_info.url], codec_name, yuv_info.bit_depth, yuv_info.width, yuv_info.height, 'YV12', yuv_info)
         pipe = Pipeline(line)
         for qp in codec_index[0]:
             os.chdir(option.exec_path[codec_name])
-            output = option.encodeYuvPath + '%s_%s_%s_' % (codec_index[2], mode, qp) \
+            output = option.encodeYuvPath + '%s_%s_%s_%s' % (codec_name, instance_name, mode, qp) \
                      + yuv_info.yuv_name + '.' + codec_index[3]
-            yuv = option.encodeYuvPath + '%s_%s_%s_' % (codec_index[2], mode, qp) \
+            yuv = option.encodeYuvPath + '%s_%s_%s_%s' % (codec_name, instance_name, mode, qp) \
                   + yuv_info.yuv_name + '.' + yuv_info.suffix_type
             arg = codec_index[1] + ' ' + option.codec_dict[codec_name] % (yuv_info.url, yuv_info.width,
                                                                           yuv_info.height, yuv_info.bit_depth,
@@ -136,7 +137,7 @@ def codec_execute(yuv_info, codec_index, line_pool):
         signal.signal(signal.SIGINT, signal_handler)
         mode_line = pipe.pop_pro_other()
         if mode_line:
-            line_pool.add_group_ele(codec_name, mode_line)
+            line_pool.add_group_ele(codec_name + '_' + instance_name, mode_line)
             pipe.clear()
         else:
             break

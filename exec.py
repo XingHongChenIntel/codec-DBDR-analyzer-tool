@@ -4,22 +4,12 @@ import subprocess
 import csv
 from y4mconv import yuvInfo
 import OptionDictionary as option
-from Data_struct import Line, LineContain, CaseDate
+from Data_struct import Line, LineContain, CaseDate, ProEnv, Pipeline
 from UI import UI
 import pickle
 import argparse
 import signal
 import time
-
-
-def decode(codec_name, bit_stream, yuv):
-    if codec_name == '265':
-        os.chdir(option.exec_path['HM'])
-        arg = option.decode_dict[codec_name] % (bit_stream, yuv)
-        p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
-        info = p.communicate()
-    else:
-        print "we are not ready for 264"
 
 
 def modify_cfg(opt, value):
@@ -30,62 +20,6 @@ def modify_cfg(opt, value):
     line = re.sub(r'%s[ ]*:[ ]*[a-zA-Z0-9]*' % opt, '%s     : %s' % (opt, value), line)
     f.write(line)
     f.close()
-
-
-class ProEnv:
-    def __init__(self, p=None, codec_index=None, output=None, yuv=None, qp=None, mode=None):
-        self.progress = p
-        self.codec_index = codec_index
-        self.output = output
-        self.yuv = yuv
-        self.qp = qp
-        self.mode = mode
-
-
-class Pipeline:
-    def __init__(self, line):
-        self.pro = []
-        self.line = line
-        self.drop_tag = False
-
-    def push_pro(self, pro):
-        self.pro.append(pro)
-
-    def pop_pro_hm(self):
-        for pro in self.pro:
-            info = pro.progress.communicate()
-            decode(pro.codec_index[3], pro.output, pro.yuv)
-            self.line.add_info(info, pro.codec_index)
-            self.line.add_output(pro.yuv)
-            self.line.add_qp(pro.qp)
-        self.line.get_psnr(self.line)
-        return self.line
-
-    def pop_pro_other(self):
-        for pro in self.pro:
-            info = pro.progress.communicate()
-            if len(self.line.check_info(info)) is 0:
-                self.drop_tag = True
-                break
-            decode(pro.codec_index[3], pro.output, pro.yuv)
-            self.line.add_info(info, pro.codec_index)
-            self.line.add_output(pro.yuv)
-            self.line.add_qp(pro.qp)
-        if self.drop_tag:
-            return None
-        else:
-            self.line.get_psnr(self.line)
-            return self.line
-
-    def clear(self):
-        if not self.drop_tag:
-            for pro in self.pro:
-                os.remove(pro.yuv)
-                os.remove(pro.output)
-
-    def security(self):
-        for pro in self.pro:
-            pro.progress.terminate()
 
 
 def hm_execute(yuv_info, codec_index, line_pool):
@@ -104,11 +38,11 @@ def hm_execute(yuv_info, codec_index, line_pool):
         pipe.push_pro(env)
 
     def signal_handler(signal, frame):
-        pipe.security()
+        line_pool.pipe_security()
 
     signal.signal(signal.SIGINT, signal_handler)
-    line_pool.add_group_ele('HM_' + codec_index[4], pipe.pop_pro_hm())
-    pipe.clear()
+    codec_name = codec_index[2] + '_' + codec_index[4]
+    line_pool.add_codec_pipe(codec_name, pipe)
 
 
 def codec_execute(yuv_info, codec_index, line_pool):
@@ -132,15 +66,11 @@ def codec_execute(yuv_info, codec_index, line_pool):
             pipe.push_pro(evn)
 
         def signal_handler(signal, frame):
-            pipe.security()
+            line_pool.pipe_security()
 
         signal.signal(signal.SIGINT, signal_handler)
-        mode_line = pipe.pop_pro_other()
-        if mode_line:
-            line_pool.add_group_ele(codec_name + '_' + instance_name, mode_line)
-            pipe.clear()
-        else:
-            break
+        unique_tag = codec_name + '_' + instance_name
+        line_pool.add_codec_pipe(unique_tag, pipe)
 
 
 def setup_codec(yuv_info):
@@ -152,6 +82,8 @@ def setup_codec(yuv_info):
             hm_execute(yuv_info, codec_index, line_pool)
         else:
             codec_execute(yuv_info, codec_index, line_pool)
+    line_pool.parse_codec_pipe()
+    line_pool.clean_pipe()
     line_pool.check_baseline(option.codec)
     return line_pool
 

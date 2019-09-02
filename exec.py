@@ -110,7 +110,6 @@ def hm_execute(yuv_info, codec_index, line_pool):
     return pipe
 
 
-
 def codec_execute(yuv_info, codec_index, line_pool):
     codec_name = codec_index[2]
     instance_name = codec_index[4]
@@ -147,14 +146,16 @@ def setup_codec(yuv_info):
     line_pool = LineContain(len(option.codec))
     line_pool.set_data_type(yuv_info)
     line_pool.build_group(option.codec)
+    pipe_hm = None
     for codec_index in option.codec:
         if codec_index[2] == 'HM':
             codec_index_hm = codec_index
             pipe_hm = hm_execute(yuv_info, codec_index, line_pool)
         else:
             codec_execute(yuv_info, codec_index, line_pool)
-    line_pool.add_group_ele('HM_' + codec_index_hm[4], pipe_hm.pop_pro_hm())
-    pipe_hm.clear()
+    if pipe_hm is not None:
+        line_pool.add_group_ele('HM_' + codec_index_hm[4], pipe_hm.pop_pro_hm())
+        pipe_hm.clear()
     line_pool.check_baseline(option.codec)
     return line_pool
 

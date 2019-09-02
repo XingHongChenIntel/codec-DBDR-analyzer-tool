@@ -1,5 +1,6 @@
 import re
 import csv
+import subprocess
 from ycbcr import YCbCr
 import bjontegaard_metric as BD
 
@@ -98,16 +99,23 @@ class Line:
         self.average_fps = sum(self.fps) / len(self.fps)
 
     def get_psnr(self, line):
-        yuv = YCbCr(filename=line.input_url, filename_diff=line.output, width=int(line.width),
-                    height=int(line.height), yuv_format_in=line.type, bitdepth=int(line.bit_depth))
-        for infile in range(len(line.input_url)):
-            for diff_file in range(len(line.output)):
-                psnr_frame = [p for p in yuv.psnr_all(diff_file, infile)]
-                line.add_psnr(psnr_frame[-1])
-                line.add_lucha_psnr(psnr_frame[-1][-1])
-            line.set_average_fps()
-            line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
-            line.sort()
+        input_url = line.input_url[0]
+        output = line.output
+        width = line.width
+        height = line.height
+        pipe_contain = []
+        for out in output:
+            arg = 'ffmpeg -s %sx%s -i %s -s %sx%s -i %s -lavfi psnr="stats_file=psnr.log" -f null -' % \
+                  (width, height, input_url, width, height, out)
+            p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            pipe_contain.append(p)
+        for p in pipe_contain:
+            info = p.communicate()
+            psnr = re.findall(r'average:[\r\n\t ]*([\.0-9]*)', info[1])
+            line.add_lucha_psnr(float(self.check_blank(psnr)))
+        line.set_average_fps()
+        line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
+        line.sort()
 
 
 class LineContain:

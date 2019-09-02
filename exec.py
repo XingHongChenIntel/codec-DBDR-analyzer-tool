@@ -33,13 +33,14 @@ def modify_cfg(opt, value):
 
 
 class ProEnv:
-    def __init__(self, p=None, codec_index=None, output=None, yuv=None, qp=None, mode=None):
+    def __init__(self, p=None, codec_index=None, output=None, yuv=None, qp=None, mode=None, time_begin=None):
         self.progress = p
         self.codec_index = codec_index
         self.output = output
         self.yuv = yuv
         self.qp = qp
         self.mode = mode
+        self.time_begin = time_begin
 
 
 class Pipeline:
@@ -71,6 +72,10 @@ class Pipeline:
             self.line.add_info(info, pro.codec_index)
             self.line.add_output(pro.yuv)
             self.line.add_qp(pro.qp)
+            elapsed = (time.time() - pro.time_begin)
+            m, s = divmod(elapsed, 60)
+            h, m = divmod(m, 60)
+            print("encode yuv time used : %d:%02d:%02d" % (h, m, s))
         if self.drop_tag:
             return None
         else:
@@ -127,14 +132,14 @@ def codec_execute(yuv_info, codec_index, line_pool):
                                                                           qp, mode, output)
             print arg
             p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            evn = ProEnv(p, codec_index, output, yuv, qp, mode)
+            evn = ProEnv(p, codec_index, output, yuv, qp, mode, time.time())
             pipe.push_pro(evn)
 
         def signal_handler(signal, frame):
             pipe.security()
 
-        signal.signal(signal.SIGINT, signal_handler)
         mode_line = pipe.pop_pro_other()
+        signal.signal(signal.SIGINT, signal_handler)
         if mode_line:
             line_pool.add_group_ele(codec_name + '_' + instance_name, mode_line)
             pipe.clear()

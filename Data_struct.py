@@ -1,6 +1,7 @@
 import re
 import csv
 import subprocess
+import time
 from ycbcr import YCbCr
 import bjontegaard_metric as BD
 
@@ -104,6 +105,7 @@ class Line:
         width = line.width
         height = line.height
         pipe_contain = []
+        time_b = time.time()
         for out in output:
             arg = 'ffmpeg -s %sx%s -i %s -s %sx%s -i %s -lavfi psnr="stats_file=psnr.log" -f null -' % \
                   (width, height, input_url, width, height, out)
@@ -113,6 +115,10 @@ class Line:
             info = p.communicate()
             psnr = re.findall(r'average:[\r\n\t ]*([\.0-9]*)', info[1])
             line.add_lucha_psnr(float(self.check_blank(psnr)))
+        elapsed = (time.time() - time_b)
+        m, s = divmod(elapsed, 60)
+        h, m = divmod(m, 60)
+        print("calculate psnr time used : %d:%02d:%02d" % (h, m, s))
         line.set_average_fps()
         line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
         line.sort()

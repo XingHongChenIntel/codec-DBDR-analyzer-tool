@@ -33,17 +33,17 @@ TestSequencePath = '/home/cxh/code/codec-DBDR-analyzer-tool/test.csv'
 exec_path = {
     'HM': '/home/cxh/code/HM-16.1/bin/',
     'x265': '/home/cxh/code/x265/build/linux/',
-    'svt': '/home/cxh/code/SVT-HEVC/Bin/Release/'
+    'svt': '/home/cxh/SVT-HEVC/Bin/Release/'
 }
 
 # encode yuv data save path
 encodeYuvPath = '/home/cxh/code/codec-DBDR-analyzer-tool/data/'
 
 # calculate psnr bd_rate
-calculate_data = '/home/cxh/code/data.csv'
+calculate_data = '/home/cxh/code/codec-DBDR-analyzer-tool/data.csv'
 # when you use this data to draw plot,
 # you have to sure you got same codec information when you run them
-calculate_serialize_data = '/home/cxh/code/file_test'
+calculate_serialize_data = '/home/cxh/code/codec-DBDR-analyzer-tool/file_test'
 # the path to save the plot picture
-plot_path = '/home/cxh/code/pictures/'
+plot_path = '/home/cxh/code/codec-DBDR-analyzer-tool/pictures/'
 

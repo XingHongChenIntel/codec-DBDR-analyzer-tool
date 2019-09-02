@@ -4,7 +4,7 @@ import subprocess
 import csv
 from y4mconv import yuvInfo
 import OptionDictionary as option
-from Data_struct import Line, LineContain, CaseDate
+from Data_struct import Line, LineContain, CaseDate, ProEnv, Pipeline
 from UI import UI
 import pickle
 import argparse
@@ -109,7 +109,7 @@ def hm_execute(yuv_info, codec_index, line_pool):
         pipe.push_pro(env)
 
     def signal_handler(signal, frame):
-        pipe.security()
+        line_pool.pipe_security()
 
     signal.signal(signal.SIGINT, signal_handler)
     return pipe
@@ -136,7 +136,7 @@ def codec_execute(yuv_info, codec_index, line_pool):
             pipe.push_pro(evn)
 
         def signal_handler(signal, frame):
-            pipe.security()
+            line_pool.pipe_security()
 
         mode_line = pipe.pop_pro_other()
         signal.signal(signal.SIGINT, signal_handler)

@@ -107,8 +107,8 @@ def hm_execute(yuv_info, codec_index, line_pool):
         pipe.security()
 
     signal.signal(signal.SIGINT, signal_handler)
-    line_pool.add_group_ele('HM_' + codec_index[4], pipe.pop_pro_hm())
-    pipe.clear()
+    return pipe
+
 
 
 def codec_execute(yuv_info, codec_index, line_pool):
@@ -149,9 +149,12 @@ def setup_codec(yuv_info):
     line_pool.build_group(option.codec)
     for codec_index in option.codec:
         if codec_index[2] == 'HM':
-            hm_execute(yuv_info, codec_index, line_pool)
+            codec_index_hm = codec_index
+            pipe_hm = hm_execute(yuv_info, codec_index, line_pool)
         else:
             codec_execute(yuv_info, codec_index, line_pool)
+    line_pool.add_group_ele('HM_' + codec_index_hm[4], pipe_hm.pop_pro_hm())
+    pipe_hm.clear()
     line_pool.check_baseline(option.codec)
     return line_pool
 

@@ -1,3 +1,4 @@
+calculate_serialize_data = '/home/cxh/code/codec-DBDR-analyzer-tool/database'
 proxy = '/home/cxh/code/codec-DBDR-analyzer-tool/data/'
 # choose the HM cfg file path on your computer
 HM_cfg_Path = '/home/cxh/code/HM-16.1/cfg/encoder_randomaccess_main.cfg'
@@ -43,8 +44,5 @@ encodeYuvPath = proxy
 # calculate psnr bd_rate
 calculate_data = '%sdata.csv' % proxy
 
-# when you use this data to draw plot,
-# you have to sure you got same codec information when you run them
-calculate_serialize_data = '%sfile_test' % proxy
 # the path to save the plot picture
 plot_path = proxy

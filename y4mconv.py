@@ -14,6 +14,18 @@ class yuvInfo:
         self.suffix_type = None
         self.type = 0
 
+    def __eq__(self, other):
+        if self.url == other.url and self.width == other.width and self.height == other.height:
+            return True
+        else:
+            return False
+
+    def __ne__(self, other):
+        if self.url != other.url or self.width != other.width and self.height != other.height:
+            return True
+        else:
+            return False
+
     def parse_yuv_type(self, str):
         yuv_info = str.split(' ')
         name = yuv_info[0].split('/')[-1].split('.')

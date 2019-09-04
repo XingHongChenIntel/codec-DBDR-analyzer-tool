@@ -137,7 +137,7 @@ class Line:
 
 
 class LineContain:
-    def __init__(self, codec_num):
+    def __init__(self, codec_num=None):
         self.baseline = None
         self.codec_num = codec_num
         self.group = {}
@@ -236,7 +236,7 @@ class LineContain:
 
 
 class CaseDate:
-    def __init__(self, path):
+    def __init__(self, path=None):
         self.case = []
         self.case_group = {'360': [], '480': [], '720': [], '1080': [],
                            '1152': [], '2304': [], '3840': [], }

@@ -14,10 +14,10 @@ exec_path = {
 }
 
 # test encoder and command line. it will be  QP, command line, encoder name, codec name, instance name
-codec = [[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cfg_Path, 'HM', '265', 'inst'],
-         [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'inst'],
-         [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'hevc'],
-         [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'inst'],
+codec = [[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cfg_Path, 'HM', '265', 'inst', 'e'],
+         [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'inst', 'e'],
+         [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'hevc', 'e'],
+         [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'inst', 'e'],
          ]
 
 # choose the test sample type, for example 360p 720p 1080p 2k 4k 8k

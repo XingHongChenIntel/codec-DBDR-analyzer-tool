@@ -106,7 +106,11 @@ def setup_codec(yuv_info, database):
 def clean_data_dir():
     for root, dirs, files in os.walk(option.encodeYuvPath):
         for f in files:
-            os.remove(os.path.join(root, f))
+            apath = os.path.join(root, f)
+            ext = os.path.splitext(apath)[1]
+            print ext
+            if ext != '.png' and ext != '.csv':
+                os.remove(apath)
 
 
 def parse_resolution(resolution):
@@ -161,7 +165,7 @@ def pre_setup():
         else:
             if not os.path.exists(fileDay):
                 os.mkdir(fileDay)
-    return fileDay
+    return fileDay + '/'
 
 
 def run_command():
@@ -184,6 +188,7 @@ def run_command():
     m, s = divmod(elapsed, 60)
     h, m = divmod(m, 60)
     print("time used : %d:%02d:%02d" % (h, m, s))
+    clean_data_dir()
 
 
 def draw_ui():

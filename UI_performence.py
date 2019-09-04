@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import MultipleLocator, FuncFormatter
-import OptionDictionary as option
+import OptionDictionary_performence as option
 
 
 class UI:
@@ -83,47 +83,47 @@ class UI:
     def bd_rate_plot(self, bdrate, fps, lab, resolution):
         fig = plt.figure(figsize=[18, 10])
         gs = GridSpec(1, 2)
-        #chart = fig.add_subplot(gs[0, 0])
-        chart2 = fig.add_subplot(gs[0, 0])
+        chart = fig.add_subplot(gs[0, 0])
+        # chart2 = fig.add_subplot(gs[0, 0])
         biao = fig.add_subplot(gs[:, 1])
         biao.set_axis_off()
         biao.set_title('%s' % resolution + 'p   ' + 'BDrate')
-        #chart.set_xlabel('Speed(fps)')
-        #chart.set_ylabel('BDRate')
-        #chart.grid(True)
-        #chart.set_xlim(0, None, True, True)
-        #chart.set_ylim(-100, 100, True, True)
-        #chart.set_title('%s' % resolution + 'p')
-        chart2.set_xlabel('Mode')
-        chart2.set_ylabel('BDRate')
-        chart2.grid(True)
-        chart2.set_xlim(0, None, True, True)
-        chart2.set_ylim(-100, 100, True, True)
-        chart2.set_title('%s' % resolution + 'p')
+        chart.set_xlabel('Speed(fps)')
+        chart.set_ylabel('BDRate')
+        chart.grid(True)
+        chart.set_xlim(0, None, True, True)
+        chart.set_ylim(-100, 100, True, True)
+        chart.set_title('%s' % resolution + 'p')
+        # chart2.set_xlabel('Mode')
+        # chart2.set_ylabel('BDRate')
+        # chart2.grid(True)
+        # chart2.set_xlim(0, None, True, True)
+        # chart2.set_ylim(-100, 100, True, True)
+        # chart2.set_title('%s' % resolution + 'p')
 
         def persent(temp, position):
             return '%1.1f' % (temp) + '%'
 
-        # chart.yaxis.set_major_locator(MultipleLocator(10))
-        # chart.yaxis.set_major_formatter(FuncFormatter(persent))
+        chart.yaxis.set_major_locator(MultipleLocator(10))
+        chart.yaxis.set_major_formatter(FuncFormatter(persent))
         for i in range(len(bdrate)):
             xrow = len(bdrate[i])
-            # if lab[i][0] != 'HM':
-            #     chart.plot(fps[i], bdrate[i], '-o', label=lab[i][0] + '_' + lab[i][1])
-            chart2.plot(range(xrow), bdrate[i], '-x', label=lab[i][0] + '_' + lab[i][1])
-        # chart.legend()
-        for line in chart2.xaxis.get_ticklabels():
-            line.set_rotation(45)
-        chart2.yaxis.set_major_locator(MultipleLocator(10))
-        chart2.yaxis.set_major_formatter(FuncFormatter(persent))
-        chart2.set_xticks(range(self.max_len(bdrate)))
+            if lab[i][0] != 'HM':
+                chart.plot(fps[i], bdrate[i], '-o', label=lab[i][0] + '_' + lab[i][1])
+            # chart2.plot(range(xrow), bdrate[i], '-x', label=lab[i][0] + '_' + lab[i][1])
+        chart.legend()
+        # for line in chart2.xaxis.get_ticklabels():
+        #     line.set_rotation(45)
+        # chart2.yaxis.set_major_locator(MultipleLocator(10))
+        # chart2.yaxis.set_major_formatter(FuncFormatter(persent))
+        # chart2.set_xticks(range(self.max_len(bdrate)))
         if 'HM' in [code[2] for code in option.codec]:
             baseline = 'HM'
         else:
             baseline = 'svt'
         rowlabel = self.label_len(bdrate, 'bd', baseline)
-        chart2.set_xticklabels(rowlabel)
-        chart2.legend()
+        # chart2.set_xticklabels(rowlabel)
+        # chart2.legend()
         trans_bdrate = self.trans_list(self.fix_arr(bdrate))
         biao.table(cellText=trans_bdrate, colLabels=[col[0] + '_' + col[1] for col in lab], rowLabels=rowlabel,
                    loc='center',
@@ -185,4 +185,4 @@ class UI:
 
     def show(self):
         self.bd_data_choose()
-        self.bitrate_data_choos()
+        #self.bitrate_data_choos()

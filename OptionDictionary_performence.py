@@ -1,5 +1,5 @@
-calculate_serialize_data = '/home/cxh/code/codec-DBDR-analyzer-tool/database'
-proxy = '/home/cxh/code/codec-DBDR-analyzer-tool/data/'
+calculate_serialize_data = '/home/cxh/code/codec-DBDR-analyzer-tool/database_performance'
+proxy = '/home/cxh/code/codec-DBDR-analyzer-tool/data_performance/'
 # choose the HM cfg file path on your computer
 HM_cfg_Path = '/home/cxh/code/HM-16.1/cfg/encoder_randomaccess_main.cfg'
 
@@ -18,7 +18,7 @@ exec_path = {
 codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cfg_Path, 'HM', '265', 'inst', 'read'],
          #[[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'ins', 'read'],
          [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'hevc', 'read'],
-         [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'inst', 'read'],
+         #[[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'inst', 'execute'],
          ]
 
 # choose the test sample type, for example 360p 720p 1080p 2k 4k 8k

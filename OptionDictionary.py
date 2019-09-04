@@ -41,7 +41,7 @@ decode_dict = {
 # encode yuv data save path
 encodeYuvPath = proxy
 
-# calculate psnr bd_rate
+# calculate psnr bd_rategit
 calculate_data = '%sdata.csv' % proxy
 
 # the path to save the plot picture

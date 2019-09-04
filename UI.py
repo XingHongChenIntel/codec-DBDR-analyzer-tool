@@ -127,7 +127,7 @@ class UI:
         biao.table(cellText=trans_bdrate, colLabels=[col[0] + '_' + col[1] for col in lab], rowLabels=rowlabel,
                    loc='center',
                    colWidths=[0.2 for i in range(len(lab))])
-        plt.pause(10)
+        #plt.pause(10)
         info = ''
         for code in option.codec:
             info += '_' + code[4] + '_'
@@ -178,7 +178,7 @@ class UI:
         rowlabel = self.label_len(encode_bdpsnr, 'bit')
         biao.table(cellText=trans_psnr, colLabels=encode_name, rowLabels=rowlabel, loc='center',
                    colWidths=[0.3 for i in range(len(encode_name))])
-        plt.pause(10)
+        #plt.pause(10)
         info = ''
         for code in option.codec:
             info += '_' + code[4]

@@ -9,10 +9,10 @@ Test_data_type = 'all'
 mode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 # test encoder and command line. it will be  QP, command line, encoder name, codec name, instance name
-codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 60' % HM_cfg_Path, 'HM', '265', 'instance'],
-         #[[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'instance'],
-         [[25, 29, 34, 38], './SvtHevcEncApp', 'svt', '265', 'hevc'],
-         #[[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'instance'],
+codec = [[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cfg_Path, 'HM', '265', 'inst'],
+         [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'inst'],
+         [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'hevc'],
+         [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'inst'],
          ]
 
 # encoder command line parameter about yuv info, if test new encoder, need to add information here
@@ -46,5 +46,5 @@ calculate_data = '/home/cxh/code/codec-DBDR-analyzer-tool/data.csv'
 # you have to sure you got same codec information when you run them
 calculate_serialize_data = '/home/cxh/code/codec-DBDR-analyzer-tool/file_test'
 # the path to save the plot picture
-plot_path = '/home/cxh/code/codec-DBDR-analyzer-tool/pictures/'
+plot_path = '/home/cxh/code/codec-DBDR-analyzer-tool/picture/'
 

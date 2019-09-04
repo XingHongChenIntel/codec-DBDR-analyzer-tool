@@ -139,8 +139,33 @@ def parse_arg():
     return args
 
 
-def run_command():
+def pre_setup():
     clean_data_dir()
+    localtime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+    print('localtime=' + localtime)
+    year = time.strftime('%Y', time.localtime(time.time()))
+    month = time.strftime('%m', time.localtime(time.time()))
+    day = time.strftime('%d', time.localtime(time.time()))
+    mdhms = time.strftime('%m%d%H%M%S', time.localtime(time.time()))
+    fileYear = option.proxy + year
+    fileMonth = fileYear + '/' + month
+    fileDay = fileMonth + '/' + day
+    if not os.path.exists(fileYear):
+        os.mkdir(fileYear)
+        os.mkdir(fileMonth)
+        os.mkdir(fileDay)
+    else:
+        if not os.path.exists(fileMonth):
+            os.mkdir(fileMonth)
+            os.mkdir(fileDay)
+        else:
+            if not os.path.exists(fileDay):
+                os.mkdir(fileDay)
+    return fileDay
+
+
+def run_command():
+    plot_path = pre_setup()
     time_b = time.time()
     yuv_contain = read_csv()
     case_data = CaseDate(option.calculate_data)
@@ -153,7 +178,7 @@ def run_command():
     case_data.set_case_num()
     case_data.setup_file()
     database.serialize_date()
-    ui = UI(case_data)
+    ui = UI(case_data, plot_path)
     ui.show()
     elapsed = (time.time() - time_b)
     m, s = divmod(elapsed, 60)

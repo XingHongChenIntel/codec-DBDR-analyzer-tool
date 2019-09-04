@@ -85,7 +85,7 @@ def setup_codec(yuv_info, database):
     pipe_hm = None
     for codec_index in option.codec:
         name = codec_index[2] + '_' + codec_index[4]
-        is_find, pool = database.find_data(yuv_info, name)
+        is_find, pool = database.find_data(yuv_info, name, codec_index[5])
         if is_find:
             line_pool.group[name] = pool
         else:
@@ -108,7 +108,6 @@ def clean_data_dir():
         for f in files:
             apath = os.path.join(root, f)
             ext = os.path.splitext(apath)[1]
-            print ext
             if ext != '.png' and ext != '.csv':
                 os.remove(apath)
 

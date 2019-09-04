@@ -191,18 +191,6 @@ class LineContain:
     def set_group_tag(self, codec_name):
         self.group_tag[codec_name] = 0
 
-    def get_psnr(self, line):
-        yuv = YCbCr(filename=line.input_url, filename_diff=line.output, width=int(line.width),
-                    height=int(line.height), yuv_format_in=line.type, bitdepth=int(line.bit_depth))
-        for infile in range(len(line.input_url)):
-            for diff_file in range(len(line.output)):
-                psnr_frame = [p for p in yuv.psnr_all(diff_file, infile)]
-                line.add_psnr(psnr_frame[-1])
-                line.add_lucha_psnr(psnr_frame[-1][-1])
-            line.sort()
-            line.set_average_fps()
-            line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
-
     def get_bd_rate(self, baseline, line):
         return BD.BD_RATE(baseline.bit_rate, baseline.psnr_luam_chro, line.bit_rate, line.psnr_luam_chro)
 
@@ -219,7 +207,6 @@ class LineContain:
                 self.group_bdrate[line.codec_name + '_' + line.instance_name].append(bd_rate)
 
     def calculate(self):
-        # self.calculate_psnr()
         self.calculate_bd_rate()
 
 

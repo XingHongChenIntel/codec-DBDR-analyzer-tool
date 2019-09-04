@@ -22,7 +22,7 @@ class Database:
             data = CaseDate()
             return data
 
-    def find_data(self, yuv_info, encode_name):
+    def find_data(self, yuv_info, encode_name, tag):
         if len(self.data.case) == 0:
             self.build_case(yuv_info)
             self.build_encode(encode_name)
@@ -30,7 +30,13 @@ class Database:
         for pic in self.data.case:
             if self.is_have_yuv(yuv_info):
                 if self.is_have_encode(encode_name):
-                    return True, pic.group[encode_name]
+                    if tag == 'read':
+                        return True, pic.group[encode_name]
+                    else:
+                        pic.group[encode_name] = []
+                        pic.group_bdrate[encode_name] = []
+                        self.temp_case = pic
+                        return False, None
         return False, None
 
     def is_have_yuv(self, yuv_info):

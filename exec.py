@@ -2,24 +2,15 @@ import os
 import re
 import subprocess
 import csv
-from y4mconv import yuvInfo
-import OptionDictionary as option
-from Data_struct import Line, LineContain, CaseDate, ProEnv, Pipeline
-from UI import UI
-import pickle
 import argparse
 import signal
 import time
-
-
-def decode(codec_name, bit_stream, yuv):
-    if codec_name == '265':
-        os.chdir(option.exec_path['HM'])
-        arg = option.decode_dict[codec_name] % (bit_stream, yuv)
-        p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
-        info = p.communicate()
-    else:
-        print "we are not ready for 264"
+from y4mconv import yuvInfo
+import OptionDictionary as option
+from Data_struct import Line, LineContain, CaseDate
+from pipelinefordata import ProEnv, Pipeline
+from Data_base import Database
+from UI import UI
 
 
 def modify_cfg(opt, value):
@@ -30,67 +21,6 @@ def modify_cfg(opt, value):
     line = re.sub(r'%s[ ]*:[ ]*[a-zA-Z0-9]*' % opt, '%s     : %s' % (opt, value), line)
     f.write(line)
     f.close()
-
-
-class ProEnv:
-    def __init__(self, p=None, codec_index=None, output=None, yuv=None, qp=None, mode=None, time_begin=None):
-        self.progress = p
-        self.codec_index = codec_index
-        self.output = output
-        self.yuv = yuv
-        self.qp = qp
-        self.mode = mode
-        self.time_begin = time_begin
-
-
-class Pipeline:
-    def __init__(self, line):
-        self.pro = []
-        self.line = line
-        self.drop_tag = False
-
-    def push_pro(self, pro):
-        self.pro.append(pro)
-
-    def pop_pro_hm(self):
-        for pro in self.pro:
-            info = pro.progress.communicate()
-            decode(pro.codec_index[3], pro.output, pro.yuv)
-            self.line.add_info(info, pro.codec_index)
-            self.line.add_output(pro.yuv)
-            self.line.add_qp(pro.qp)
-        self.line.get_psnr(self.line)
-        return self.line
-
-    def pop_pro_other(self):
-        for pro in self.pro:
-            info = pro.progress.communicate()
-            if len(self.line.check_info(info)) is 0:
-                self.drop_tag = True
-                break
-            decode(pro.codec_index[3], pro.output, pro.yuv)
-            self.line.add_info(info, pro.codec_index)
-            self.line.add_output(pro.yuv)
-            self.line.add_qp(pro.qp)
-            elapsed = (time.time() - pro.time_begin)
-            m, s = divmod(elapsed, 60)
-            h, m = divmod(m, 60)
-            print("encode yuv time used : %d:%02d:%02d" % (h, m, s))
-        if self.drop_tag:
-            return None
-        else:
-            self.line.get_psnr(self.line)
-            return self.line
-
-    def clear(self):
-        if not self.drop_tag:
-            for pro in self.pro:
-                os.remove(pro.yuv)
-                os.remove(pro.output)
-
-    def security(self):
-        for pro in self.pro:
-            pro.progress.terminate()
 
 
 def hm_execute(yuv_info, codec_index, line_pool):
@@ -115,7 +45,7 @@ def hm_execute(yuv_info, codec_index, line_pool):
     return pipe
 
 
-def codec_execute(yuv_info, codec_index, line_pool):
+def codec_execute(yuv_info, codec_index, line_pool, database):
     codec_name = codec_index[2]
     instance_name = codec_index[4]
     for mode in option.mode:
@@ -142,33 +72,44 @@ def codec_execute(yuv_info, codec_index, line_pool):
         signal.signal(signal.SIGINT, signal_handler)
         if mode_line:
             line_pool.add_group_ele(codec_name + '_' + instance_name, mode_line)
+            database.add_data(mode_line, codec_name + '_' + instance_name)
             pipe.clear()
         else:
             break
 
 
-def setup_codec(yuv_info):
+def setup_codec(yuv_info, database):
     line_pool = LineContain(len(option.codec))
     line_pool.set_data_type(yuv_info)
     line_pool.build_group(option.codec)
     pipe_hm = None
     for codec_index in option.codec:
-        if codec_index[2] == 'HM':
-            codec_index_hm = codec_index
-            pipe_hm = hm_execute(yuv_info, codec_index, line_pool)
+        name = codec_index[2] + '_' + codec_index[4]
+        is_find, pool = database.find_data(yuv_info, name, codec_index[5])
+        if is_find:
+            line_pool.group[name] = pool
         else:
-            codec_execute(yuv_info, codec_index, line_pool)
+            if codec_index[2] == 'HM':
+                codec_index_hm = codec_index
+                pipe_hm = hm_execute(yuv_info, codec_index, line_pool)
+            else:
+                codec_execute(yuv_info, codec_index, line_pool, database)
     if pipe_hm is not None:
-        line_pool.add_group_ele('HM_' + codec_index_hm[4], pipe_hm.pop_pro_hm())
+        line = pipe_hm.pop_pro_hm()
+        line_pool.add_group_ele('HM_' + codec_index_hm[4], line)
+        database.add_data(line, 'HM_' + codec_index_hm[4])
         pipe_hm.clear()
     line_pool.check_baseline(option.codec)
     return line_pool
 
 
 def clean_data_dir():
-    dirs = os.listdir(option.encodeYuvPath)
-    for i in dirs:
-        os.remove(option.encodeYuvPath + i)
+    for root, dirs, files in os.walk(option.encodeYuvPath):
+        for f in files:
+            apath = os.path.join(root, f)
+            ext = os.path.splitext(apath)[1]
+            if ext != '.png' and ext != '.csv':
+                os.remove(apath)
 
 
 def parse_resolution(resolution):
@@ -194,19 +135,6 @@ def read_csv():
     return target_yuv_contain
 
 
-def serialize_date(data):
-    f = open(option.calculate_serialize_data, 'wb')
-    pickle.dump(data, f)
-    f.close()
-
-
-def deserialize_data():
-    f = open(option.calculate_serialize_data, 'rb')
-    data = pickle.load(f)
-    f.close()
-    return data
-
-
 def parse_arg():
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--plot', help='if already got data we can just plot', default=0, type=int)
@@ -214,31 +142,56 @@ def parse_arg():
     return args
 
 
-def run_command():
+def pre_setup():
     clean_data_dir()
+    localtime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+    print('localtime=' + localtime)
+    year = time.strftime('%Y', time.localtime(time.time()))
+    month = time.strftime('%m', time.localtime(time.time()))
+    day = time.strftime('%d', time.localtime(time.time()))
+    mdhms = time.strftime('%m%d%H%M%S', time.localtime(time.time()))
+    fileYear = option.proxy + year
+    fileMonth = fileYear + '/' + month
+    fileDay = fileMonth + '/' + day
+    if not os.path.exists(fileYear):
+        os.mkdir(fileYear)
+        os.mkdir(fileMonth)
+        os.mkdir(fileDay)
+    else:
+        if not os.path.exists(fileMonth):
+            os.mkdir(fileMonth)
+            os.mkdir(fileDay)
+        else:
+            if not os.path.exists(fileDay):
+                os.mkdir(fileDay)
+    return fileDay + '/'
+
+
+def run_command():
+    plot_path = pre_setup()
     time_b = time.time()
     yuv_contain = read_csv()
     case_data = CaseDate(option.calculate_data)
+    database = Database(option.calculate_serialize_data)
     print "\ntest case number is %d\n" % len(yuv_contain)
     for yuv in yuv_contain:
-        case = setup_codec(yuv)
+        case = setup_codec(yuv, database)
         case.calculate()
         case_data.add_case(case, yuv)
     case_data.set_case_num()
     case_data.setup_file()
-    serialize_date(case_data)
-    ui = UI(case_data)
+    database.serialize_date()
+    ui = UI(case_data, plot_path)
     ui.show()
     elapsed = (time.time() - time_b)
     m, s = divmod(elapsed, 60)
     h, m = divmod(m, 60)
     print("time used : %d:%02d:%02d" % (h, m, s))
+    clean_data_dir()
 
 
 def draw_ui():
-    case_data = deserialize_data()
-    ui = UI(case_data)
-    ui.show()
+    print "we will fix this"
 
 
 def main():

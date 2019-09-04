@@ -10,13 +10,14 @@ import OptionDictionary as option
 
 
 class UI:
-    def __init__(self, data):
+    def __init__(self, data, plot_path):
         self.data = data
         self.case_num = data.case_num
         self.encode_num = len(option.codec)
         self.bd_fps = []
         self.bd_rate = []
         self.bd_label = []
+        self.plot_path = plot_path
 
     def average_list(self, arr):
         sum = 0
@@ -127,11 +128,10 @@ class UI:
         biao.table(cellText=trans_bdrate, colLabels=[col[0] + '_' + col[1] for col in lab], rowLabels=rowlabel,
                    loc='center',
                    colWidths=[0.2 for i in range(len(lab))])
-        # plt.pause(10)
         info = ''
         for code in option.codec:
             info += '_' + code[4] + '_'
-        fig.savefig(option.plot_path + '_' + str(resolution) + '_' + info + '_BDrate')
+        fig.savefig(self.plot_path + '_' + str(resolution) + '_' + info + '_BDrate')
 
     def max_len(self, bd):
         max = 10
@@ -178,11 +178,10 @@ class UI:
         rowlabel = self.label_len(encode_bdpsnr, 'bit')
         biao.table(cellText=trans_psnr, colLabels=encode_name, rowLabels=rowlabel, loc='center',
                    colWidths=[0.3 for i in range(len(encode_name))])
-        # plt.pause(10)
         info = ''
         for code in option.codec:
             info += '_' + code[4]
-        fig.savefig(option.plot_path + '_' + str(resolution) + info + '_bit_rate')
+        fig.savefig(self.plot_path + '_' + str(resolution) + info + '_bit_rate')
 
     def show(self):
         self.bd_data_choose()

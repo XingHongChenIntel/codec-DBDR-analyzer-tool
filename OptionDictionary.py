@@ -1,12 +1,16 @@
+proxy = '/home/cxh/code/codec-DBDR-analyzer-tool/data/'
 # choose the HM cfg file path on your computer
 HM_cfg_Path = '/home/cxh/code/HM-16.1/cfg/encoder_randomaccess_main.cfg'
 
-# choose the test sample type, for example 360p 720p 1080p 2k 4k 8k
-# if you want to test all sample use 'all
-Test_data_type = 'all'
+# file path which got test yuv or y4m information.(10 bit y4m isn't available now)
+TestSequencePath = '/home/cxh/code/codec-DBDR-analyzer-tool/test.csv'
 
-# encode mode for different encoder
-mode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+# encoder path
+exec_path = {
+    'HM': '/home/cxh/code/HM-16.1/bin/',
+    'x265': '/home/cxh/code/x265/build/linux/',
+    'svt': '/home/cxh/SVT-HEVC/Bin/Release/'
+}
 
 # test encoder and command line. it will be  QP, command line, encoder name, codec name, instance name
 codec = [[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cfg_Path, 'HM', '265', 'inst'],
@@ -15,6 +19,12 @@ codec = [[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cfg
          [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'inst'],
          ]
 
+# choose the test sample type, for example 360p 720p 1080p 2k 4k 8k
+# if you want to test all sample use 'all
+Test_data_type = 'all'
+
+# encode mode for different encoder
+mode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 # encoder command line parameter about yuv info, if test new encoder, need to add information here
 codec_dict = {
     'HM': '-i %s -wdt %s -hgt %s -q %s -b %s',
@@ -27,24 +37,14 @@ decode_dict = {
     '265': './TAppDecoderStatic -b %s -o %s'
 }
 
-# file path which got test yuv or y4m information
-TestSequencePath = '/home/cxh/code/codec-DBDR-analyzer-tool/test.csv'
-
-# encoder path
-exec_path = {
-    'HM': '/home/cxh/code/HM-16.1/bin/',
-    'x265': '/home/cxh/code/x265/build/linux/',
-    'svt': '/home/cxh/SVT-HEVC/Bin/Release/'
-}
-
 # encode yuv data save path
-encodeYuvPath = '/home/cxh/code/codec-DBDR-analyzer-tool/data/'
+encodeYuvPath = proxy
 
 # calculate psnr bd_rate
-calculate_data = '/home/cxh/code/codec-DBDR-analyzer-tool/data.csv'
+calculate_data = '%sdata.csv' % proxy
+
 # when you use this data to draw plot,
 # you have to sure you got same codec information when you run them
-calculate_serialize_data = '/home/cxh/code/codec-DBDR-analyzer-tool/file_test'
+calculate_serialize_data = '%sfile_test' % proxy
 # the path to save the plot picture
-plot_path = '/home/cxh/code/codec-DBDR-analyzer-tool/picture/'
-
+plot_path = proxy

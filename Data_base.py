@@ -27,16 +27,17 @@ class Database:
             self.build_case(yuv_info)
             self.build_encode(encode_name)
             return False, None
-        for pic in self.data.case:
-            if self.is_have_yuv(yuv_info):
-                if self.is_have_encode(encode_name):
-                    if tag == 'read':
-                        return True, pic.group[encode_name]
-                    else:
-                        pic.group[encode_name] = []
-                        pic.group_bdrate[encode_name] = []
-                        self.temp_case = pic
-                        return False, None
+        if self.is_have_yuv(yuv_info):
+            if self.is_have_encode(encode_name):
+                if tag == 'read':
+                    return True, self.temp_case.group[encode_name]
+                else:
+                    self.temp_case.group[encode_name] = []
+                    self.temp_case.group_bdrate[encode_name] = []
+                    return False, None
+        else:
+            self.build_encode(encode_name)
+            return False, None
         return False, None
 
     def is_have_yuv(self, yuv_info):
@@ -62,8 +63,8 @@ class Database:
     def build_case(self, yuv_info):
         line_pool = LineContain()
         line_pool.set_data_type(yuv_info)
-        self.temp_case = line_pool
         self.data.case.append(line_pool)
+        self.temp_case = self.data.case[-1]
 
     def add_data(self, line, encode_name):
         self.temp_case.group[encode_name].append(line)

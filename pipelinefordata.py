@@ -10,8 +10,18 @@ def decode(codec_name, bit_stream, yuv):
         arg = option.decode_dict[codec_name] % (bit_stream, yuv)
         p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
         info = p.communicate()
+    elif codec_name == '264':
+        os.chdir(option.exec_path['JM'])
+        arg = option.decode_dict[codec_name] % (bit_stream, yuv)
+        p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
+        info = p.communicate()
+    elif codec_name == 'AV1':
+        os.chdir(option.exec_path['AV1'])
+        arg = option.decode_dict[codec_name] % (bit_stream, yuv)
+        p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
+        info = p.communicate()
     else:
-        print "we are not ready for 264"
+        print "we are not ready for this codec"
 
 
 class ProEnv:
@@ -37,6 +47,7 @@ class Pipeline:
     def pop_pro_hm(self):
         for pro in self.pro:
             info = pro.progress.communicate()
+            runtime = time.time() - pro.time_begin
             decode(pro.codec_index[3], pro.output, pro.yuv)
             self.line.add_info(info, pro.codec_index)
             self.line.add_output(pro.yuv)
@@ -47,6 +58,9 @@ class Pipeline:
     def pop_pro_other(self):
         for pro in self.pro:
             info = pro.progress.communicate()
+            print info
+            file_size = os.path.getsize(pro.output)
+            print file_size
             if len(self.line.check_info(info)) is 0:
                 self.drop_tag = True
                 break
@@ -73,4 +87,3 @@ class Pipeline:
     def security(self):
         for pro in self.pro:
             pro.progress.terminate()
-

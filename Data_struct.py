@@ -34,42 +34,47 @@ class Line:
             return 0
 
     def parse_fps(self, line):
-        if self.codec_name == 'x265':
+        if self.codec_name == 'x265' or self.codec_name == 'x264':
             ss = re.findall(r'\(([\.0-9]*)[\r\n\t ]*fps\)', line[1])
             return float(self.check_blank(ss))
         elif self.codec_name == 'svt':
             ss = re.findall(r'Average Speed:[\r\n\t ]*([\.0-9]*)[\r\n\t ]*fps', line[0])
             return float(self.check_blank(ss))
         elif self.codec_name == 'HM':
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
             return float(self.check_blank(ss))
         else:
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[0])
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[1])
             return float(self.check_blank(ss))
 
     def parse_bit_rate(self, line):
-        if self.codec_name == 'x265':
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kb/s', line[1])
+        if self.codec_name == 'x265' or self.codec_name == 'x264':
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kb/s', line[1])
             return float(self.check_blank(ss))
         elif self.codec_name == 'svt':
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
             return float(self.check_blank(ss))
         elif self.codec_name == 'HM':
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
             return float(self.check_blank(ss))
+        elif self.codec_name == 'AV1':
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*b/s', line[1])
+            return float(self.check_blank(ss))/1000
         else:
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
             return float(self.check_blank(ss))
 
     def check_info(self, line):
-        if self.codec_name == 'x265':
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kb/s', line[1])
+        if self.codec_name == 'x265' or self.codec_name == 'x264':
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kb/s', line[1])
         elif self.codec_name == 'svt':
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
         elif self.codec_name == 'HM':
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
+        elif self.codec_name == 'AV1':
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*b/s', line[1])
         else:
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]kbps', line[0])
+            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
         return ss
 
     def add_info(self, line, codec):

@@ -59,8 +59,6 @@ class Pipeline:
         for pro in self.pro:
             info = pro.progress.communicate()
             print info
-            file_size = os.path.getsize(pro.output)
-            print file_size
             if len(self.line.check_info(info)) is 0:
                 self.drop_tag = True
                 break

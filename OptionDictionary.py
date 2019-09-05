@@ -12,7 +12,7 @@ exec_path = {
     'x265': '/home/cxh/code/x265/build/linux/',
     'svt': '/home/cxh/SVT-HEVC/Bin/Release/',
     'AV1': '/home/cxh/code/aom/cxhbuild/',
-    'JM': '/home/cxh/JM/bin/',
+    'JM': '/home/cxh/code/JM/bin/',
     'x264': '/home/cxh/code/x264/'
 }
 
@@ -20,10 +20,10 @@ exec_path = {
 # is read from database(you can use 'read' or 'execute')
 codec = [  # [[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cfg_Path, 'HM', '265', 'inst', 'read'],
         # [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'ins', 'read'],
-         [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'hevc', 'execute'],
+        #[[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'hevc', 'execute'],
         # [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'inst', 'read'],
         #[[22, 28, 34, 40], './aomenc --threads=64', 'AV1', 'AV1', 'hevc', 'read'],
-        #[[22, 28, 34, 40], './x264', 'x264', 'AV1', '264', 'read'],
+        [[22, 28, 34, 40], './x264', 'x264', '264', 'instance', 'read'],
 ]
 
 # choose the test sample type, for example 360p 720p 1080p 2k 4k 8k

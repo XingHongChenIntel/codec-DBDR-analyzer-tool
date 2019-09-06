@@ -178,6 +178,7 @@ def run_command():
         case = setup_codec(yuv, database)
         case.calculate()
         case_data.add_case(case, yuv)
+        database.serialize_date()
     case_data.set_case_num()
     case_data.setup_file()
     database.serialize_date()

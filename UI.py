@@ -98,7 +98,7 @@ class UI:
         chart2.set_ylabel('BDRate')
         chart2.grid(True)
         chart2.set_xlim(0, None, True, True)
-        chart2.set_ylim(-100, 100, True, True)
+        chart2.set_ylim(-20, 100, True, True)
         chart2.set_title('%s' % resolution + 'p')
 
         def persent(temp, position):

@@ -47,11 +47,15 @@ class Pipeline:
     def pop_pro_hm(self):
         for pro in self.pro:
             info = pro.progress.communicate()
-            runtime = time.time() - pro.time_begin
+            self.line.add_bitrate(self.line, pro.output)
             decode(pro.codec_index[3], pro.output, pro.yuv)
             self.line.add_info(info, pro.codec_index)
             self.line.add_output(pro.yuv)
             self.line.add_qp(pro.qp)
+            elapsed = (time.time() - pro.time_begin)
+            m, s = divmod(elapsed, 60)
+            h, m = divmod(m, 60)
+            print("encode yuv time used : %d:%02d:%02d" % (h, m, s))
         self.line.get_psnr(self.line)
         return self.line
 

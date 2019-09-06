@@ -103,6 +103,8 @@ def BD_RATE(R1, PSNR1, R2, PSNR2, piecewise=0):
         avg_exp_diff = 0
     avg_diff = (np.exp(avg_exp_diff) - 1) * 100
     # avg_diff = np.power(10, avg_exp_diff) - 1
+    if avg_diff > 200:
+        avg_diff = 200
     return round(avg_diff, 2)
 
 

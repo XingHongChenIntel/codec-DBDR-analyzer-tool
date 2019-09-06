@@ -50,7 +50,7 @@ class Line:
                 ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[1])
                 return float(self.check_blank(ss))
             else:
-                ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[1])
+                ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[0])
                 return float(self.check_blank(ss))
 
     def parse_bit_rate(self, line):

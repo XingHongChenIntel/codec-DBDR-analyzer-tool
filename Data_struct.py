@@ -4,6 +4,7 @@ import subprocess
 import time
 from ycbcr import YCbCr
 import bjontegaard_metric as BD
+from multiprocessing import Process, Value, Array
 
 
 class Line:
@@ -133,10 +134,17 @@ class Line:
                     height=int(line.height), yuv_format_in=line.type, bitdepth=int(line.bit_depth))
         time_b = time.time()
         for infile in range(len(line.input_url)):
+            p_pool = []
+            com_psnr = Array('d', len(line.output))
             for diff_file in range(len(line.output)):
-                psnr_frame = yuv.psnr_all(diff_file, infile)
-                line.add_psnr(psnr_frame)
-                line.add_lucha_psnr(psnr_frame[-1])
+                p = Process(target=yuv.psnr_all, args=(diff_file, infile, com_psnr))
+                p.start()
+                p_pool.append(p)
+            for p in p_pool:
+                p.join()
+            for psnr_encode in com_psnr:
+                line.add_psnr(psnr_encode)
+                line.add_lucha_psnr(psnr_encode)
             elapsed = (time.time() - time_b)
             m, s = divmod(elapsed, 60)
             h, m = divmod(m, 60)

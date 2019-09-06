@@ -18,6 +18,7 @@ class Y:
     """
     BASE
     """
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -31,7 +32,7 @@ class Y:
             wh = width * height
         # start-stop
         #       y  y   cb  cb      cr      cr
-        return (0, wh, wh, wh/4*5, wh/4*5, wh/2*3)
+        return (0, wh, wh, wh / 4 * 5, wh / 4 * 5, wh / 2 * 3)
 
     def get_422_partitioning(self, width=None, height=None):
         if not width:
@@ -40,13 +41,14 @@ class Y:
             wh = width * height
         # start-stop
         #       y  y   cb  cb      cr      cr
-        return (0, wh, wh, wh/2*3, wh/2*3, wh*2)
+        return (0, wh, wh, wh / 2 * 3, wh / 2 * 3, wh * 2)
 
 
 class YV12(Y):
     """
     YV12
     """
+
     def __init__(self, width, height):
         Y.__init__(self, width, height)
 
@@ -65,15 +67,16 @@ class YV12(Y):
         Y|U|V
         """
         p = self.get_420_partitioning(width, height)
-        return (slice(p[0], p[1]),    # start-stop for luma
-                slice(p[2], p[3]),    # start-stop for chroma
-                slice(p[4], p[5]))    # start-stop for chroma
+        return (slice(p[0], p[1]),  # start-stop for luma
+                slice(p[2], p[3]),  # start-stop for chroma
+                slice(p[4], p[5]))  # start-stop for chroma
 
 
 class IYUV(Y):
     """
     IYUV
     """
+
     def __init__(self, width, height):
         Y.__init__(self, width, height)
         self.chroma_div = self.div(2, 2)
@@ -98,6 +101,7 @@ class NV12(Y):
     """
     NV12
     """
+
     def __init__(self, width, height):
         Y.__init__(self, width, height)
 
@@ -116,15 +120,16 @@ class NV12(Y):
         Y|U0|V0|U1|V1...
         """
         p = self.get_420_partitioning(width, height)
-        return (slice(p[0],   p[1]),       # start-stop for luma
-                slice(p[2],   p[5], 2),    # start-stop for chroma
-                slice(p[2]+1, p[5], 2))    # start-stop for chroma
+        return (slice(p[0], p[1]),  # start-stop for luma
+                slice(p[2], p[5], 2),  # start-stop for chroma
+                slice(p[2] + 1, p[5], 2))  # start-stop for chroma
 
 
 class UYVY(Y):
     """
     UYVY
     """
+
     def __init__(self, width, height):
         Y.__init__(self, width, height)
         self.chroma_div = self.div(2, 1)
@@ -149,6 +154,7 @@ class YVYU(Y):
     """
     YVYU
     """
+
     def __init__(self, width, height):
         Y.__init__(self, width, height)
         self.chroma_div = self.div(2, 1)
@@ -173,6 +179,7 @@ class YUY2(Y):
     """
     YUY2
     """
+
     def __init__(self, width, height):
         Y.__init__(self, width, height)
         self.chroma_div = self.div(2, 1)
@@ -197,6 +204,7 @@ class Y422(Y):
     """
     422
     """
+
     def __init__(self, width, height):
         Y.__init__(self, width, height)
         self.chroma_div = self.div(2, 1)
@@ -221,18 +229,29 @@ class Font:
     """
     pass
     """
+
     def __init__(self):
         self.char = (
-            (0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x7ffe, 0x7ffe),  # 0
-            (0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x1800, 0x0180),  # 1
-            (0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x7ffe, 0x7ffe, 0x6000, 0x6000, 0x6000, 0x6000, 0x6000, 0x7ffe, 0x7ffe),  # 2
-            (0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x7ffe, 0x7ffe),  # 3
-            (0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006),  # 4
-            (0x7ffe, 0x7ffe, 0x6000, 0x6000, 0x6000, 0x6000, 0x6000, 0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x7ffe, 0x7ffe),  # 5
-            (0x6000, 0x6000, 0x6000, 0x6000, 0x6000, 0x6000, 0x6000, 0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x7ffe, 0x7ffe),  # 6
-            (0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006),  # 7
-            (0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x7ffe, 0x7ffe),  # 8
-            (0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006),  # 9
+            (0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006,
+             0x6006, 0x7ffe, 0x7ffe),  # 0
+            (0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180, 0x0180,
+             0x0180, 0x1800, 0x0180),  # 1
+            (0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x7ffe, 0x7ffe, 0x6000, 0x6000, 0x6000, 0x6000,
+             0x6000, 0x7ffe, 0x7ffe),  # 2
+            (0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006,
+             0x0006, 0x7ffe, 0x7ffe),  # 3
+            (0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006,
+             0x0006, 0x0006, 0x0006),  # 4
+            (0x7ffe, 0x7ffe, 0x6000, 0x6000, 0x6000, 0x6000, 0x6000, 0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006,
+             0x0006, 0x7ffe, 0x7ffe),  # 5
+            (0x6000, 0x6000, 0x6000, 0x6000, 0x6000, 0x6000, 0x6000, 0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006,
+             0x6006, 0x7ffe, 0x7ffe),  # 6
+            (0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006, 0x0006,
+             0x0006, 0x0006, 0x0006),  # 7
+            (0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006,
+             0x6006, 0x7ffe, 0x7ffe),  # 8
+            (0x7ffe, 0x7ffe, 0x6006, 0x6006, 0x6006, 0x6006, 0x6006, 0x7ffe, 0x7ffe, 0x0006, 0x0006, 0x0006, 0x0006,
+             0x0006, 0x0006, 0x0006),  # 9
         )
 
     def show(self, num):
@@ -269,19 +288,20 @@ class YCbCr:
         http://www.libsdl.org/
         http://www.libsdl.org/docs/html/sdloverlay.html
     """
+
     def __init__(
-        self,
-        width=0,
-        height=0,
-        filename=None,
-        yuv_format_in=None,
-        yuv_format_out=None,
-        filename_out=None,
-        filename_diff=None,
-        crop_rect=None,
-        num=None,
-        bitdepth=8,
-        func=None):
+            self,
+            width=0,
+            height=0,
+            filename=None,
+            yuv_format_in=None,
+            yuv_format_out=None,
+            filename_out=None,
+            filename_diff=None,
+            crop_rect=None,
+            num=None,
+            bitdepth=8,
+            func=None):
 
         self.supported_420 = [
             'YV12',
@@ -301,11 +321,11 @@ class YCbCr:
         ]
 
         if yuv_format_in not in self.supported_420 + self.supported_422 + \
-           self.supported_extra:
+                self.supported_extra:
             raise NameError('Format not supported! "%s"' % yuv_format_in)
 
         if yuv_format_out not in self.supported_420 + self.supported_422 + \
-           self.supported_extra:
+                self.supported_extra:
             raise NameError('Format not supported! "%s"' % yuv_format_out)
 
         self.filename = filename
@@ -321,9 +341,14 @@ class YCbCr:
             rect = namedtuple('rect', 'xs ys xe ye')
             self.crop_rect = rect(*crop_rect)
 
+        self.read_origin_yuv_tag = 0
         self.yy = None
         self.cb = None
         self.cr = None
+
+        self.yy_copy = None
+        self.cb_copy = None
+        self.cr_copy = None
 
         # Reader/Writer
         RW = {
@@ -338,7 +363,7 @@ class YCbCr:
 
         # Setup
         if self.yuv_format_in:  # we need a reader and and a writer just
-                                # to make sure
+            # to make sure
             self.reader = RW[self.yuv_format_in](self.width, self.height)
             self.writer = RW[self.yuv_format_in](self.width, self.height)
             self.frame_size_in = self.reader.get_frame_size()
@@ -350,10 +375,10 @@ class YCbCr:
                 bitsize = 1
             else:
                 bitsize = 2
-            n1 = (os.path.getsize(self.filename[0]) / self.frame_size_in)/bitsize
+            n1 = (os.path.getsize(self.filename[0]) / self.frame_size_in) / bitsize
             n2 = n1
             if self.filename_diff:
-                n2 = (os.path.getsize(self.filename_diff[0]) / self.frame_size_in)/bitsize
+                n2 = (os.path.getsize(self.filename_diff[0]) / self.frame_size_in) / bitsize
 
             self.num_frames = min(n1, n2)
             self.layout_in = self.reader.get_layout()
@@ -369,7 +394,6 @@ class YCbCr:
         # 8bpp -> 10bpp, 10->8 dito; special handling
         if yuv_format_in is not None:
             self.__check()
-
 
         # How many frames to process
         if num:
@@ -409,7 +433,7 @@ class YCbCr:
         base1 = os.path.basename(self.filename)
         base2 = os.path.basename(self.filename_diff)
         out = os.path.splitext(base1)[0] + '_' + \
-            os.path.splitext(base2)[0] + '_diff.yuv'
+              os.path.splitext(base2)[0] + '_diff.yuv'
 
         chroma = np.empty(self.width * self.height / 2, dtype=np.uint8)
         chroma.fill(0x80)
@@ -442,6 +466,7 @@ class YCbCr:
         http://iphome.hhi.de/wiegand/assets/pdfs/2012_12_IEEE-HEVC-Performance.pdf
         p.1676
         """
+
         def psnr(a, b):
             m = ((a - b) ** 2).mean()
             if m == 0:
@@ -451,7 +476,11 @@ class YCbCr:
                 maxvalue = 1023
             return 10 * np.log10(maxvalue ** 2 / m)
 
-        yy = []; cb = []; cr = []; bd = []
+        yy = []
+        cb = []
+        cr = []
+        bd = []
+
         if self.bitdepth == 8:
             read = self.__read_frame
         else:
@@ -460,9 +489,9 @@ class YCbCr:
                 open(self.filename_diff[out_file_id], 'rb') as fd_2:
             for i in xrange(self.num_frames):
                 read(fd_1)
-                frame1 = self.__copy_planes()[:-1]    # skip whole frame
+                frame1 = self.__copy_planes()  # skip whole frame
                 read(fd_2)
-                frame2 = self.__copy_planes()[:-1]    # skip whole frame
+                frame2 = self.__copy_planes()  # skip whole frame
 
                 yy.append(psnr(frame1[0], frame2[0]))
                 cb.append(psnr(frame1[1], frame2[1]))
@@ -471,9 +500,9 @@ class YCbCr:
 
                 # yield [yy[-1], cb[-1], cr[-1], bd[-1]]
 
-            #yield ['-', '-', '-', '-', '-']
+            # yield ['-', '-', '-', '-', '-']
             # yield [sum(yy)/len(yy), sum(cb)/len(cb), sum(cr)/len(cr), sum(bd)/len(bd)]
-            return [sum(yy)/len(yy), sum(cb)/len(cb), sum(cr)/len(cr), sum(bd)/len(bd)]
+            return [sum(yy) / len(yy), sum(cb) / len(cb), sum(cr) / len(cr), sum(bd) / len(bd)]
 
     def psnr_all(self, out_file_id=0, in_file_id=0):
         """
@@ -487,6 +516,7 @@ class YCbCr:
         http://iphome.hhi.de/wiegand/assets/pdfs/2012_12_IEEE-HEVC-Performance.pdf
         p.1676
         """
+
         def psnr(a, b):
             m = ((a - b) ** 2).mean()
             if m == 0:
@@ -496,7 +526,11 @@ class YCbCr:
                 maxvalue = 1023
             return 10 * np.log10(maxvalue ** 2 / m)
 
-        yy = []; cb = []; cr = []; bd = []
+        yy = []
+        cb = []
+        cr = []
+        bd = []
+
         if self.bitdepth == 8:
             read = self.__read_frame
         else:
@@ -504,21 +538,14 @@ class YCbCr:
         with open(self.filename[in_file_id], 'rb') as fd_1, \
                 open(self.filename_diff[out_file_id], 'rb') as fd_2:
             for i in xrange(self.num_frames):
-                read(fd_1)
-                frame1 = self.__copy_planes()[:-1]    # skip whole frame
-                read(fd_2)
-                frame2 = self.__copy_planes()[:-1]    # skip whole frame
-
-                yy.append(psnr(frame1[0], frame2[0]))
-                cb.append(psnr(frame1[1], frame2[1]))
-                cr.append(psnr(frame1[2], frame2[2]))
+                read(fd_1, 0)
+                read(fd_2, 1)
+                # frame2 = self.__copy_planes()[:-1]    # skip whole frame
+                yy.append(psnr(self.yy, self.yy_copy))
+                cb.append(psnr(self.cb, self.cb_copy))
+                cr.append(psnr(self.cr, self.cr_copy))
                 bd.append((6 * yy[-1] + cb[-1] + cr[-1]) / 8.0)
-
-                yield [yy[-1], cb[-1], cr[-1], bd[-1]]
-
-            #yield ['-', '-', '-', '-', '-']
-            # yield [sum(yy)/len(yy), sum(cb)/len(cb), sum(cr)/len(cr), sum(bd)/len(bd)]
-            yield [round(sum(yy)/len(yy), 2), sum(cb)/len(cb), sum(cr)/len(cr), round(sum(bd)/len(bd), 2)]
+            return [round(sum(yy) / len(yy), 2), sum(cb) / len(cb), sum(cr) / len(cr), round(sum(bd) / len(bd), 2)]
 
     def get_accout_diff(self):
         return len(self.filename_diff)
@@ -537,66 +564,66 @@ class YCbCr:
         from scipy.constants import pi
 
         def compute_ssim(img_mat_1, img_mat_2):
-            #Variables for Gaussian kernel definition
+            # Variables for Gaussian kernel definition
             gaussian_kernel_sigma = 1.5
             gaussian_kernel_width = 11
             gaussian_kernel = np.zeros((gaussian_kernel_width, gaussian_kernel_width))
 
-            #Fill Gaussian kernel
+            # Fill Gaussian kernel
             for i in range(gaussian_kernel_width):
                 for j in range(gaussian_kernel_width):
                     gaussian_kernel[i, j] = \
-                        (1 / (2 * pi * (gaussian_kernel_sigma ** 2))) *\
-                        exp(-(((i-5)**2)+((j-5)**2))/(2*(gaussian_kernel_sigma**2)))
+                        (1 / (2 * pi * (gaussian_kernel_sigma ** 2))) * \
+                        exp(-(((i - 5) ** 2) + ((j - 5) ** 2)) / (2 * (gaussian_kernel_sigma ** 2)))
 
-            #Convert image matrices to double precision (like in the Matlab version)
+            # Convert image matrices to double precision (like in the Matlab version)
             img_mat_1 = img_mat_1.astype(np.float)
             img_mat_2 = img_mat_2.astype(np.float)
 
-            #Squares of input matrices
+            # Squares of input matrices
             img_mat_1_sq = img_mat_1 ** 2
             img_mat_2_sq = img_mat_2 ** 2
             img_mat_12 = img_mat_1 * img_mat_2
 
-            #Means obtained by Gaussian filtering of inputs
+            # Means obtained by Gaussian filtering of inputs
             img_mat_mu_1 = scipy.ndimage.filters.convolve(img_mat_1, gaussian_kernel)
             img_mat_mu_2 = scipy.ndimage.filters.convolve(img_mat_2, gaussian_kernel)
 
-            #Squares of means
+            # Squares of means
             img_mat_mu_1_sq = img_mat_mu_1 ** 2
             img_mat_mu_2_sq = img_mat_mu_2 ** 2
             img_mat_mu_12 = img_mat_mu_1 * img_mat_mu_2
 
-            #Variances obtained by Gaussian filtering of inputs' squares
+            # Variances obtained by Gaussian filtering of inputs' squares
             img_mat_sigma_1_sq = scipy.ndimage.filters.convolve(img_mat_1_sq, gaussian_kernel)
             img_mat_sigma_2_sq = scipy.ndimage.filters.convolve(img_mat_2_sq, gaussian_kernel)
 
-            #Covariance
+            # Covariance
             img_mat_sigma_12 = scipy.ndimage.filters.convolve(img_mat_12, gaussian_kernel)
 
-            #Centered squares of variances
+            # Centered squares of variances
             img_mat_sigma_1_sq = img_mat_sigma_1_sq - img_mat_mu_1_sq
             img_mat_sigma_2_sq = img_mat_sigma_2_sq - img_mat_mu_2_sq
             img_mat_sigma_12 = img_mat_sigma_12 - img_mat_mu_12
 
-            #c1/c2 constants
-            #First use: manual fitting
+            # c1/c2 constants
+            # First use: manual fitting
             c_1 = 6.5025
             c_2 = 58.5225
 
-            #Second use: change k1,k2 & c1,c2 depend on L (width of color map)
+            # Second use: change k1,k2 & c1,c2 depend on L (width of color map)
             l = 255
             k_1 = 0.01
             c_1 = (k_1 * l) ** 2
             k_2 = 0.03
             c_2 = (k_2 * l) ** 2
 
-            #Numerator of SSIM
+            # Numerator of SSIM
             num_ssim = (2 * img_mat_mu_12 + c_1) * (2 * img_mat_sigma_12 + c_2)
-            #Denominator of SSIM
-            den_ssim = (img_mat_mu_1_sq + img_mat_mu_2_sq + c_1) *\
-                (img_mat_sigma_1_sq + img_mat_sigma_2_sq + c_2)
-            #SSIM
+            # Denominator of SSIM
+            den_ssim = (img_mat_mu_1_sq + img_mat_mu_2_sq + c_1) * \
+                       (img_mat_sigma_1_sq + img_mat_sigma_2_sq + c_2)
+            # SSIM
             ssim_map = num_ssim / den_ssim
             index = np.average(ssim_map)
 
@@ -616,7 +643,7 @@ class YCbCr:
 
                 yield s[-1]
             yield '--'
-            yield sum(s)/len(s)
+            yield sum(s) / len(s)
 
     def get_luma(self, alt_fname=False):
         """
@@ -734,7 +761,6 @@ class YCbCr:
 
         self.__execute(self.__crop)
 
-
     def reduce_framerate(self, fin, fout):
         """
         Reduce framerate by throwing frames away
@@ -750,7 +776,7 @@ class YCbCr:
                 open(fname_out, 'wb') as fd_2:
             for i in xrange(self.num_frames):
                 data = fd_1.read(self.frame_size_in)
-                if i%(fin/fout) == 0:
+                if i % (fin / fout) == 0:
                     fd_2.write(data)
                 sys.stdout.write('.')
                 sys.stdout.flush()
@@ -790,28 +816,35 @@ class YCbCr:
             if not size == size_diff:
                 print >> sys.stderr, "[WARNING] - file-sizes are not equal"
 
-
-    def __read_frame(self, fd):
+    def __read_frame(self, fd, tag):
         """
         Use extended indexing to read 1 frame into self.{y, cb, cr}
         """
         self.raw = np.fromfile(fd, dtype=np.uint8, count=self.frame_size_in)
         self.raw = self.raw.astype(np.int, copy=False)
+        if tag is 0:
+            self.yy = self.raw[self.layout_in[0]]
+            self.cb = self.raw[self.layout_in[1]]
+            self.cr = self.raw[self.layout_in[2]]
+        else:
+            self.yy_copy = self.raw[self.layout_in[0]]
+            self.cb_copy = self.raw[self.layout_in[1]]
+            self.cr_copy = self.raw[self.layout_in[2]]
 
-        self.yy = self.raw[self.layout_in[0]]
-        self.cb = self.raw[self.layout_in[1]]
-        self.cr = self.raw[self.layout_in[2]]
-
-    def __read_frame_10(self, fd):
+    def __read_frame_10(self, fd, tag):
         """
         Use extended indexing to read 1 frame into self.{y, cb, cr}
         """
         self.raw = np.fromfile(fd, dtype=np.uint16, count=self.frame_size_in)
         self.raw = self.raw.astype(np.uint16)
-
-        self.yy = self.raw[self.layout_in[0]]
-        self.cb = self.raw[self.layout_in[1]]
-        self.cr = self.raw[self.layout_in[2]]
+        if tag is 0:
+            self.yy = self.raw[self.layout_in[0]]
+            self.cb = self.raw[self.layout_in[1]]
+            self.cr = self.raw[self.layout_in[2]]
+        else:
+            self.yy_copy = self.raw[self.layout_in[0]]
+            self.cb_copy = self.raw[self.layout_in[1]]
+            self.cr_copy = self.raw[self.layout_in[2]]
 
     def __write_frame(self, fd):
         """
@@ -833,7 +866,7 @@ class YCbCr:
         """
 
         if self.yuv_format_in in self.supported_420 and \
-           self.yuv_format_out in self.supported_422:
+                self.yuv_format_out in self.supported_422:
             cb = np.zeros(self.width * self.height / 2, dtype=np.int)
             cr = np.zeros(self.width * self.height / 2, dtype=np.int)
 
@@ -841,7 +874,7 @@ class YCbCr:
             self.cr = self.__conv420to422(self.cr, cr)
 
         if self.yuv_format_in in self.supported_422 and \
-           self.yuv_format_out in self.supported_420:
+                self.yuv_format_out in self.supported_420:
             cb = np.zeros(self.width * self.height / 4, dtype=np.int)
             cr = np.zeros(self.width * self.height / 4, dtype=np.int)
 
@@ -861,32 +894,32 @@ class YCbCr:
         for i in xrange(w):
             for j in xrange(h):
                 j2 = j << 1
-                jm3 = 0 if (j<3) else j-3
-                jm2 = 0 if (j<2) else j-2
-                jm1 = 0 if (j<1) else j-1
-                jp1 = j+1 if (j<h-1) else h-1
-                jp2 = j+2 if (j<h-2) else h-1
-                jp3 = j+3 if (j<h-3) else h-1
+                jm3 = 0 if (j < 3) else j - 3
+                jm2 = 0 if (j < 2) else j - 2
+                jm1 = 0 if (j < 1) else j - 1
+                jp1 = j + 1 if (j < h - 1) else h - 1
+                jp2 = j + 2 if (j < h - 2) else h - 1
+                jp3 = j + 3 if (j < h - 3) else h - 1
 
-                pel = (3*src[i+w*jm3]
-                     -16*src[i+w*jm2]
-                     +67*src[i+w*jm1]
-                    +227*src[i+w*j]
-                     -32*src[i+w*jp1]
-                      +7*src[i+w*jp2]+128)>>8
+                pel = (3 * src[i + w * jm3]
+                       - 16 * src[i + w * jm2]
+                       + 67 * src[i + w * jm1]
+                       + 227 * src[i + w * j]
+                       - 32 * src[i + w * jp1]
+                       + 7 * src[i + w * jp2] + 128) >> 8
 
-                dst[i+w*j2] = pel if pel > 0 else 0
-                dst[i+w*j2] = pel if pel < 255 else 255
+                dst[i + w * j2] = pel if pel > 0 else 0
+                dst[i + w * j2] = pel if pel < 255 else 255
 
-                pel = (3*src[i+w*jp3]
-                     -16*src[i+w*jp2]
-                     +67*src[i+w*jp1]
-                    +227*src[i+w*j]
-                     -32*src[i+w*jm1]
-                     +7*src[i+w*jm2]+128)>>8
+                pel = (3 * src[i + w * jp3]
+                       - 16 * src[i + w * jp2]
+                       + 67 * src[i + w * jp1]
+                       + 227 * src[i + w * j]
+                       - 32 * src[i + w * jm1]
+                       + 7 * src[i + w * jm2] + 128) >> 8
 
-                dst[i+w*(j2+1)] = pel if pel > 0 else 0
-                dst[i+w*(j2+1)] = pel if pel < 255 else 255
+                dst[i + w * (j2 + 1)] = pel if pel > 0 else 0
+                dst[i + w * (j2 + 1)] = pel if pel < 255 else 255
         return dst
 
     def __conv422to420(self, src, dst):
@@ -903,29 +936,29 @@ class YCbCr:
 
         for i in xrange(w):
             for j in xrange(0, h, 2):
-                jm5 = 0 if (j<5) else j-5
-                jm4 = 0 if (j<4) else j-4
-                jm3 = 0 if (j<3) else j-3
-                jm2 = 0 if (j<2) else j-2
-                jm1 = 0 if (j<1) else j-1
-                jp1 = j+1 if (j<h-1) else h-1
-                jp2 = j+2 if (j<h-2) else h-1
-                jp3 = j+3 if (j<h-3) else h-1
-                jp4 = j+4 if (j<h-4) else h-1
-                jp5 = j+5 if (j<h-5) else h-1
-                jp6 = j+5 if (j<h-5) else h-1 # something strange here
-                                              # changed j+6 into j+5
+                jm5 = 0 if (j < 5) else j - 5
+                jm4 = 0 if (j < 4) else j - 4
+                jm3 = 0 if (j < 3) else j - 3
+                jm2 = 0 if (j < 2) else j - 2
+                jm1 = 0 if (j < 1) else j - 1
+                jp1 = j + 1 if (j < h - 1) else h - 1
+                jp2 = j + 2 if (j < h - 2) else h - 1
+                jp3 = j + 3 if (j < h - 3) else h - 1
+                jp4 = j + 4 if (j < h - 4) else h - 1
+                jp5 = j + 5 if (j < h - 5) else h - 1
+                jp6 = j + 5 if (j < h - 5) else h - 1  # something strange here
+                # changed j+6 into j+5
 
                 # FIR filter with 0.5 sample interval phase shift
-                pel = ( 228*(src[i+w*j]  +src[i+w*jp1])
-                      +70*(src[i+w*jm1]+src[i+w*jp2])
-                      -37*(src[i+w*jm2]+src[i+w*jp3])
-                      -21*(src[i+w*jm3]+src[i+w*jp4])
-                      +11*(src[i+w*jm4]+src[i+w*jp5])
-                      +5*(src[i+w*jm5]+src[i+w*jp6])+256)>>9
+                pel = (228 * (src[i + w * j] + src[i + w * jp1])
+                       + 70 * (src[i + w * jm1] + src[i + w * jp2])
+                       - 37 * (src[i + w * jm2] + src[i + w * jp3])
+                       - 21 * (src[i + w * jm3] + src[i + w * jp4])
+                       + 11 * (src[i + w * jm4] + src[i + w * jp5])
+                       + 5 * (src[i + w * jm5] + src[i + w * jp6]) + 256) >> 9
 
-                dst[i+w*(j>>1)] = pel if pel > 0 else 0
-                dst[i+w*(j>>1)] = pel if pel < 255 else 255
+                dst[i + w * (j >> 1)] = pel if pel > 0 else 0
+                dst[i + w * (j >> 1)] = pel if pel < 255 else 255
         return dst
 
     def __rgb2ycbcr(self, r, g, b):
@@ -974,7 +1007,7 @@ class YCbCr:
         Return a copy of the different color planes,
         including whole frame
         """
-        return self.yy.copy(), self.cb.copy(), self.cr.copy(), self.raw.copy()
+        return self.yy.copy(), self.cb.copy(), self.cr.copy()
 
     def __add_frame_number(self, frame, D):
         """
@@ -990,7 +1023,7 @@ class YCbCr:
             for row, d in enumerate(digit):
                 for i in range(15, -1, -1):
                     if d & (1 << i):
-                        self.yy[row][pos*16:pos*16+16][15-i] = 16
+                        self.yy[row][pos * 16:pos * 16 + 16][15 - i] = 16
 
         self.yy = self.yy.reshape(-1)
 
@@ -1020,7 +1053,7 @@ class YCbCr:
         X     X     X     X
         O           O
         """
-        d = self.chroma_div    # divisor
+        d = self.chroma_div  # divisor
         r = self.crop_rect
 
         self.yy = np.reshape(self.yy, (self.height, self.width))
@@ -1032,17 +1065,18 @@ class YCbCr:
                                    self.width / d.width])
         self.cb = self.cb[r.ys / d.height:
                           r.ye / d.height + 1,
-                          r.xs / d.width:
-                          r.xe / d.width + 1]
+                  r.xs / d.width:
+                  r.xe / d.width + 1]
         self.cb = self.cb.reshape(-1)
 
         self.cr = self.cr.reshape([self.height / d.height,
                                    self.width / d.width])
         self.cr = self.cr[r.ys / d.height:
                           r.ye / d.height + 1,
-                          r.xs / d.width:
-                          r.xe / d.width + 1]
+                  r.xs / d.width:
+                  r.xe / d.width + 1]
         self.cr = self.cr.reshape(-1)
+
 
 def main():
     # Helper functions
@@ -1296,6 +1330,7 @@ def main():
     args.func(args)
     t2 = time.clock()
     print "\nTime: ", round(t2 - t1, 4)
+
 
 if __name__ == '__main__':
     main()

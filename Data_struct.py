@@ -59,7 +59,7 @@ class Line:
             return float(self.check_blank(ss))
         elif self.codec_name == 'AV1':
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]*b/s', line[1])
-            return float(self.check_blank(ss))/1000
+            return float(self.check_blank(ss)) / 1000
         else:
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
             return float(self.check_blank(ss))
@@ -104,7 +104,7 @@ class Line:
     def set_average_fps(self):
         self.average_fps = sum(self.fps) / len(self.fps)
 
-    def get_psnr(self, line):
+    def get_psnr_ffmpeg(self, line):
         input_url = line.input_url[0]
         output = line.output
         width = line.width
@@ -127,6 +127,23 @@ class Line:
         line.set_average_fps()
         line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
         line.sort()
+
+    def get_psnr(self, line):
+        yuv = YCbCr(filename=line.input_url, filename_diff=line.output, width=int(line.width),
+                    height=int(line.height), yuv_format_in=line.type, bitdepth=int(line.bit_depth))
+        time_b = time.time()
+        for infile in range(len(line.input_url)):
+            for diff_file in range(len(line.output)):
+                psnr_frame = yuv.psnr_all(diff_file, infile)
+                line.add_psnr(psnr_frame)
+                line.add_lucha_psnr(psnr_frame[-1])
+            elapsed = (time.time() - time_b)
+            m, s = divmod(elapsed, 60)
+            h, m = divmod(m, 60)
+            print("calculate psnr time used : %d:%02d:%02d" % (h, m, s))
+            line.set_average_fps()
+            line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
+            line.sort()
 
 
 class LineContain:

@@ -1,3 +1,4 @@
+import os
 import re
 import csv
 import subprocess
@@ -79,10 +80,24 @@ class Line:
         return ss
 
     def add_info(self, line, codec):
-        self.bit_rate.append(self.parse_bit_rate(line))
+        # self.bit_rate.append(self.parse_bit_rate(line))
         self.fps.append(self.parse_fps(line))
         self.ref = codec[3]
         self.instance_name = codec[4]
+
+    def calculate_frame(self, line):
+        frame_size = (int(line.width) * int(line.height) * 3 / 2)
+        if line.bit_depth == '8':
+            bitsize = 1
+        else:
+            bitsize = 2
+        num_frame = (os.path.getsize(line.input_url[0]) / frame_size) / bitsize
+        return num_frame
+
+    def add_bitrate(self, line, benchmark):
+        frame = self.calculate_frame(line)
+        bitrate = os.path.getsize(benchmark) * 8 / (float(frame / 60) * 1000)
+        self.bit_rate.append(bitrate)
 
     def add_output(self, output):
         self.output.append(output)

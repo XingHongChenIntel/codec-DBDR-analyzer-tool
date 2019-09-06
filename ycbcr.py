@@ -1,8 +1,6 @@
 import time
 import sys
 import os
-import thread
-import threading
 from collections import namedtuple
 import numpy as np
 

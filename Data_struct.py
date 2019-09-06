@@ -46,8 +46,12 @@ class Line:
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
             return float(self.check_blank(ss))
         else:
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[1])
-            return float(self.check_blank(ss))
+            if len(line[0]) is 0:
+                ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[1])
+                return float(self.check_blank(ss))
+            else:
+                ss = re.findall(r'([\.0-9]*)[\r\n\t ]*fps', line[1])
+                return float(self.check_blank(ss))
 
     def parse_bit_rate(self, line):
         if self.codec_name == 'x265' or self.codec_name == 'x264':

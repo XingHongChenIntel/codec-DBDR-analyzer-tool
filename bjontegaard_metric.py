@@ -96,7 +96,11 @@ def BD_RATE(R1, PSNR1, R2, PSNR2, piecewise=0):
         int2 = np.trapz(v2, dx=interval)
 
     # find avg diff
-    avg_exp_diff = (int2 - int1) / (max_int - min_int)
+    if max_int != min_int:
+        avg_exp_diff = (int2 - int1) / (max_int - min_int)
+    else:
+        print "your psnr have problem"
+        avg_exp_diff = 0
     avg_diff = (np.exp(avg_exp_diff) - 1) * 100
     # avg_diff = np.power(10, avg_exp_diff) - 1
     return round(avg_diff, 2)

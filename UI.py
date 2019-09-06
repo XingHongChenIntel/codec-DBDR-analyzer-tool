@@ -81,11 +81,11 @@ class UI:
                 self.bitrate_plot(encdoe_bitrate, encode_psnr, encode_name, resolution, encode_bdpsnr)
 
     def bd_rate_plot(self, bdrate, fps, lab, resolution):
-        fig = plt.figure(figsize=[18, 10])
-        gs = GridSpec(1, 2)
-        #chart = fig.add_subplot(gs[0, 0])
-        chart2 = fig.add_subplot(gs[0, 0])
-        biao = fig.add_subplot(gs[:, 1])
+        fig = plt.figure(figsize=[16, 8])
+        gs = GridSpec(1, 5)
+        #chart = fig.add_subplot(gs[0, 0:3])
+        chart2 = fig.add_subplot(gs[0, 0:3])
+        biao = fig.add_subplot(gs[:, 3:5])
         biao.set_axis_off()
         biao.set_title('%s' % resolution + 'p   ' + 'BDrate')
         #chart.set_xlabel('Speed(fps)')

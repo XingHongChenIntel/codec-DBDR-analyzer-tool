@@ -25,7 +25,7 @@ class UI:
         for col in range(len(arr[0])):
             for row in range(len(arr)):
                 sum += arr[row][col]
-            result.append(sum / len(arr))
+            result.append(round(sum / len(arr), 2))
             sum = 0
         return result
 

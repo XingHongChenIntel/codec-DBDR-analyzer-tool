@@ -33,7 +33,7 @@ def hm_execute(yuv_info, codec_index, line_pool):
         arg = codec_index[1] + ' ' + option.codec_dict['HM'] % (yuv_info.url, yuv_info.width,
                                                                 yuv_info.height, qp, output)
         print arg
-        modify_cfg('InternalBitDepth', yuv_info.bit_depth)
+        # modify_cfg('InternalBitDepth', yuv_info.bit_depth)
         p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
         env = ProEnv(p, codec_index, output, yuv, qp, time_begin=time.time())
         pipe.push_pro(env)

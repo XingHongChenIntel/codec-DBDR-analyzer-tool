@@ -9,17 +9,17 @@ def decode(codec_name, bit_stream, yuv):
         os.chdir(option.exec_path['HM'])
         arg = option.decode_dict[codec_name] % (bit_stream, yuv)
         p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
-        info = p.communicate()
+        return p
     elif codec_name == '264':
         os.chdir(option.exec_path['JM'])
         arg = option.decode_dict[codec_name] % (bit_stream, yuv)
         p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
-        info = p.communicate()
+        return p
     elif codec_name == 'AV1':
         os.chdir(option.exec_path['AV1'])
         arg = option.decode_dict[codec_name] % (bit_stream, yuv)
         p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
-        info = p.communicate()
+        return p
     else:
         print "we are not ready for this codec"
 
@@ -45,10 +45,12 @@ class Pipeline:
         self.pro.append(pro)
 
     def pop_pro_hm(self):
+        decode_p_pool = []
         for pro in self.pro:
             info = pro.progress.communicate()
             self.line.add_bitrate(self.line, pro.output)
-            decode(pro.codec_index[3], pro.output, pro.yuv)
+            p = decode(pro.codec_index[3], pro.output, pro.yuv)
+            decode_p_pool.append(p)
             self.line.add_info(info, pro.codec_index)
             self.line.add_output(pro.yuv)
             self.line.add_qp(pro.qp)
@@ -56,18 +58,21 @@ class Pipeline:
             m, s = divmod(elapsed, 60)
             h, m = divmod(m, 60)
             print("encode yuv time used : %d:%02d:%02d" % (h, m, s))
+        for p in decode_p_pool:
+            p.communicate()
         self.line.get_psnr(self.line)
         return self.line
 
     def pop_pro_other(self):
+        decode_p_pool = []
         for pro in self.pro:
             info = pro.progress.communicate()
-            print info
             if len(self.line.check_info(info)) is 0:
                 self.drop_tag = True
                 break
             self.line.add_bitrate(self.line, pro.output)
-            decode(pro.codec_index[3], pro.output, pro.yuv)
+            p = decode(pro.codec_index[3], pro.output, pro.yuv)
+            decode_p_pool.append(p)
             self.line.add_info(info, pro.codec_index)
             self.line.add_output(pro.yuv)
             self.line.add_qp(pro.qp)
@@ -78,6 +83,8 @@ class Pipeline:
         if self.drop_tag:
             return None
         else:
+            for p in decode_p_pool:
+                p.communicate()
             self.line.get_psnr(self.line)
             return self.line
 

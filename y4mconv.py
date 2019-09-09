@@ -15,13 +15,13 @@ class yuvInfo:
         self.type = 0
 
     def __eq__(self, other):
-        if self.url == other.url and self.width == other.width and self.height == other.height:
+        if self.yuv_name == other.yuv_name and self.width == other.width and self.height == other.height:
             return True
         else:
             return False
 
     def __ne__(self, other):
-        if self.url != other.url or self.width != other.width and self.height != other.height:
+        if self.yuv_name != other.yuv_name or self.width != other.width and self.height != other.height:
             return True
         else:
             return False

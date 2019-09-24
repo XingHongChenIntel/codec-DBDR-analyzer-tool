@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import os
 import matplotlib
 
 matplotlib.use('Agg')
@@ -71,7 +72,7 @@ class UI:
                     ave_bitrate = []
                     ave_bd_psnr = []
                     for case in case_:
-                        ave_psnr.append([line.psnr_luam_chro for line in case.group[name + '_' + tag]])
+                        ave_psnr.append([line.psnr for line in case.group[name + '_' + tag]])
                         ave_bitrate.append([line.bit_rate for line in case.group[name + '_' + tag]])
                         ave_bd_psnr.append([line.bd_psnr for line in case.group[name + '_' + tag]])
                     encode_name.append(name + '_' + tag)
@@ -80,20 +81,101 @@ class UI:
                     encode_bdpsnr.append(self.average_list(ave_bd_psnr))
                 self.bitrate_plot(encdoe_bitrate, encode_psnr, encode_name, resolution, encode_bdpsnr)
 
+    def all_detail(self):
+        for resolution, case_ in self.data.case_group.items():
+            if len(case_) > 0:
+                if not os.path.exists(self.plot_path+str(resolution)):
+                    os.mkdir(self.plot_path+resolution)
+                bd_psnr, com_psnr, com_bitrate, com_avepsnr = [], [], [], []
+                table_name, col_name, legend_name = [], [], []
+                for case in case_:
+                    psnr, bitrate, ave_psnr, label, ff = [], [], [], [], []
+                    for name, tag in [[i[2], i[4]] for i in option.codec]:
+                        # 0 is mode number.
+                        line = case.group[name + '_' + tag][0]
+                        psnr.append(line.psnr)
+                        bitrate.append(line.bit_rate)
+                        ave_psnr.append([line.bd_psnr])
+                        ff.append(line.bd_psnr)
+                        label.append(tag+'_'+line.yuv_info.yuv_name)
+                        if line is not case.baseline:
+                            bd_psnr.append([line.BD_psnr_luam, line.BD_psnr_charm_cb, line.BD_psnr_charm_cr,
+                                            line.BD_psnr])
+                            table_name.append(line.yuv_info.yuv_name+'_'+tag)
+                    self.detail_plot(psnr, bitrate, ave_psnr, label, resolution,
+                                      [line.yuv_info.yuv_name])
+                    com_psnr.extend(psnr)
+                    com_bitrate.extend(bitrate)
+                    com_avepsnr.append(ff)
+                    col_name.append(line.yuv_info.yuv_name)
+                    legend_name.extend(label)
+                row_name = []
+                for name, tag in [[i[2], i[4]] for i in option.codec]:
+                        row_name.append(name+'_'+tag)
+                self.detail_plot_com(com_psnr, com_bitrate, com_avepsnr, legend_name,
+                                 resolution, col_name, row_name)
+                self.BD_psnr_table(bd_psnr, table_name, resolution)
+
+    def BD_psnr_table(self, psnr, row, resolution):
+        fig = plt.figure(figsize=[16, 8])
+        gs = GridSpec(1, 1)
+        biao = fig.add_subplot(gs[0, 0])
+        biao.set_axis_off()
+        biao.set_title('%s' % resolution + 'p   ' + 'BD-PSNR')
+        biao.table(cellText=psnr, colLabels=['Y_PSNR', 'U_PSNR', 'V_PSNR', 'YUV_PSNR'],
+                   rowLabels=row, loc='center', colWidths=[0.2, 0.2, 0.2, 0.2])
+        fig.savefig(self.plot_path + str(resolution) + '/' +resolution+ 'BD-PSNR')
+
+    def detail_plot(self, psnr, bitrate, ave_psnr, name, resolution, case_name):
+        fig = plt.figure(figsize=[16, 8])
+        gs = GridSpec(2, 5)
+        chart = fig.add_subplot(gs[0, :3])
+        biao = fig.add_subplot(gs[1, 3:])
+        biao.set_axis_off()
+        biao.set_title('%s' % resolution + 'p   ' + 'BD-PSNR')
+        chart.set_title('%s' % resolution + 'p')
+        chart.set_xlabel('bit_rate')
+        chart.set_ylabel('PSNR')
+        chart.grid(True)
+        for num in range(len(psnr)):
+            chart.plot(bitrate[num], psnr[num], '-o', label=name[num])
+        chart.legend(loc='right')
+        biao.table(cellText=ave_psnr, colLabels=case_name, rowLabels=name, loc='center',
+                   colWidths=[0.4 for i in range(len(case_name))])
+        fig.savefig(self.plot_path + str(resolution) + '/' + case_name[0])
+
+    def detail_plot_com(self, psnr, bitrate, ave_psnr, name, resolution, row_name, col_name):
+        fig = plt.figure(figsize=[16, 8])
+        gs = GridSpec(2, 5)
+        chart = fig.add_subplot(gs[0, :3])
+        biao = fig.add_subplot(gs[1, 3:])
+        biao.set_axis_off()
+        biao.set_title('%s' % resolution + 'p   ' + 'BD-PSNR')
+        chart.set_title('%s' % resolution + 'p')
+        chart.set_xlabel('bit_rate')
+        chart.set_ylabel('PSNR')
+        chart.grid(True)
+        for num in range(len(psnr)):
+            chart.plot(bitrate[num], psnr[num], '-o', label=name[num])
+        chart.legend(loc='right')
+        biao.table(cellText=ave_psnr, colLabels=col_name, rowLabels=row_name, loc='center',
+                   colWidths=[0.4 for i in range(len(col_name))])
+        fig.savefig(self.plot_path + str(resolution) + '/' + 'combo_plot')
+
     def bd_rate_plot(self, bdrate, fps, lab, resolution):
         fig = plt.figure(figsize=[16, 8])
         gs = GridSpec(1, 5)
-        #chart = fig.add_subplot(gs[0, 0:3])
+        # chart = fig.add_subplot(gs[0, 0:3])
         chart2 = fig.add_subplot(gs[0, 0:3])
         biao = fig.add_subplot(gs[:, 3:5])
         biao.set_axis_off()
         biao.set_title('%s' % resolution + 'p   ' + 'BDrate')
-        #chart.set_xlabel('Speed(fps)')
-        #chart.set_ylabel('BDRate')
-        #chart.grid(True)
-        #chart.set_xlim(0, None, True, True)
-        #chart.set_ylim(-100, 100, True, True)
-        #chart.set_title('%s' % resolution + 'p')
+        # chart.set_xlabel('Speed(fps)')
+        # chart.set_ylabel('BDRate')
+        # chart.grid(True)
+        # chart.set_xlim(0, None, True, True)
+        # chart.set_ylim(-100, 100, True, True)
+        # chart.set_title('%s' % resolution + 'p')
         chart2.set_xlabel('Mode')
         chart2.set_ylabel('BDRate')
         chart2.grid(True)
@@ -186,3 +268,4 @@ class UI:
     def show(self):
         self.bd_data_choose()
         self.bitrate_data_choos()
+        self.all_detail()

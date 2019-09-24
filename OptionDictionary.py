@@ -21,7 +21,7 @@ exec_path = {
 # every time when you add new encode ,you should also add them to exec_path and codec_dict
 codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cfg_Path, 'HM', '265', 'testmode', 'read'],
         #[[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'testmode', 'read'],
-        #[[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'testmode', 'read'],
+        [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'testmode', 'read'],
         [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'test', 'read'],
         #[[22, 28, 34, 40], './aomenc --threads=64', 'AV1', 'AV1', 'testmode', 'read'],
         #[[22, 28, 34, 40], './x264', 'x264', '264', 'testmode', 'read'],

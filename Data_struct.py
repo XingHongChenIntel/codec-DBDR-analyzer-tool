@@ -21,8 +21,14 @@ class Line:
         self.bit_rate = []
         self.fps = []
         self.psnr = []
-        self.psnr_luam_chro = []
+        self.psnr_luam = []
+        self.psnr_charm_cb = []
+        self.psnr_charm_cr = []
         self.bd_psnr = None
+        self.BD_psnr = None
+        self.BD_psnr_luam = None
+        self.BD_psnr_charm_cb = None
+        self.BD_psnr_charm_cr = None
         self.average_fps = None
         self.bd_rate = None
         self.qp = []
@@ -110,13 +116,13 @@ class Line:
         self.psnr.append(psnr)
 
     def add_lucha_psnr(self, psnr):
-        self.psnr_luam_chro.append(psnr)
+        self.psnr_luam.append(psnr)
 
     def add_qp(self, qp):
         self.qp.append(qp)
 
     def sort(self):
-        print("bit_rate info:", self.bd_psnr, self.psnr_luam_chro, self.bit_rate)
+        print("bit_rate info:", self.bd_psnr, self.psnr_luam, self.bit_rate)
 
     def set_bd_psnr(self, bd_psnr):
         self.bd_psnr = bd_psnr
@@ -154,22 +160,24 @@ class Line:
         time_b = time.time()
         for infile in range(len(line.input_url)):
             p_pool = []
-            com_psnr = Array('d', len(line.output))
+            com_psnr = Array('d', len(line.output) * 4)
             for diff_file in range(len(line.output)):
                 p = Process(target=yuv.psnr_all, args=(diff_file, infile, com_psnr))
                 p.start()
                 p_pool.append(p)
             for p in p_pool:
                 p.join()
-            for psnr_encode in com_psnr:
-                line.add_psnr(psnr_encode)
-                line.add_lucha_psnr(psnr_encode)
+            for num in range(len(line.output)):
+                line.psnr.append(com_psnr[num * 4])
+                line.psnr_luam.append(com_psnr[num * 4 + 1])
+                line.psnr_charm_cb.append(com_psnr[num * 4 + 2])
+                line.psnr_charm_cr.append(com_psnr[num * 4 + 3])
             elapsed = (time.time() - time_b)
             m, s = divmod(elapsed, 60)
             h, m = divmod(m, 60)
             print("calculate psnr time used : %d:%02d:%02d" % (h, m, s))
             line.set_average_fps()
-            line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
+            line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr))
             line.sort()
 
 
@@ -241,12 +249,20 @@ class LineContain:
         self.group_tag[codec_name] = 0
 
     def get_bd_rate(self, baseline, line):
-        return BD.BD_RATE(baseline.bit_rate, baseline.psnr_luam_chro, line.bit_rate, line.psnr_luam_chro)
+        return BD.BD_RATE(baseline.bit_rate, baseline.psnr, line.bit_rate, line.psnr)
+
+    def get_bd_psnr(self, baseline, line):
+        psnr = BD.BD_PSNR(baseline.bit_rate, baseline.psnr, line.bit_rate, line.psnr)
+        psnr_y = BD.BD_PSNR(baseline.bit_rate, baseline.psnr_luam, line.bit_rate, line.psnr_luam)
+        psnr_u = BD.BD_PSNR(baseline.bit_rate, baseline.psnr_charm_cb, line.bit_rate, line.psnr_charm_cb)
+        psnr_v = BD.BD_PSNR(baseline.bit_rate, baseline.psnr_charm_cr, line.bit_rate, line.psnr_charm_cr)
+        return psnr, psnr_y, psnr_u, psnr_v
 
     def calculate_psnr(self):
         for pool in self.group.values():
             for line in pool:
-                self.get_psnr(line)
+                line.BD_psnr, line.BD_psnr_luam, line.BD_psnr_charm_cb, line.BD_psnr_charm_cr = self.get_bd_psnr(
+                    self.baseline, line)
 
     def calculate_bd_rate(self):
         for pool in self.group.values():
@@ -257,6 +273,7 @@ class LineContain:
 
     def calculate(self):
         self.calculate_bd_rate()
+        self.calculate_psnr()
 
 
 class CaseDate:
@@ -289,7 +306,7 @@ class CaseDate:
                     file_line[2] = line.codec_name + '_' + line.instance_name
                     file_line[3] = mode
                     file_line[4] = line.qp[i]
-                    file_line[5] = line.psnr_luam_chro[i]
+                    file_line[5] = line.psnr[i]
                     file_line[6] = line.bit_rate[i]
                     file_line[7] = line.fps[i]
                     file_line[8] = line.bd_rate

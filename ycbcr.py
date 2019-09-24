@@ -130,6 +130,9 @@ class YCbCr:
 
     def psnr_all(self, out_file_id=0, in_file_id=0, psnr_contain=None):
         bd = []
+        sum_yy = []
+        sum_cb = []
+        sum_cr = []
         if self.bitdepth == 8:
             read = self.__read_frame
         else:
@@ -144,7 +147,13 @@ class YCbCr:
                 cb = self.psnr(cb_frame, crp_cb)
                 cr = self.psnr(cr_frame, crp_cr)
                 bd.append((6 * yy + cb + cr) / 8.0)
-            psnr_contain[out_file_id] = round(sum(bd) / len(bd), 2)
+                sum_yy.append(yy)
+                sum_cb.append(cb)
+                sum_cr.append(cr)
+            psnr_contain[out_file_id * 4] = round(sum(bd) / len(bd), 2)
+            psnr_contain[out_file_id * 4 + 1] = round(sum(sum_yy) / len(sum_yy), 2)
+            psnr_contain[out_file_id * 4 + 2] = round(sum(sum_cb) / len(sum_cb), 2)
+            psnr_contain[out_file_id * 4 + 3] = round(sum(sum_cr) / len(sum_cr), 2)
 
     def get_accout_diff(self):
         return len(self.filename_diff)

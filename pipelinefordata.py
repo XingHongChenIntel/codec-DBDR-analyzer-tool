@@ -20,6 +20,11 @@ def decode(codec_name, bit_stream, yuv):
         arg = option.decode_dict[codec_name] % (bit_stream, yuv)
         p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
         return p
+    elif codec_name == 'SvtAv1':
+        os.chdir(option.exec_path['SvtAv1'])
+        arg = option.decode_dict[codec_name] % (bit_stream, yuv)
+        p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
+        return p
     else:
         print "we are not ready for this codec"
 

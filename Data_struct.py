@@ -232,7 +232,7 @@ class LineContain:
     def add_group_ele(self, codec_name, line):
         self.group[codec_name].append(line)
 
-    def check_baseline(self, codec):
+    def check_baseline_old(self, codec):
         codec_contain = [codec_name[2] for codec_name in codec]
         instance_contain = [instance_name[4] for instance_name in codec]
         if 'HM' in codec_contain:
@@ -243,6 +243,12 @@ class LineContain:
             print "there is no baseline encode"
             for i in self.group:
                 self.set_baseline(self.group[i][0])
+                break
+
+    def check_baseline(self, option):
+        for codec in option:
+            if codec[6] == 'baseline':
+                self.set_baseline(self.group[codec[2]+'_'+codec[4]][0])
                 break
 
     def set_group_tag(self, codec_name):
@@ -256,6 +262,10 @@ class LineContain:
         psnr_y = BD.BD_PSNR(baseline.bit_rate, baseline.psnr_luam, line.bit_rate, line.psnr_luam)
         psnr_u = BD.BD_PSNR(baseline.bit_rate, baseline.psnr_charm_cb, line.bit_rate, line.psnr_charm_cb)
         psnr_v = BD.BD_PSNR(baseline.bit_rate, baseline.psnr_charm_cr, line.bit_rate, line.psnr_charm_cr)
+        psnr = str(round(psnr * 100, 2)) + '%'
+        psnr_y = str(round(psnr_y * 100, 2)) + '%'
+        psnr_u = str(round(psnr_u * 100, 2)) + '%'
+        psnr_v = str(round(psnr_v * 100, 2)) + '%'
         return psnr, psnr_y, psnr_u, psnr_v
 
     def calculate_psnr(self):

@@ -28,8 +28,9 @@ class yuvInfo:
 
     def parse_yuv_type(self, str):
         yuv_info = str.split(' ')
-        name = yuv_info[0].split('/')[-1].split('.')[0]
-        self.suffix_type = name[1]
+        yuvname = yuv_info[0].split('/')[-1].split('.')
+        name = yuvname[0]
+        self.suffix_type = yuvname[1]
         onlyname = re.findall(r'([_0-9a-zA-Z]*)_[0-9]*p', name)
         if onlyname:
             self.yuv_name = onlyname[0]

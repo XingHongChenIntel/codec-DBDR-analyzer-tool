@@ -141,7 +141,7 @@ class UI:
         chart.grid(True)
         for num in range(len(psnr)):
             chart.plot(bitrate[num], psnr[num], '-o', label=name[num])
-        chart.legend(loc='right')
+        chart.legend(loc=0)
         biao.table(cellText=ave_psnr, colLabels=case_name, rowLabels=name, loc=0,
                    colWidths=[0.4 for i in range(len(case_name))],edges='horizontal')
         fig.savefig(self.plot_path + str(resolution) + '/' + case_name[0])
@@ -159,7 +159,7 @@ class UI:
         chart.grid(True)
         for num in range(len(psnr)):
             chart.plot(bitrate[num], psnr[num], '-o', label=name[num])
-        chart.legend(loc='right')
+        #chart.legend(loc=0)
         biao.table(cellText=ave_psnr, colLabels=col_name, rowLabels=row_name, loc=0,
                    colWidths=[0.4 for i in range(len(col_name))],edges='horizontal')
         fig.savefig(self.plot_path + str(resolution) + '/' + 'combo_plot')
@@ -207,7 +207,7 @@ class UI:
             baseline = 'svt'
         rowlabel = self.label_len(bdrate, 'bd', baseline)
         chart2.set_xticklabels(rowlabel)
-        chart2.legend()
+        chart2.legend(loc=0)
         trans_bdrate = self.trans_list(self.fix_arr(bdrate))
         biao.table(cellText=trans_bdrate, colLabels=[col[0] + '_' + col[1] for col in lab], rowLabels=rowlabel,
                    loc=0, edges='horizontal',
@@ -257,7 +257,7 @@ class UI:
             for mode in range(len(encdoe_bitrate[encode])):
                 chart.plot(encdoe_bitrate[encode][mode], encode_psnr[encode][mode], '-o',
                            label=encode_name[encode] + '_' + str(mode))
-        chart.legend(loc='right')
+        chart.legend(loc=0)
         trans_psnr = self.trans_list(self.fix_arr(encode_bdpsnr))
         rowlabel = self.label_len(encode_bdpsnr, 'bit')
         biao.table(cellText=trans_psnr, colLabels=encode_name, rowLabels=rowlabel, loc=0,

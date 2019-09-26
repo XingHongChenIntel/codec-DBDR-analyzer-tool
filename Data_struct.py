@@ -31,6 +31,9 @@ class Line:
         self.BD_psnr_charm_cr = None
         self.average_fps = None
         self.bd_rate = None
+        self.bd_rate_luma = None
+        self.bd_rate_charm_cb = None
+        self.bd_rate_charm_cr = None
         self.qp = []
         self.ref = None
         self.instance_name = None
@@ -177,7 +180,7 @@ class Line:
             h, m = divmod(m, 60)
             print("calculate psnr time used : %d:%02d:%02d" % (h, m, s))
             line.set_average_fps()
-            line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr))
+            # line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr))
             line.sort()
 
 
@@ -255,17 +258,24 @@ class LineContain:
         self.group_tag[codec_name] = 0
 
     def get_bd_rate(self, baseline, line):
-        return BD.BD_RATE(baseline.bit_rate, baseline.psnr, line.bit_rate, line.psnr)
+        rate = BD.BD_RATE(baseline.bit_rate, baseline.psnr, line.bit_rate, line.psnr)
+        psnr_y = BD.BD_RATE(baseline.bit_rate, baseline.psnr_luam, line.bit_rate, line.psnr_luam)
+        psnr_u = BD.BD_RATE(baseline.bit_rate, baseline.psnr_charm_cb, line.bit_rate, line.psnr_charm_cb)
+        psnr_v = BD.BD_RATE(baseline.bit_rate, baseline.psnr_charm_cr, line.bit_rate, line.psnr_charm_cr)
+        rate_y = str(round(psnr_y, 2)) + '%'
+        rate_u = str(round(psnr_u, 2)) + '%'
+        rate_v = str(round(psnr_v, 2)) + '%'
+        return rate, rate_y, rate_u, rate_v
 
     def get_bd_psnr(self, baseline, line):
         psnr = BD.BD_PSNR(baseline.bit_rate, baseline.psnr, line.bit_rate, line.psnr)
         psnr_y = BD.BD_PSNR(baseline.bit_rate, baseline.psnr_luam, line.bit_rate, line.psnr_luam)
         psnr_u = BD.BD_PSNR(baseline.bit_rate, baseline.psnr_charm_cb, line.bit_rate, line.psnr_charm_cb)
         psnr_v = BD.BD_PSNR(baseline.bit_rate, baseline.psnr_charm_cr, line.bit_rate, line.psnr_charm_cr)
-        psnr = str(round(psnr * 100, 2)) + '%'
-        psnr_y = str(round(psnr_y * 100, 2)) + '%'
-        psnr_u = str(round(psnr_u * 100, 2)) + '%'
-        psnr_v = str(round(psnr_v * 100, 2)) + '%'
+        psnr = str(round(psnr, 2)) + 'dB'
+        psnr_y = str(round(psnr_y, 2)) + 'dB'
+        psnr_u = str(round(psnr_u, 2)) + 'dB'
+        psnr_v = str(round(psnr_v, 2)) + 'dB'
         return psnr, psnr_y, psnr_u, psnr_v
 
     def calculate_psnr(self):
@@ -273,12 +283,16 @@ class LineContain:
             for line in pool:
                 line.BD_psnr, line.BD_psnr_luam, line.BD_psnr_charm_cb, line.BD_psnr_charm_cr = self.get_bd_psnr(
                     self.baseline, line)
+                line.bd_psnr = BD.BD_PSNR_Average(self.baseline.bit_rate, self.baseline.psnr, line.bit_rate, line.psnr)
 
     def calculate_bd_rate(self):
         for pool in self.group.values():
             for line in pool:
-                bd_rate = self.get_bd_rate(self.baseline, line)
+                bd_rate, bd_rate_y, bd_rate_u, bd_rate_v = self.get_bd_rate(self.baseline, line)
                 line.bd_rate = bd_rate
+                line.bd_rate_luma = bd_rate_y
+                line.bd_rate_charm_cb = bd_rate_u
+                line.bd_rate_charm_cr = bd_rate_v
                 self.group_bdrate[line.codec_name + '_' + line.instance_name].append(bd_rate)
 
     def calculate(self):

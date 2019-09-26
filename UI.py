@@ -86,7 +86,7 @@ class UI:
             if len(case_) > 0:
                 if not os.path.exists(self.plot_path+str(resolution)):
                     os.mkdir(self.plot_path+resolution)
-                bd_psnr, com_psnr, com_bitrate, com_avepsnr = [], [], [], []
+                bd_psnr, bd_rate, com_psnr, com_bitrate, com_avepsnr = [], [], [], [], []
                 table_name, col_name, legend_name = [], [], []
                 for case in case_:
                     psnr, bitrate, ave_psnr, label, ff = [], [], [], [], []
@@ -101,9 +101,10 @@ class UI:
                         if line is not case.baseline:
                             bd_psnr.append([line.BD_psnr_luam, line.BD_psnr_charm_cb, line.BD_psnr_charm_cr,
                                             line.BD_psnr])
+                            bd_rate.append([line.bd_rate_luma, line.bd_rate_charm_cb, line.bd_rate_charm_cr,
+                                            str(round(line.bd_rate, 2)) + '%'])
                             table_name.append(line.yuv_info.yuv_name+'_'+tag)
-                    self.detail_plot(psnr, bitrate, ave_psnr, label, resolution,
-                                      [line.yuv_info.yuv_name])
+                    self.detail_plot(psnr, bitrate, ave_psnr, label, resolution, [line.yuv_info.yuv_name])
                     com_psnr.extend(psnr)
                     com_bitrate.extend(bitrate)
                     com_avepsnr.append(ff)
@@ -114,17 +115,18 @@ class UI:
                         row_name.append(name+'_'+tag)
                 self.detail_plot_com(com_psnr, com_bitrate, com_avepsnr, legend_name,
                                  resolution, col_name, row_name)
-                self.BD_psnr_table(bd_psnr, table_name, resolution)
+                self.BD_table(bd_psnr, table_name, resolution, 'psnr')
+                self.BD_table(bd_rate, table_name, resolution, 'rate')
 
-    def BD_psnr_table(self, psnr, row, resolution):
+    def BD_table(self, psnr, row, resolution, title):
         fig = plt.figure(figsize=[16, 8])
         gs = GridSpec(1, 1)
         biao = fig.add_subplot(gs[0, 0])
         biao.set_axis_off()
-        biao.set_title('%s' % resolution + 'p   ' + 'BD-PSNR')
-        biao.table(cellText=psnr, colLabels=['Y_PSNR', 'U_PSNR', 'V_PSNR', 'YUV_PSNR'],
-                   rowLabels=row, loc='center', colWidths=[0.2, 0.2, 0.2, 0.2])
-        fig.savefig(self.plot_path + str(resolution) + '/' +resolution+ 'BD-PSNR')
+        biao.set_title('%s' % resolution + 'p   ' + 'BD_'+title)
+        biao.table(cellText=psnr, colLabels=['Y_'+title, 'U_'+title, 'V_'+title, 'YUV_'+title],
+                   rowLabels=row, loc=0, colWidths=[0.2, 0.2, 0.2, 0.2],edges='horizontal')
+        fig.savefig(self.plot_path + str(resolution) + '/' +resolution+ 'BD-'+title)
 
     def detail_plot(self, psnr, bitrate, ave_psnr, name, resolution, case_name):
         fig = plt.figure(figsize=[16, 8])
@@ -140,8 +142,8 @@ class UI:
         for num in range(len(psnr)):
             chart.plot(bitrate[num], psnr[num], '-o', label=name[num])
         chart.legend(loc='right')
-        biao.table(cellText=ave_psnr, colLabels=case_name, rowLabels=name, loc='center',
-                   colWidths=[0.4 for i in range(len(case_name))])
+        biao.table(cellText=ave_psnr, colLabels=case_name, rowLabels=name, loc=0,
+                   colWidths=[0.4 for i in range(len(case_name))],edges='horizontal')
         fig.savefig(self.plot_path + str(resolution) + '/' + case_name[0])
 
     def detail_plot_com(self, psnr, bitrate, ave_psnr, name, resolution, row_name, col_name):
@@ -158,8 +160,8 @@ class UI:
         for num in range(len(psnr)):
             chart.plot(bitrate[num], psnr[num], '-o', label=name[num])
         chart.legend(loc='right')
-        biao.table(cellText=ave_psnr, colLabels=col_name, rowLabels=row_name, loc='center',
-                   colWidths=[0.4 for i in range(len(col_name))])
+        biao.table(cellText=ave_psnr, colLabels=col_name, rowLabels=row_name, loc=0,
+                   colWidths=[0.4 for i in range(len(col_name))],edges='horizontal')
         fig.savefig(self.plot_path + str(resolution) + '/' + 'combo_plot')
 
     def bd_rate_plot(self, bdrate, fps, lab, resolution):
@@ -208,7 +210,7 @@ class UI:
         chart2.legend()
         trans_bdrate = self.trans_list(self.fix_arr(bdrate))
         biao.table(cellText=trans_bdrate, colLabels=[col[0] + '_' + col[1] for col in lab], rowLabels=rowlabel,
-                   loc='center',
+                   loc=0, edges='horizontal',
                    colWidths=[0.2 for i in range(len(lab))])
         info = ''
         for code in option.codec:
@@ -258,8 +260,8 @@ class UI:
         chart.legend(loc='right')
         trans_psnr = self.trans_list(self.fix_arr(encode_bdpsnr))
         rowlabel = self.label_len(encode_bdpsnr, 'bit')
-        biao.table(cellText=trans_psnr, colLabels=encode_name, rowLabels=rowlabel, loc='center',
-                   colWidths=[0.3 for i in range(len(encode_name))])
+        biao.table(cellText=trans_psnr, colLabels=encode_name, rowLabels=rowlabel, loc=0,
+                   colWidths=[0.3 for i in range(len(encode_name))], edges='horizontal')
         info = ''
         for code in option.codec:
             info += '_' + code[4]

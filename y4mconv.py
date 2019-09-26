@@ -28,9 +28,17 @@ class yuvInfo:
 
     def parse_yuv_type(self, str):
         yuv_info = str.split(' ')
-        name = yuv_info[0].split('/')[-1].split('.')
+        name = yuv_info[0].split('/')[-1].split('.')[0]
         self.suffix_type = name[1]
-        self.yuv_name = name[0]
+        onlyname = re.findall(r'([_0-9a-zA-Z]*)_[0-9]*p', name)
+        if onlyname:
+            self.yuv_name = onlyname[0]
+        else:
+            onlyname = re.findall(r'([_0-9a-zA-Z]*)_[0-9]*x[0-9]*', name)
+            if onlyname:
+                self.yuv_name = onlyname[0]
+            else:
+                self.yuv_name = name
         if self.suffix_type == 'y4m':
             yuv_info = self.__from_y4m_to_yuv(yuv_info)
         self.suffix_type = 'yuv'

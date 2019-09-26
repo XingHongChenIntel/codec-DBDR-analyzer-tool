@@ -7,10 +7,13 @@
 #/home/cxh/experiment/720p/park_joy_420_720p50.yuv 1280 720 8 1
 #/home/cxh/experiment/720p/ducks_take_off_420_720p50.yuv 1280 720 8 1
 #/home/cxh/experiment/720p/old_town_cross_420_720p50.yuv 1280 720 8 1
-#/home/cxh/code/testDatay4m/shields_640x360_60f.y4m
-#/home/cxh/code/testDatay4m/speed_bag_640x360_60f.y4m
+/home/cxh/code/testDatay4m/shields_640x360_60f.y4m
+/home/cxh/code/testDatay4m/speed_bag_640x360_60f.y4m
 #/home/cxh/code/testDatay4m/vidyo1_720p_60fps_60f.y4m
 #/home/cxh/code/testDatay4m/vidyo3_720p_60fps_60f.y4m
-/home/cxh/code/testdata/YUV/matrix1080P60f.yuv 1920 1080 8 1
+#/home/cxh/code/testdata/YUV/matrix1080P60f.yuv 1920 1080 8 1
 /home/cxh/code/testdata/YUV/blue_sky_360p_60f.yuv 640 360 8 1
 /home/cxh/code/testdata/YUV/niklas360p_60f.yuv 640 360 8 1
+/home/cxh/code/testdata/YUV/thaloundeskmtg360p_60f.yuv 640 360 8 1
+/home/cxh/code/testdata/YUV/kirland360p_60f.yuv 640 360 8 1
+/home/cxh/code/testdata/YUV/red_kayak_360p_60f.yuv 640 360 8 1

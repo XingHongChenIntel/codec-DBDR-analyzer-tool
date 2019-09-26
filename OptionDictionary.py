@@ -20,9 +20,9 @@ exec_path = {
 # is read from database(you can use 'read' or 'execute')
 # every time when you add new encode ,you should also add them to exec_path and codec_dict
 codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cfg_Path, 'HM', '265', 'testmode', 'read'],
-        [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'testmode', 'read'],
-        [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'testmode', 'read'],
-        [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'test', 'read'],
+        [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'test265', 'rea', 'None'],
+        [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'testmode', 'rea', 'baseline'],
+        [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'test', 'rea', 'None'],
         #[[22, 28, 34, 40], './aomenc --threads=64', 'AV1', 'AV1', 'testmode', 'read'],
         #[[22, 28, 34, 40], './x264', 'x264', '264', 'testmode', 'read'],
 ]
@@ -32,7 +32,7 @@ codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cf
 Test_data_type = 'all'
 
 # encode mode for different encoder
-mode = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+mode = [0,]# 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 # encoder command line parameter about yuv info, if test new encoder, need to add information here
 codec_dict = {
     'HM': '-i %s -wdt %s -hgt %s -q %s -b %s',

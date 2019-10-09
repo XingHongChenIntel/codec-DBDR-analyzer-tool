@@ -125,7 +125,7 @@ class Line:
         self.qp.append(qp)
 
     def sort(self):
-        print("bit_rate info:", self.bd_psnr, self.psnr_luam, self.bit_rate)
+        print("bit_rate info:", self.psnr, self.psnr_luam, self.bit_rate)
 
     def set_bd_psnr(self, bd_psnr):
         self.bd_psnr = bd_psnr

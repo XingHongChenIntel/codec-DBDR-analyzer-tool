@@ -11,6 +11,7 @@ from Data_struct import Line, LineContain, CaseDate
 from pipelinefordata import ProEnv, Pipeline
 from Data_base import Database
 from UI import UI
+from multiprocessing import Process, Value, Array
 
 
 def modify_cfg(opt, value):
@@ -83,6 +84,7 @@ def setup_codec(yuv_info, database):
     line_pool.set_data_type(yuv_info)
     line_pool.build_group(option.codec)
     pipe_hm = None
+    process_pool = []
     for codec_index in option.codec:
         name = codec_index[2] + '_' + codec_index[4]
         is_find, pool = database.find_data(yuv_info, name, codec_index[5])
@@ -93,12 +95,17 @@ def setup_codec(yuv_info, database):
                 codec_index_hm = codec_index
                 pipe_hm = hm_execute(yuv_info, codec_index, line_pool)
             else:
-                codec_execute(yuv_info, codec_index, line_pool, database)
+               # codec_execute(yuv_info, codec_index, line_pool, database)
+                p = Process(target=codec_execute, args=(yuv_info, codec_index, line_pool, database))
+                p.start()
+                process_pool.append(p)
     if pipe_hm is not None:
         line = pipe_hm.pop_pro_hm()
         line_pool.add_group_ele('HM_' + codec_index_hm[4], line)
         database.add_data(line, 'HM_' + codec_index_hm[4])
         pipe_hm.clear()
+    for p in process_pool:
+        p.join()
     line_pool.check_baseline(option.codec)
     return line_pool
 

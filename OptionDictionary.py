@@ -26,7 +26,7 @@ codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cf
         #[[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'test', 'read'],
         #[[25, 31, 37, 43], './aomenc --threads=64', 'AV1', 'AV1', 'Origin', 'execute', 'baseline'],
         #[[22, 28, 34, 40], './x264', 'x264', '264', 'testmode', 'read'],
-        [[20, 26, 32, 38], './testorigin.sh', 'SvtAv1','SvtAv1','origin_','execute', 'baseline'],
+        [[20, 26, 32, 38], './testorigin.sh', 'SvtAv1','SvtAv1','origin','read', 'baseline'],
         [[20, 26, 32, 38], './test2pass.sh', 'SvtAv1','SvtAv1','2pass_','execute', 'none'],
         [[20, 26, 32, 38], './test2pass_stat.sh', 'SvtAv1','SvtAv1','2pass_stat_','execute', 'none'],
         #[[25,],'./aomenc --codec=av1 --passes=2 --threads=64 --i420 --profile=0 --frame-parallel=0 --tile-columns=0 --test-decode=fatal --kf-min-dist=120  --kf-max-dist=120 --end-usage=q --lag-in-frames=25 --auto-alt-ref=2 --aq-mode=0 --fps=30000/1001', 'AV1', 'AV1', 'Qmode', 'execute', 'none'],
@@ -35,7 +35,7 @@ codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cf
 
 # choose the test sample type, for example 360p 720p 1080p 2k 4k 8k
 # if you want to test all sample use 'all
-Test_data_type = '720p'
+Test_data_type = '1080p'
 
 # encode mode for different encoder
 mode = [0,]#1, 2, 3, 4, 5, 6, 7, 8,]# 9, 10, 11, 12, 13, 14, 15]

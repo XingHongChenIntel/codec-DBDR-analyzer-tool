@@ -194,6 +194,12 @@ class LineContain:
         self.yuv_info = None
         self.codec_pipe = {}
 
+    def extra(self):
+        return self
+
+    def set_group(self, pool, name):
+        self.group[name] = pool
+
     def add_codec_pipe(self, codec, pipe):
         self.codec_pipe[codec].append(pipe)
 
@@ -308,6 +314,9 @@ class CaseDate:
         self.case_num = None
         self.datafile = None
         self.path = path
+
+    def extra(self):
+        return self
 
     def add_case(self, case, yuv_info):
         self.case.append(case)

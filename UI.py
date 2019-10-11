@@ -92,7 +92,6 @@ class UI:
                     psnr, bitrate, ave_psnr, label, ff = [], [], [], [], []
                     for name, tag in [[i[2], i[4]] for i in option.codec]:
                         # 0 is mode number.
-                        print case.group[name + '_' + tag]
                         line = case.group[name + '_' + tag][0]
                         psnr.append(line.psnr)
                         bitrate.append(line.bit_rate)

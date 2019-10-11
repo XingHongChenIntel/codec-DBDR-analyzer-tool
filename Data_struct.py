@@ -163,18 +163,24 @@ class Line:
         time_b = time.time()
         for infile in range(len(line.input_url)):
             p_pool = []
-            com_psnr = Array('d', len(line.output) * 4)
             for diff_file in range(len(line.output)):
-                p = Process(target=yuv.psnr_all, args=(diff_file, infile, com_psnr))
-                p.start()
-                p_pool.append(p)
-            for p in p_pool:
-                p.join()
-            for num in range(len(line.output)):
-                line.psnr.append(com_psnr[num * 4])
-                line.psnr_luam.append(com_psnr[num * 4 + 1])
-                line.psnr_charm_cb.append(com_psnr[num * 4 + 2])
-                line.psnr_charm_cr.append(com_psnr[num * 4 + 3])
+                psnr = yuv.psnr_all(diff_file, infile)
+                line.psnr.append(psnr[0])
+                line.psnr_luam.append(psnr[1])
+                line.psnr_charm_cb.append(psnr[2])
+                line.psnr_charm_cr.append(psnr[3])
+            # com_psnr = Array('d', len(line.output) * 4)
+            # for diff_file in range(len(line.output)):
+            #     p = Process(target=yuv.psnr_all, args=(diff_file, infile, com_psnr))
+            #     p.start()
+            #     p_pool.append(p)
+            # for p in p_pool:
+            #     p.join()
+            # for num in range(len(line.output)):
+            #     line.psnr.append(com_psnr[num * 4])
+            #     line.psnr_luam.append(com_psnr[num * 4 + 1])
+            #     line.psnr_charm_cb.append(com_psnr[num * 4 + 2])
+            #     line.psnr_charm_cr.append(com_psnr[num * 4 + 3])
             elapsed = (time.time() - time_b)
             m, s = divmod(elapsed, 60)
             h, m = divmod(m, 60)

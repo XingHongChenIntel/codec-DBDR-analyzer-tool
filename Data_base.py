@@ -66,7 +66,7 @@ class Database:
         self.data.case.append(line_pool)
         self.temp_case = self.data.case[-1]
 
-    def add_data(self, line, encode_name):
+    def add_data(self, encode_name, line):
         self.temp_case.group[encode_name].append(line)
 
     def serialize_date(self):

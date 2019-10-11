@@ -150,10 +150,12 @@ class YCbCr:
                 sum_yy.append(yy)
                 sum_cb.append(cb)
                 sum_cr.append(cr)
-            psnr_contain[out_file_id * 4] = round(sum(bd) / len(bd), 2)
-            psnr_contain[out_file_id * 4 + 1] = round(sum(sum_yy) / len(sum_yy), 2)
-            psnr_contain[out_file_id * 4 + 2] = round(sum(sum_cb) / len(sum_cb), 2)
-            psnr_contain[out_file_id * 4 + 3] = round(sum(sum_cr) / len(sum_cr), 2)
+            # psnr_contain[out_file_id * 4] = round(sum(bd) / len(bd), 2)
+            # psnr_contain[out_file_id * 4 + 1] = round(sum(sum_yy) / len(sum_yy), 2)
+            # psnr_contain[out_file_id * 4 + 2] = round(sum(sum_cb) / len(sum_cb), 2)
+            # psnr_contain[out_file_id * 4 + 3] = round(sum(sum_cr) / len(sum_cr), 2)
+            return [round(sum(bd) / len(bd), 2),round(sum(sum_yy) / len(sum_yy), 2)
+                    ,round(sum(sum_cb) / len(sum_cb), 2),round(sum(sum_cr) / len(sum_cr), 2)]
 
     def get_accout_diff(self):
         return len(self.filename_diff)

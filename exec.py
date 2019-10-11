@@ -11,7 +11,8 @@ from Data_struct import Line, LineContain, CaseDate
 from pipelinefordata import ProEnv, Pipeline
 from Data_base import Database
 from UI import UI
-from multiprocessing import Process, Value, Array, Lock
+import multiprocessing
+from multiprocessing import Process, Value, Array, Lock, Pool, Queue
 from multiprocessing.managers import BaseManager
 
 
@@ -59,9 +60,10 @@ def hm_execute(yuv_info, codec_index, line_pool):
     return pipe
 
 
-def codec_execute(yuv_info, codec_index, line_pool, database, lock=None):
+def codec_execute(yuv_info, codec_index, line_pool, database, queue=None):
     codec_name = codec_index[2]
     instance_name = codec_index[4]
+    line_pool = []
     for mode in option.mode:
         line = Line([yuv_info.url], codec_name, yuv_info.bit_depth, yuv_info.width, yuv_info.height, 'YV12', yuv_info)
         pipe = Pipeline(line)
@@ -80,18 +82,16 @@ def codec_execute(yuv_info, codec_index, line_pool, database, lock=None):
             pipe.push_pro(evn)
 
         def signal_handler(signal, frame):
-            # with lock:
-            line_pool.pipe_security()
+            pipe.security()
 
         mode_line = pipe.pop_pro_other()
-        signal.signal(signal.SIGINT, signal_handler)
+        # signal.signal(signal.SIGINT, signal_handler)
         if mode_line:
-            # with lock:
-            line_pool.add_group_ele(codec_name + '_' + instance_name, mode_line)
-            database.add_data(mode_line, codec_name + '_' + instance_name)
+            line_pool.append([codec_name + '_' + instance_name, mode_line])
             pipe.clear()
         else:
             break
+    queue.put(line_pool)
 
 
 def setup_codec(yuv_info, database):
@@ -102,8 +102,10 @@ def setup_codec(yuv_info, database):
     line_pool.set_data_type(yuv_info)
     line_pool.build_group(option.codec)
     pipe_hm = None
-    process_pool = []
-    lock = Lock()
+    queue = multiprocessing.Manager().Queue()
+    process_pool = Pool(processes=3)
+    # process_pool = []
+    # lock = Lock()
     for codec_index in option.codec:
         name = codec_index[2] + '_' + codec_index[4]
         is_find, pool = database.find_data(yuv_info, name, codec_index[5])
@@ -115,7 +117,9 @@ def setup_codec(yuv_info, database):
                 codec_index_hm = codec_index
                 pipe_hm = hm_execute(yuv_info, codec_index, line_pool)
             else:
-                codec_execute(yuv_info, codec_index, line_pool, database)
+                if __name__ == '__main__':
+                    process_pool.apply_async(codec_execute, (yuv_info, codec_index, line_pool, database, queue,))
+                # codec_execute(yuv_info, codec_index, line_pool, database)
                 # p = Process(target=codec_execute, args=(yuv_info, codec_index, line_pool, database, lock))
                 # p.start()
                 # process_pool.append(p)
@@ -124,6 +128,13 @@ def setup_codec(yuv_info, database):
         line_pool.add_group_ele('HM_' + codec_index_hm[4], line)
         database.add_data(line, 'HM_' + codec_index_hm[4])
         pipe_hm.clear()
+    process_pool.close()
+    process_pool.join()
+    for i in range(queue.qsize()):
+        data = queue.get()
+        for j in data:
+            line_pool.add_group_ele(j[0], j[1])
+            database.add_data(j[0], j[1])
     # for p in process_pool:
     #     p.join()
     line_pool.check_baseline(option.codec)

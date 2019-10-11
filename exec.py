@@ -171,6 +171,8 @@ def parse_arg():
 
 
 def pre_setup():
+    if not os.path.exists(option.proxy):
+        os.mkdir(option.proxy)
     clean_data_dir()
     localtime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     print('localtime=' + localtime)

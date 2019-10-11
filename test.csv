@@ -12,8 +12,8 @@
 #/home/cxh/code/testDatay4m/vidyo1_720p_60fps_60f.y4m
 #/home/cxh/code/testDatay4m/vidyo3_720p_60fps_60f.y4m
 #/home/cxh/code/testdata/YUV/matrix1080P60f.yuv 1920 1080 8 1
-/home/cxh/code/testdata/YUV/blue_sky_360p_60f.yuv 640 360 8 1
-/home/cxh/code/testdata/YUV/niklas360p_60f.yuv 640 360 8 1
-/home/cxh/code/testdata/YUV/thaloundeskmtg360p_60f.yuv 640 360 8 1
-/home/cxh/code/testdata/YUV/kirland360p_60f.yuv 640 360 8 1
-/home/cxh/code/testdata/YUV/red_kayak_360p_60f.yuv 640 360 8 1
+#/home/cxh/code/testdata/YUV/blue_sky_360p_60f.yuv 640 360 8 1
+#/home/cxh/code/testdata/YUV/niklas360p_60f.yuv 640 360 8 1
+#/home/cxh/code/testdata/YUV/thaloundeskmtg360p_60f.yuv 640 360 8 1
+#/home/cxh/code/testdata/YUV/kirland360p_60f.yuv 640 360 8 1
+#/home/cxh/code/testdata/YUV/red_kayak_360p_60f.yuv 640 360 8 1

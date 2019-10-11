@@ -30,7 +30,7 @@ codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 10000' % HM_cf
 # choose the test sample type, for example 360p 720p 1080p 2k 4k 8k
 # if you want to test all sample use 'all
 Test_data_type = '1080p'
-
+Multi_process = 3
 # encode mode for different encoder
 mode = [0,]# 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 # encoder command line parameter about yuv info, if test new encoder, need to add information here
@@ -53,7 +53,7 @@ decode_dict = {
 encodeYuvPath = proxy
 
 # calculate psnr bd_rate
-calculate_data = '%sdata.csv' % proxy
+calculate_data = '%s/data.csv' % proxy
 
 # the path to save the plot picture
 plot_path = proxy

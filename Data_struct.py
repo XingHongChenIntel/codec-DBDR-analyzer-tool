@@ -362,6 +362,7 @@ class CaseDate:
             for pic in self.case:
                 for p in self.write_pool_info(pic, header):
                     print p
+                    writer.writerow(p)
                     file_contain.append(p)
-            for l in file_contain:
-                writer.writerow(l)
+            # for l in file_contain:
+            #     writer.writerow(l)

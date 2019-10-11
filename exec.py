@@ -103,7 +103,7 @@ def setup_codec(yuv_info, database):
     line_pool.build_group(option.codec)
     pipe_hm = None
     queue = multiprocessing.Manager().Queue()
-    process_pool = Pool(processes=3)
+    process_pool = Pool(processes=option.Multi_process)
     # process_pool = []
     # lock = Lock()
     for codec_index in option.codec:

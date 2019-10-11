@@ -11,6 +11,20 @@ from Data_struct import Line, LineContain, CaseDate
 from pipelinefordata import ProEnv, Pipeline
 from Data_base import Database
 from UI import UI
+from multiprocessing import Process, Value, Array, Lock
+from multiprocessing.managers import BaseManager
+
+
+class MyManager(BaseManager):
+    pass
+
+
+class DataManager(BaseManager):
+    pass
+
+
+MyManager.register('LineContain', LineContain)
+DataManager.register('Database', Database)
 
 
 def modify_cfg(opt, value):
@@ -45,7 +59,7 @@ def hm_execute(yuv_info, codec_index, line_pool):
     return pipe
 
 
-def codec_execute(yuv_info, codec_index, line_pool, database):
+def codec_execute(yuv_info, codec_index, line_pool, database, lock):
     codec_name = codec_index[2]
     instance_name = codec_index[4]
     for mode in option.mode:
@@ -66,41 +80,55 @@ def codec_execute(yuv_info, codec_index, line_pool, database):
             pipe.push_pro(evn)
 
         def signal_handler(signal, frame):
-            line_pool.pipe_security()
+            with lock:
+                line_pool.pipe_security()
 
         mode_line = pipe.pop_pro_other()
         signal.signal(signal.SIGINT, signal_handler)
         if mode_line:
-            line_pool.add_group_ele(codec_name + '_' + instance_name, mode_line)
-            database.add_data(mode_line, codec_name + '_' + instance_name)
-            pipe.clear()
+            with lock:
+                line_pool.add_group_ele(codec_name + '_' + instance_name, mode_line)
+                database.add_data(mode_line, codec_name + '_' + instance_name)
+                pipe.clear()
         else:
             break
 
 
 def setup_codec(yuv_info, database):
-    line_pool = LineContain(len(option.codec))
+    manager = MyManager()
+    manager.start()
+    # line_pool = LineContain(len(option.codec))
+    line_pool = manager.LineContain(len(option.codec))
     line_pool.set_data_type(yuv_info)
     line_pool.build_group(option.codec)
     pipe_hm = None
+    process_pool = []
+    lock = Lock()
     for codec_index in option.codec:
         name = codec_index[2] + '_' + codec_index[4]
         is_find, pool = database.find_data(yuv_info, name, codec_index[5])
         if is_find:
-            line_pool.group[name] = pool
+            # line_pool.group[name] = pool
+            line_pool.set_group(pool, name)
         else:
             if codec_index[2] == 'HM':
                 codec_index_hm = codec_index
                 pipe_hm = hm_execute(yuv_info, codec_index, line_pool)
             else:
-                codec_execute(yuv_info, codec_index, line_pool, database)
+                # codec_execute(yuv_info, codec_index, line_pool, database)
+                p = Process(target=codec_execute, args=(yuv_info, codec_index, line_pool, database, lock))
+                p.start()
+                process_pool.append(p)
     if pipe_hm is not None:
         line = pipe_hm.pop_pro_hm()
         line_pool.add_group_ele('HM_' + codec_index_hm[4], line)
         database.add_data(line, 'HM_' + codec_index_hm[4])
         pipe_hm.clear()
+    for p in process_pool:
+        p.join()
     line_pool.check_baseline(option.codec)
-    return line_pool
+    new_pool = line_pool.extra()
+    return new_pool
 
 
 def clean_data_dir():
@@ -172,7 +200,10 @@ def run_command():
     time_b = time.time()
     yuv_contain = read_csv()
     case_data = CaseDate(option.calculate_data)
-    database = Database(option.calculate_serialize_data)
+    manager = DataManager()
+    manager.start()
+    database = manager.Database(option.calculate_serialize_data)
+    # database = Database(option.calculate_serialize_data)
     print "\ntest case number is %d\n" % len(yuv_contain)
     for yuv in yuv_contain:
         case = setup_codec(yuv, database)

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import copy
 import os
 import matplotlib
 
@@ -197,17 +198,16 @@ class UI:
             xrow = len(bdrate[i])
             # if lab[i][0] != 'HM':
             #     chart.plot(fps[i], bdrate[i], '-o', label=lab[i][0] + '_' + lab[i][1])
-            chart2.plot(range(xrow), bdrate[i], '-x', label=lab[i][0] + '_' + lab[i][1])
+            chart2.plot(option.mode, bdrate[i], '-x', label=lab[i][0] + '_' + lab[i][1])
         # chart.legend()
         for line in chart2.xaxis.get_ticklabels():
             line.set_rotation(45)
         chart2.yaxis.set_major_locator(MultipleLocator(10))
         chart2.yaxis.set_major_formatter(FuncFormatter(persent))
         chart2.set_xticks(range(self.max_len(bdrate)))
-        if 'HM' in [code[2] for code in option.codec]:
-            baseline = 'HM'
-        else:
-            baseline = 'svt'
+        for codec in option.codec:
+            if codec[6] == 'baseline':
+                baseline = codec[2]
         rowlabel = self.label_len(bdrate, 'bd', baseline)
         chart2.set_xticklabels(rowlabel)
         chart2.legend(loc=0)
@@ -221,18 +221,24 @@ class UI:
         fig.savefig(self.plot_path + '_' + str(resolution) + '_' + info + '_BDrate')
 
     def max_len(self, bd):
-        max = 10
+        # max should be set by work out mode
+        maxnum = 11
         for rate in bd:
-            if max < len(rate):
-                max = len(rate)
-        return max
+            if maxnum < max(option.mode[0:len(rate)]):
+                maxnum = max(option.mode[0:len(rate)])
+        return maxnum
 
     def fix_arr(self, bdrate):
         max = self.max_len(bdrate)
         for rate in bdrate:
+            modelist = [0 for i in range(max)]
+            for i in range(len(rate)):
+                modelist[option.mode[i]] = rate[i]
             if len(rate) < max:
                 for i in range(max - len(rate)):
-                    rate.append('0')
+                    rate.append(0)
+            for i in range(len(rate)):
+                rate[i] = modelist[i]
         return bdrate
 
     def label_len(self, bdrate, tag, baseline=None):

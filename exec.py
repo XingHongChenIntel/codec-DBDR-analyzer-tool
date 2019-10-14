@@ -48,10 +48,10 @@ def hm_execute(yuv_info, codec_index, line_pool):
         yuv = option.encodeYuvPath + 'HM_%s_%s_' % (codec_index[4], qp) + yuv_info.yuv_name + '.' + yuv_info.suffix_type
         if yuv_info.bit_depth == 8:
             arg = codec_index[1] % option.HM_cfg_Path + ' ' + option.codec_dict['HM'] % (yuv_info.url, yuv_info.width,
-                                                                    yuv_info.height, qp, output, yuv_info.color_format)
+                                                                    yuv_info.height, qp, output)
         else:
             arg = codec_index[1] % option.HM_10_cfg_Path + ' ' + option.codec_dict['HM'] % (yuv_info.url, yuv_info.width,
-                                                                    yuv_info.height, qp, output, yuv_info.color_format)
+                                                                    yuv_info.height, qp, output)
         print arg
         # modify_cfg('InternalBitDepth', yuv_info.bit_depth)
         p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
@@ -138,7 +138,7 @@ def setup_codec(yuv_info, database):
     if pipe_hm is not None:
         line = pipe_hm.pop_pro_hm()
         line_pool.add_group_ele('HM_' + codec_index_hm[4], line)
-        database.add_data(line, 'HM_' + codec_index_hm[4])
+        database.add_data('HM_' + codec_index_hm[4], line)
         pipe_hm.clear()
     process_pool.close()
     process_pool.join()
@@ -244,7 +244,8 @@ def run_command():
     m, s = divmod(elapsed, 60)
     h, m = divmod(m, 60)
     print("time used : %d:%02d:%02d" % (h, m, s))
-    clean_data_dir()
+    if not option.TestTag:
+        clean_data_dir()
 
 
 def draw_ui():

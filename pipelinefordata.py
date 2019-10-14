@@ -97,8 +97,9 @@ class Pipeline:
     def clear(self):
         if not self.drop_tag:
             for pro in self.pro:
-                os.remove(pro.yuv)
-                os.remove(pro.output)
+                if not option.TestTag:
+                    os.remove(pro.yuv)
+                    os.remove(pro.output)
 
     def security(self):
         for pro in self.pro:

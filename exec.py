@@ -45,8 +45,12 @@ def hm_execute(yuv_info, codec_index, line_pool):
     for qp in codec_index[0]:
         output = option.encodeYuvPath + 'HM_%s_%s_' % (codec_index[4], qp) + yuv_info.yuv_name + '.' + codec_index[3]
         yuv = option.encodeYuvPath + 'HM_%s_%s_' % (codec_index[4], qp) + yuv_info.yuv_name + '.' + yuv_info.suffix_type
-        arg = codec_index[1] + ' ' + option.codec_dict['HM'] % (yuv_info.url, yuv_info.width,
-                                                                yuv_info.height, qp, output)
+        if yuv_info.bit_depth == 8:
+            arg = codec_index[1] % option.HM_cfg_Path + ' ' + option.codec_dict['HM'] % (yuv_info.url, yuv_info.width,
+                                                                    yuv_info.height, qp, output, yuv_info.color_format)
+        else:
+            arg = codec_index[1] % option.HM_10_cfg_Path + ' ' + option.codec_dict['HM'] % (yuv_info.url, yuv_info.width,
+                                                                    yuv_info.height, qp, output, yuv_info.color_format)
         print arg
         # modify_cfg('InternalBitDepth', yuv_info.bit_depth)
         p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
@@ -73,9 +77,14 @@ def codec_execute(yuv_info, codec_index, line_pool, database, queue=None):
                      + yuv_info.yuv_name + '.' + codec_index[3]
             yuv = option.encodeYuvPath + '%s_%s_%s_%s' % (codec_name, instance_name, mode, qp) \
                   + yuv_info.yuv_name + '.' + yuv_info.suffix_type
-            arg = codec_index[1] + ' ' + option.codec_dict[codec_name] % (yuv_info.url, yuv_info.width,
-                                                                          yuv_info.height, yuv_info.bit_depth,
-                                                                          qp, mode, output)
+            if codec_index[2] == 'svt':
+                arg = codec_index[1] + ' ' + option.codec_dict[codec_name] % (yuv_info.url, yuv_info.width,
+                                                                              yuv_info.height, yuv_info.bit_depth,
+                                                                              qp, mode, output, yuv_info.color_format)
+            else:
+                arg = codec_index[1] + ' ' + option.codec_dict[codec_name] % (yuv_info.url, yuv_info.width,
+                                                                              yuv_info.height, yuv_info.bit_depth,
+                                                                              qp, mode, output)
             print arg
             p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             evn = ProEnv(p, codec_index, output, yuv, qp, mode, time.time())

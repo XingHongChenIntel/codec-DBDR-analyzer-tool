@@ -40,7 +40,8 @@ def modify_cfg(opt, value):
 
 def hm_execute(yuv_info, codec_index, line_pool):
     os.chdir(option.exec_path['HM'])
-    line = Line([yuv_info.url], 'HM', yuv_info.bit_depth, yuv_info.width, yuv_info.height, 'YV12', yuv_info)
+    line = Line([yuv_info.url], 'HM', yuv_info.bit_depth, yuv_info.width, yuv_info.height,
+                yuv_info.color_format, yuv_info)
     pipe = Pipeline(line)
     for qp in codec_index[0]:
         output = option.encodeYuvPath + 'HM_%s_%s_' % (codec_index[4], qp) + yuv_info.yuv_name + '.' + codec_index[3]
@@ -69,7 +70,8 @@ def codec_execute(yuv_info, codec_index, line_pool, database, queue=None):
     instance_name = codec_index[4]
     line_pool = []
     for mode in option.mode:
-        line = Line([yuv_info.url], codec_name, yuv_info.bit_depth, yuv_info.width, yuv_info.height, 'YV12', yuv_info)
+        line = Line([yuv_info.url], codec_name, yuv_info.bit_depth, yuv_info.width,
+                    yuv_info.height, yuv_info.color_format, yuv_info)
         pipe = Pipeline(line)
         for qp in codec_index[0]:
             os.chdir(option.exec_path[codec_name])

@@ -100,9 +100,9 @@ class Line:
         self.instance_name = codec[4]
 
     def calculate_frame(self, line):
-        if line.yuv_info.color_format == 1:
+        if line.yuv_info.color_format == '1':
             frame_size = (int(line.width) * int(line.height) * 3 / 2)
-        elif line.yuv_info.color_format == 2:
+        elif line.yuv_info.color_format == '2':
             frame_size = (int(line.width) * int(line.height) * 2)
         else:
             frame_size = (int(line.width) * int(line.height) * 3)
@@ -115,7 +115,12 @@ class Line:
 
     def add_bitrate(self, line, benchmark):
         frame = self.calculate_frame(line)
-        bitrate = os.path.getsize(benchmark) * 8 / (float(frame / 60) * 1000)
+        # origin yuv file supposed more than 60f
+        if frame < 60:
+            print '[warning]: origin yuv is less than 60f'
+            bitrate = os.path.getsize(benchmark) * 8 / (float(frame) / 60 * 1000)
+        else:
+            bitrate = os.path.getsize(benchmark) * 8 / (float(frame / 60) * 1000)
         self.bit_rate.append(bitrate)
 
     def add_output(self, output):
@@ -342,8 +347,8 @@ class CaseDate:
         self.case_num = len(self.case)
 
     def write_pool_info(self, line_pool, file_line):
-        index = 0
         for encode in line_pool.group.values():
+            index = 0
             for line in encode:
                 for i in range(len(line.output)):
                     file_line[0] = line.yuv_info.yuv_name
@@ -357,7 +362,7 @@ class CaseDate:
                     file_line[8] = line.bd_rate
                     file_line[9] = line.bd_psnr
                     yield file_line
-            index = index + 1
+                index = index + 1
 
     def setup_file(self):
         header = ['yuv name', 'type', 'encode', 'mode', 'qp', 'psnr', 'bit_rate', 'fps', 'BD_rate', 'Bd_psnr']

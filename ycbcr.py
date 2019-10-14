@@ -59,6 +59,30 @@ class Yuv(Y):
                 slice(p[4], p[5]))  # start-stop for chroma
 
 
+class Y422(Y):
+    """
+    422
+    """
+    def __init__(self, width, height):
+        Y.__init__(self, width, height)
+        self.chroma_div = self.div(2, 1)
+
+    def get_frame_size(self, width=None, height=None):
+        if not width:
+            width = self.width
+            height = self.height
+        return (width * height * 2)
+
+    def get_layout(self, width=None, height=None):
+        """
+        Y|U|V
+        """
+        p = self.get_422_partitioning(width, height)
+        return (slice(p[0], p[1]),
+                slice(p[2], p[3]),
+                slice(p[4], p[5]))
+
+
 class YCbCr:
     def __init__(
             self,

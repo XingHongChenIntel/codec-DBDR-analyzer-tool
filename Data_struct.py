@@ -100,7 +100,12 @@ class Line:
         self.instance_name = codec[4]
 
     def calculate_frame(self, line):
-        frame_size = (int(line.width) * int(line.height) * 3 / 2)
+        if line.yuv_info.color_format == 1:
+            frame_size = (int(line.width) * int(line.height) * 3 / 2)
+        elif line.yuv_info.color_format == 2:
+            frame_size = (int(line.width) * int(line.height) * 2)
+        else:
+            frame_size = (int(line.width) * int(line.height) * 3)
         if line.bit_depth == '8':
             bitsize = 1
         else:

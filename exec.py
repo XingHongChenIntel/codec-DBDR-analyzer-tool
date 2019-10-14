@@ -102,7 +102,7 @@ def codec_execute(yuv_info, codec_index, line_pool, database, queue=None):
             line_pool.append([codec_name + '_' + instance_name, mode_line])
             pipe.clear()
         else:
-            print 'warning: when mode %s , cmdline: %s failed' % (mode, codec_index)
+            print >> sys.stderr, 'warning: when mode %s , cmdline: %s failed' % (mode, codec_index)
             break
     queue.put(line_pool)
 

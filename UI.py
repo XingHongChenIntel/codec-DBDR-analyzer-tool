@@ -115,8 +115,11 @@ class UI:
                         row_name.append(name+'_'+tag)
                 self.detail_plot_com(com_psnr, com_bitrate, com_avepsnr, legend_name,
                                  resolution, col_name, row_name)
-                self.BD_table(bd_psnr, table_name, resolution, 'psnr')
-                self.BD_table(bd_rate, table_name, resolution, 'rate')
+                if len(bd_psnr) and len(bd_rate):
+                    self.BD_table(bd_psnr, table_name, resolution, 'psnr')
+                    self.BD_table(bd_rate, table_name, resolution, 'rate')
+                else:
+                    print 'warning: there is only one encode, can not show BD table!'
 
     def BD_table(self, psnr, row, resolution, title):
         fig = plt.figure(figsize=[16, 8])

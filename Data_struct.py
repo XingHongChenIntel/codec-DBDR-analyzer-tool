@@ -5,6 +5,7 @@ import subprocess
 import time
 from ycbcr import YCbCr
 import bjontegaard_metric as BD
+import OptionDictionary as option
 from multiprocessing import Process, Value, Array
 
 
@@ -336,14 +337,14 @@ class CaseDate:
         self.case_num = len(self.case)
 
     def write_pool_info(self, line_pool, file_line):
-        mode = 0
+        index = 0
         for encode in line_pool.group.values():
             for line in encode:
                 for i in range(len(line.output)):
                     file_line[0] = line.yuv_info.yuv_name
                     file_line[1] = line.height + 'p'
                     file_line[2] = line.codec_name + '_' + line.instance_name
-                    file_line[3] = mode
+                    file_line[3] = option.mode[index]
                     file_line[4] = line.qp[i]
                     file_line[5] = line.psnr[i]
                     file_line[6] = line.bit_rate[i]
@@ -351,7 +352,7 @@ class CaseDate:
                     file_line[8] = line.bd_rate
                     file_line[9] = line.bd_psnr
                     yield file_line
-            mode += 1
+            index = index + 1
 
     def setup_file(self):
         header = ['yuv name', 'type', 'encode', 'mode', 'qp', 'psnr', 'bit_rate', 'fps', 'BD_rate', 'Bd_psnr']

@@ -34,6 +34,15 @@ class Y:
         #       y  y   cb  cb      cr      cr
         return (0, wh, wh, wh / 2 * 3, wh / 2 * 3, wh * 2)
 
+    def get_444_partitioning(self, width=None, height=None):
+        if not width:
+            wh = self.wh
+        else:
+            wh = width * height
+        # start-stop
+        #       y  y   cb  cb      cr      cr
+        return (0, wh, wh, wh * 2, wh * 2 , wh * 3)
+
 
 class Yuv(Y):
     def __init__(self, width, height):
@@ -82,6 +91,29 @@ class Y422(Y):
                 slice(p[2], p[3]),
                 slice(p[4], p[5]))
 
+class Y444(Y):
+    """
+    444
+    """
+    def __init__(self, width, height):
+        Y.__init__(self, width, height)
+        self.chroma_div = self.div(2, 1)
+
+    def get_frame_size(self, width=None, height=None):
+        if not width:
+            width = self.width
+            height = self.height
+        return (width * height * 3)
+
+    def get_layout(self, width=None, height=None):
+        """
+        Y|U|V
+        """
+        p = self.get_422_partitioning(width, height)
+        return (slice(p[0], p[1]),
+                slice(p[2], p[3]),
+                slice(p[4], p[5]))
+
 
 class YCbCr:
     def __init__(
@@ -112,8 +144,17 @@ class YCbCr:
         # Setup
         if self.yuv_format_in:  # we need a reader and and a writer just
             # to make sure
-            self.reader = Yuv(self.width, self.height)
-            self.writer = Yuv(self.width, self.height)
+            if yuv_format_in == '1':
+                self.reader = Yuv(self.width, self.height)
+                self.writer = Yuv(self.width, self.height)
+            elif yuv_format_in == '2':
+                self.reader = Y422(self.width, self.height)
+                self.writer = Y422(self.width, self.height)
+            elif yuv_format_in == '3':
+                self.reader = Y444(self.width, self.height)
+                self.writer = Y444(self.width, self.height)
+            else:
+                print >> sys.stderr, 'the yuv format are not available!'
             self.frame_size_in = self.reader.get_frame_size()
             self.frame_size_out = self.reader.get_frame_size()
 

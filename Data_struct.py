@@ -2,6 +2,7 @@ import os
 import re
 import csv
 import subprocess
+import sys
 import time
 from ycbcr import YCbCr
 import bjontegaard_metric as BD
@@ -90,7 +91,13 @@ class Line:
         elif self.codec_name == 'AV1':
             ss = re.findall(r'([\.0-9]*)[\r\n\t ]*b/s', line[1])
         else:
-            ss = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
+            if line[0]:
+                a = re.findall(r'([\.0-9]*)[\r\n\t ]*kbps', line[0])
+                b = re.findall(r'([\.0-9]*)[\r\n\t ]*b/s', line[0])
+            elif line[1]:
+                a = re.findall(r'([.0-9]*)[\r\n\t ]*kbps', line[0])
+                b = re.findall(r'([\.0-9]*)[\r\n\t ]*b/s', line[0])
+            ss = a if a else b
         return ss
 
     def add_info(self, line, codec):
@@ -123,7 +130,7 @@ class Line:
             bitrate = os.path.getsize(benchmark) * 8 / (float(frame / 60) * 1000)
         self.bit_rate.append(bitrate)
 
-    def add_output(self, output):
+    def add_output_url(self, output):
         self.output.append(output)
 
     def add_psnr(self, psnr):
@@ -175,6 +182,8 @@ class Line:
         for infile in range(len(line.input_url)):
             p_pool = []
             for diff_file in range(len(line.output)):
+                if not os.path.exists(line.output[diff_file]):
+                    print >> sys.stderr, '%s decode failed' % self.codec_name
                 psnr = yuv.psnr_all(diff_file, infile)
                 line.psnr.append(psnr[0])
                 line.psnr_luam.append(psnr[1])
@@ -272,10 +281,16 @@ class LineContain:
                 break
 
     def check_baseline(self, option):
+        tag = False
         for codec in option:
             if codec[6] == 'baseline':
+                tag = True
                 self.set_baseline(self.group[codec[2]+'_'+codec[4]][0])
                 break
+        if not tag:
+            print 'Have not set baseline!\n'
+            codec_name = option.codec[0][2]+'_'+option.codec[0][4]
+            self.set_baseline(self.group[codec_name][0])
 
     def set_group_tag(self, codec_name):
         self.group_tag[codec_name] = 0

@@ -5,6 +5,7 @@ import csv
 import argparse
 import signal
 import time
+import sys
 from y4mconv import yuvInfo
 import OptionDictionary as option
 from Data_struct import Line, LineContain, CaseDate
@@ -149,6 +150,9 @@ def setup_codec(yuv_info, database):
             database.add_data(j[0], j[1])
     # for p in process_pool:
     #     p.join()
+    for codec, line in line_pool.group.items():
+        if len(line) == 0:
+            print >> sys.stderr, '%s is empty, check cmdline first!' % codec
     line_pool.check_baseline(option.codec)
     # new_pool = line_pool.extra()
     return line_pool

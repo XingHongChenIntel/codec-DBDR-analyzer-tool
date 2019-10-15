@@ -21,26 +21,32 @@ exec_path = {
 # test encoder and command line. it will be  QP, command line, encoder name, codec name, instance name,
 # is read from database(you can use 'read' or 'execute')
 # every time when you add new encode ,you should also add them to exec_path and codec_dict
-codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60', 'HM', '265', 't3', 'reae', 'baseline'],
+codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 60', 'HM', '265', 't3', 'reae', 'baseline'],
+         # [[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60', 'HM', '265', 't3', 'reae', 'None'],
         # [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'test265', 're', 'None'],
-        # [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'testmode', 're', 'baseline'],
-        # [[29, 35, 42, 48], './SvtHevcEncApp', 'svt', '265', 'test', 're', 'None'],
-        #[[22, 28, 34, 40], './aomenc --threads=64', 'AV1', 'AV1', 'testmode', 'read'],
+        [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'testmode', 're', 'baseline'],
+        # [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'test', 're', 'None'],
+        # [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'tes', 're', 'None'],
+        # [[22, 28, 34, 40], './aomenc --threads=64', 'AV1', 'AV1', 'testmo', 'rea', 'baseline'],
+        # [[22, 28, 34, 40], './aomenc --threads=64', 'AV1', 'AV1', 'tes', 'rea', 'None'],
+        # [[22, 28, 34, 40], './aomenc --threads=64', 'AV1', 'AV1', 'testqwe', 'rea', 'None'],
         #[[22, 28, 34, 40], './x264', 'x264', '264', 'testmode', 'read'],
-        [[20, 32, 43, 55], './SvtAv1EncApp -n 60 -intra-period 119 -c /home/cxh/code/SVT-AV1/Config/Sample.cfg \
-         -lad 119', 'SvtAv1', 'AV1', 'test', 're', 'None'],
-        [[20, 32, 43, 55], './aomenc --codec=av1 --psnr --verbose --passes=1 --threads=40 --i420 --profile=0 \
-        --frame-parallel=0 --tile-columns=0 --test-decode=fatal --kf-min-dist=120 --kf-max-dist=120 --end-usage=q \
-        --lag-in-frames=25  --auto-alt-ref=2 --aq-mode=0 --bit-depth=8 --fps=30000/1000', \
-         'AV1', 'AV1', 'testmode', 're', 'baseline'],
+        # [[20, 32, 43, 55], './SvtAv1EncApp -n 60 -intra-period 119 -c /home/cxh/code/SVT-AV1/Config/Sample.cfg \
+        #  -lad 119', 'SvtAv1', 'AV1', 'svtav1', 'rea1', 'baseline'],
+        # [[20, 32, 43, 55], './SvtAv1EncApp -n 60 -intra-period 119 -c /home/cxh/code/SVT-AV1/Config/Sample.cfg \
+        #  -lad 119', 'SvtAv1', 'AV1', 'sv', 'rea1', 'None'],
+        # [[20, 32, 43, 55], './aomenc --codec=av1 --psnr --verbose --passes=1 --threads=40 --i420 --profile=0 \
+        # --frame-parallel=0 --tile-columns=0 --test-decode=fatal --kf-min-dist=120 --kf-max-dist=120 --end-usage=q \
+        # --lag-in-frames=25  --auto-alt-ref=2 --aq-mode=0 --bit-depth=8 --fps=30000/1000', \
+        #  'AV1', 'AV1', 'av1', 'read', 'baseline'],
 ]
 
-# choose the test sample type, for example 360p 720p 1080p 2k 4k 8k
+# choose the test sample type, for example 360p 720p 1080p 2K 4K 8K
 # if you want to test all sample use 'all
-Test_data_type = '360p'
-Multi_process = 3
+Test_data_type = '4K'
+Multi_process = 1
 # encode mode for different encoder
-mode = [4, 5]# 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+mode = [0,]# 1, 2, 3, ]# 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 # encoder command line parameter about yuv info, if test new encoder, need to add information here
 codec_dict = {
     'HM': '-i %s -wdt %s -hgt %s -q %s -b %s',

@@ -54,6 +54,10 @@ class Pipeline:
         decode_p_pool = []
         for pro in self.pro:
             info = pro.progress.communicate()
+            if len(self.line.check_info(info)) is 0:
+                print >> sys.stderr, 'codec:%s, at mode:%s, qp:%s, run failed' % (pro.codec_index, pro.mode, pro.qp)
+                self.drop_tag = True
+                break
             self.line.add_bitrate(self.line, pro.output)
             p = decode(pro.codec_index[3], pro.output, pro.yuv)
             decode_p_pool.append(p)
@@ -64,10 +68,13 @@ class Pipeline:
             m, s = divmod(elapsed, 60)
             h, m = divmod(m, 60)
             print("encode yuv time used : %d:%02d:%02d" % (h, m, s))
-        for p in decode_p_pool:
-            p.communicate()
-        self.line.get_psnr(self.line)
-        return self.line
+        if self.drop_tag:
+            return None
+        else:
+            for p in decode_p_pool:
+                p.communicate()
+            self.line.get_psnr(self.line)
+            return self.line
 
     def pop_pro_other(self):
         decode_p_pool = []

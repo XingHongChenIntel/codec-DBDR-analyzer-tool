@@ -13,20 +13,7 @@ from pipelinefordata import ProEnv, Pipeline
 from Data_base import Database
 from UI import UI
 import multiprocessing
-from multiprocessing import Process, Value, Array, Lock, Pool, Queue
-from multiprocessing.managers import BaseManager
-
-
-class MyManager(BaseManager):
-    pass
-
-
-class DataManager(BaseManager):
-    pass
-
-
-MyManager.register('LineContain', LineContain)
-DataManager.register('Database', Database)
+from multiprocessing import Pool
 
 
 def term(sig_num, addtion):

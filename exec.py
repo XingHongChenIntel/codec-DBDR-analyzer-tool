@@ -63,7 +63,6 @@ def codec_execute(yuv_info, codec_index, line_pool, database, queue=None):
         line = Line([yuv_info.url], codec_name, yuv_info.bit_depth, yuv_info.width,
                     yuv_info.height, yuv_info.color_format, yuv_info)
         pipe = Pipeline(line)
-
         for qp in codec_index[0]:
             os.chdir(option.exec_path[codec_name])
             output = option.encodeYuvPath + '%s_%s_%s_%s' % (codec_name, instance_name, mode, qp) \
@@ -80,6 +79,8 @@ def codec_execute(yuv_info, codec_index, line_pool, database, queue=None):
                                                                               qp, mode, output)
             print arg
             p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if option.Multi_process == 0:
+                p.wait()
             evn = ProEnv(p, codec_index, output, yuv, qp, mode, time.time())
             pipe.push_pro(evn)
 
@@ -92,7 +93,7 @@ def codec_execute(yuv_info, codec_index, line_pool, database, queue=None):
         if mode_line:
             line_pool.append([codec_name + '_' + instance_name, mode_line])
             pipe.clear()
-            print 'FUck!!'
+            print 'FUck!!, this mode is successful finished!'
         else:
             print >> sys.stderr, 'warning: when mode %s , cmdline: %s failed' % (mode, codec_index)
             break
@@ -106,7 +107,8 @@ def setup_codec(yuv_info, database):
     line_pool.build_group(option.codec)
     pipe_hm = None
     queue = multiprocessing.Manager().Queue()
-    process_pool = Pool(processes=option.Multi_process)
+    process_num = option.Multi_process if option.Multi_process is not 0 else 1
+    process_pool = Pool(processes=process_num)
     process_pool.daemon = True
     #
     # def signal_handler(sig_num, addtion):
@@ -132,7 +134,7 @@ def setup_codec(yuv_info, database):
         pipe_hm.clear()
     process_pool.close()
     process_pool.join()
-    print queue.qsize()
+    print '%s codec finish for case %s' % (queue.qsize(), name)
     for i in range(queue.qsize()):
         data = queue.get()
         for j in data:
@@ -217,8 +219,13 @@ def run_command():
     yuv_contain = read_csv()
     case_data = CaseDate(option.calculate_data)
     database = Database(option.calculate_serialize_data)
+    multi_tag = option.Multi_process
     print "\ntest case number is %d\n" % len(yuv_contain)
     for yuv in yuv_contain:
+        if yuv.color_format > 1:
+            option.Multi_process = 0
+        else:
+            option.Multi_process = multi_tag
         case = setup_codec(yuv, database)
         case.calculate()
         case_data.add_case(case, yuv)

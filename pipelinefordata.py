@@ -5,7 +5,10 @@ import time
 import OptionDictionary as option
 
 
-def decode(codec_name, bit_stream, yuv):
+def decode(codec_name, bit_stream, yuv, line):
+    if line.yuv_info.color_format > 1:
+        p = subprocess.Popen('ffmpeg -i %s %s' % (bit_stream, yuv), shell=True, stdout=subprocess.PIPE)
+        return p
     if codec_name == '265':
         os.chdir(option.exec_path['HM'])
         arg = option.decode_dict[codec_name] % (bit_stream, yuv)
@@ -59,7 +62,7 @@ class Pipeline:
                 self.drop_tag = True
                 break
             self.line.add_bitrate(self.line, pro.output)
-            p = decode(pro.codec_index[3], pro.output, pro.yuv)
+            p = decode(pro.codec_index[3], pro.output, pro.yuv, self.line)
             decode_p_pool.append(p)
             self.line.add_info(info, pro.codec_index)
             self.line.add_output_url(pro.yuv)
@@ -86,7 +89,7 @@ class Pipeline:
                 self.drop_tag = True
                 break
             self.line.add_bitrate(self.line, pro.output)
-            p = decode(pro.codec_index[3], pro.output, pro.yuv)
+            p = decode(pro.codec_index[3], pro.output, pro.yuv, self.line)
             decode_p_pool.append(p)
             self.line.add_info(info, pro.codec_index)
             self.line.add_output_url(pro.yuv)

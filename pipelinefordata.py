@@ -103,5 +103,6 @@ class Pipeline:
                     os.remove(pro.output)
 
     def security(self):
+        print 'kill progress!'
         for pro in self.pro:
             pro.progress.terminate()

@@ -82,6 +82,7 @@ class Pipeline:
             info = pro.progress.communicate()
             if len(self.line.check_info(info)) is 0:
                 print >> sys.stderr, 'codec:%s, at mode:%s, qp:%s, run failed' % (pro.codec_index, pro.mode, pro.qp)
+                print info
                 self.drop_tag = True
                 break
             self.line.add_bitrate(self.line, pro.output)
@@ -99,7 +100,10 @@ class Pipeline:
         else:
             for p in decode_p_pool:
                 p.communicate()
-            self.line.get_psnr(self.line)
+            if self.line.yuv_info.color_format == 1:
+                self.line.get_psnr(self.line)
+            else:
+                self.line.get_psnr_ffmpeg(self.line)
             return self.line
 
     def clear(self):

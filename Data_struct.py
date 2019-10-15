@@ -39,6 +39,8 @@ class Line:
         self.qp = []
         self.ref = None
         self.instance_name = None
+        self.pix_fmt_dict = {'81': 'yuv420p', '82': 'yuv422p', '83': 'yuv444p',
+                             '101': 'yuv420p10le', '102': 'yuv422p10le', '103': 'yuv444p10le',}
 
     def check_blank(self, ss):
         if len(ss):
@@ -143,7 +145,7 @@ class Line:
         self.qp.append(qp)
 
     def sort(self):
-        print("bit_rate info:", self.psnr, self.psnr_luam, self.bit_rate)
+        print("line info:", self.codec_name, self.psnr, self.bit_rate)
 
     def set_bd_psnr(self, bd_psnr):
         self.bd_psnr = bd_psnr
@@ -156,23 +158,32 @@ class Line:
         output = line.output
         width = line.width
         height = line.height
-        pipe_contain = []
+        pix_key = str(line.bit_depth) + str(line.yuv_info.color_format)
+        if pix_key not in self.pix_fmt_dict:
+            print >> sys.stderr, '[Warning]: wrong bit_depth or wrong color_format input!\n'
+        pix = self.pix_fmt_dict[pix_key]
         time_b = time.time()
         for out in output:
-            arg = 'ffmpeg -s %sx%s -i %s -s %sx%s -i %s -lavfi psnr="stats_file=psnr.log" -f null -' % \
-                  (width, height, input_url, width, height, out)
+            arg = 'ffmpeg -s:w %sx%s -pix_fmt %s -i %s -s:w %sx%s -pix_fmt %s -i %s -lavfi psnr="stats_file=psnr.log" \
+            -f null -' % (width, height, pix, input_url, width, height, pix, out)
             p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            pipe_contain.append(p)
-        for p in pipe_contain:
             info = p.communicate()
-            psnr = re.findall(r'average:[\r\n\t ]*([\.0-9]*)', info[1])
-            line.add_lucha_psnr(float(self.check_blank(psnr)))
+            psnr = self.check_blank(re.findall(r'average:[\r\n\t ]*([\.0-9]*)', info[1]))
+            psnry = self.check_blank(re.findall(r'y:[\r\n\t ]*([\.0-9]*)', info[1]))
+            psnru = self.check_blank(re.findall(r'u:[\r\n\t ]*([\.0-9]*)', info[1]))
+            psnrv = self.check_blank(re.findall(r'v:[\r\n\t ]*([\.0-9]*)', info[1]))
+            if 0 in [psnr, psnry, psnru, psnrv]:
+                print 'ffmpeg psnr calculate wrong!\n'
+            line.psnr.append(round(float(psnr), 2))
+            line.psnr_luam.append(round(float(psnry), 2))
+            line.psnr_charm_cb.append(round(float(psnru), 2))
+            line.psnr_charm_cr.append(round(float(psnrv), 2))
         elapsed = (time.time() - time_b)
         m, s = divmod(elapsed, 60)
         h, m = divmod(m, 60)
         print("calculate psnr time used : %d:%02d:%02d" % (h, m, s))
         line.set_average_fps()
-        line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
+        # line.set_bd_psnr(BD.BD_PSNR_Average(line.bit_rate, line.psnr_luam_chro))
         line.sort()
 
     def get_psnr(self, line):
@@ -189,6 +200,8 @@ class Line:
                 line.psnr_luam.append(psnr[1])
                 line.psnr_charm_cb.append(psnr[2])
                 line.psnr_charm_cr.append(psnr[3])
+            if len(psnr) == 0:
+                print 'calculate psnr failed!\n'
             # com_psnr = Array('d', len(line.output) * 4)
             # for diff_file in range(len(line.output)):
             #     p = Process(target=yuv.psnr_all, args=(diff_file, infile, com_psnr))

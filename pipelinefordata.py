@@ -6,7 +6,7 @@ import OptionDictionary as option
 
 
 def decode(codec_name, bit_stream, yuv, line):
-    if line.yuv_info.color_format > 1:
+    if int(line.yuv_info.color_format) > 2:
         p = subprocess.Popen('ffmpeg -i %s %s' % (bit_stream, yuv), shell=True, stdout=subprocess.PIPE)
         return p
     if codec_name == '265':

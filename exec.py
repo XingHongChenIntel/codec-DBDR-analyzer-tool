@@ -222,7 +222,8 @@ def run_command():
     multi_tag = option.Multi_process
     print "\ntest case number is %d\n" % len(yuv_contain)
     for yuv in yuv_contain:
-        if yuv.color_format > 1:
+        if int(yuv.color_format) > 2:
+            print yuv.color_format
             option.Multi_process = 0
         else:
             option.Multi_process = multi_tag

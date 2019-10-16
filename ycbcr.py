@@ -382,20 +382,16 @@ class YCbCr:
         cr = self.raw[self.layout_in[2]]
         return yy, cb, cr
 
-    def __read_frame_10(self, fd, tag):
+    def __read_frame_10(self, fd):
         """
         Use extended indexing to read 1 frame into self.{y, cb, cr}
         """
         self.raw = np.fromfile(fd, dtype=np.uint16, count=self.frame_size_in)
         self.raw = self.raw.astype(np.uint16)
-        if tag is 0:
-            self.yy = self.raw[self.layout_in[0]]
-            self.cb = self.raw[self.layout_in[1]]
-            self.cr = self.raw[self.layout_in[2]]
-        else:
-            self.yy_copy = self.raw[self.layout_in[0]]
-            self.cb_copy = self.raw[self.layout_in[1]]
-            self.cr_copy = self.raw[self.layout_in[2]]
+        yy = self.raw[self.layout_in[0]]
+        cb = self.raw[self.layout_in[1]]
+        cr = self.raw[self.layout_in[2]]
+        return yy, cb, cr
 
     def __write_frame(self, fd):
         """

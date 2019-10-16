@@ -103,7 +103,7 @@ class Line:
         return ss
 
     def add_info(self, line, codec):
-        # self.bit_rate.append(self.parse_bit_rate(line))
+        self.bit_rate.append(self.parse_bit_rate(line))
         self.fps.append(self.parse_fps(line))
         self.ref = codec[3]
         self.instance_name = codec[4]
@@ -196,6 +196,8 @@ class Line:
                 if not os.path.exists(line.output[diff_file]):
                     print >> sys.stderr, '%s decode failed' % self.codec_name
                 psnr = yuv.psnr_all(diff_file, infile)
+                if 0 in psnr:
+                    print ' psnr calculate wrong!\n'
                 line.psnr.append(psnr[0])
                 line.psnr_luam.append(psnr[1])
                 line.psnr_charm_cb.append(psnr[2])

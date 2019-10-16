@@ -222,7 +222,7 @@ class UI:
 
     def max_len(self, bd):
         # max should be set by work out mode
-        maxnum = 11
+        maxnum = 12
         for rate in bd:
             if maxnum < max(option.mode[0:len(rate)]):
                 maxnum = max(option.mode[0:len(rate)])

@@ -193,6 +193,25 @@ class YCbCr:
             maxvalue = 1023
         return 10 * np.log10(maxvalue ** 2 / m)
 
+    def ave_psnr(self, a, b, a1, b1, c1, d1):
+        y = ((a - b) ** 2).mean()
+        u = ((a1 - b1) ** 2).mean()
+        v = ((c1 - d1) ** 2).mean()
+        if self.yuv_format_in == '1':
+            m = y*2/3 + u/6 + v/6
+        elif self.yuv_format_in == '2':
+            m = y*4/8 + u*2/8 + v*2/8
+        elif self.yuv_format_in == '3':
+            m = y/3 + u/3 + v/3
+        else:
+            m = 0
+        if m == 0:
+            return float("nan")
+        maxvalue = 255
+        if self.bitdepth == 10:
+            maxvalue = 1023
+        return 10 * np.log10(maxvalue ** 2 / m)
+
     def psnr_all(self, out_file_id=0, in_file_id=0, psnr_contain=None):
         bd = []
         sum_yy = []
@@ -208,10 +227,12 @@ class YCbCr:
                 yy_frame, cb_frame, cr_frame = read(fd_1)
                 crp_yy, crp_cb, crp_cr = read(fd_2)
                 # frame2 = self.__copy_planes()[:-1]    # skip whole frame
-                yy = self.psnr(yy_frame, crp_yy)
-                cb = self.psnr(cb_frame, crp_cb)
-                cr = self.psnr(cr_frame, crp_cr)
-                bd.append((6 * yy + cb + cr) / 8.0)
+                yy = round(self.psnr(yy_frame, crp_yy), 3)
+                cb = round(self.psnr(cb_frame, crp_cb), 3)
+                cr = round(self.psnr(cr_frame, crp_cr), 3)
+                ave = round(self.ave_psnr(yy_frame, crp_yy, cb_frame, crp_cb, cr_frame, crp_cr), 3)
+                bd.append(ave)
+                # bd.append((4 * yy + cb + cr) / 6)
                 sum_yy.append(yy)
                 sum_cb.append(cb)
                 sum_cr.append(cr)
@@ -219,8 +240,8 @@ class YCbCr:
             # psnr_contain[out_file_id * 4 + 1] = round(sum(sum_yy) / len(sum_yy), 2)
             # psnr_contain[out_file_id * 4 + 2] = round(sum(sum_cb) / len(sum_cb), 2)
             # psnr_contain[out_file_id * 4 + 3] = round(sum(sum_cr) / len(sum_cr), 2)
-            return [round(sum(bd) / len(bd), 2),round(sum(sum_yy) / len(sum_yy), 2)
-                    ,round(sum(sum_cb) / len(sum_cb), 2),round(sum(sum_cr) / len(sum_cr), 2)]
+            return [round(sum(bd) / len(bd), 3),round(sum(sum_yy) / len(sum_yy), 3)
+                    ,round(sum(sum_cb) / len(sum_cb), 3),round(sum(sum_cr) / len(sum_cr), 3)]
 
     def get_accout_diff(self):
         return len(self.filename_diff)

@@ -103,7 +103,7 @@ class Pipeline:
         else:
             for p in decode_p_pool:
                 p.communicate()
-            if int(self.line.yuv_info.color_format) == 1:
+            if int(self.line.yuv_info.color_format) < 3:
                 self.line.get_psnr(self.line)
             else:
                 self.line.get_psnr_ffmpeg(self.line)

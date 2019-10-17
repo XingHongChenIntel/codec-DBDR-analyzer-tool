@@ -198,7 +198,7 @@ class UI:
             xrow = len(bdrate[i])
             # if lab[i][0] != 'HM':
             #     chart.plot(fps[i], bdrate[i], '-o', label=lab[i][0] + '_' + lab[i][1])
-            chart2.plot(option.mode, bdrate[i], '-x', label=lab[i][0] + '_' + lab[i][1])
+            chart2.plot(option.mode[0:xrow], bdrate[i], '-x', label=lab[i][0] + '_' + lab[i][1])
         # chart.legend()
         for line in chart2.xaxis.get_ticklabels():
             line.set_rotation(45)
@@ -222,11 +222,11 @@ class UI:
 
     def max_len(self, bd):
         # max should be set by work out mode
-        maxnum = 12
+        maxnum = 9
         for rate in bd:
             if maxnum < max(option.mode[0:len(rate)]):
                 maxnum = max(option.mode[0:len(rate)])
-        return maxnum
+        return maxnum+1
 
     def fix_arr(self, bdrate):
         max = self.max_len(bdrate)
@@ -267,8 +267,8 @@ class UI:
                 chart.plot(encdoe_bitrate[encode][mode], encode_psnr[encode][mode], '-o',
                            label=encode_name[encode] + '_' + str(mode))
         chart.legend(loc=0)
-        trans_psnr = self.trans_list(self.fix_arr(encode_bdpsnr))
         rowlabel = self.label_len(encode_bdpsnr, 'bit')
+        trans_psnr = self.trans_list(self.fix_arr(encode_bdpsnr))
         biao.table(cellText=trans_psnr, colLabels=encode_name, rowLabels=rowlabel, loc=0,
                    colWidths=[0.3 for i in range(len(encode_name))], edges='horizontal')
         info = ''

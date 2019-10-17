@@ -103,7 +103,7 @@ class Line:
         return ss
 
     def add_info(self, line, codec):
-        self.bit_rate.append(self.parse_bit_rate(line))
+        # self.bit_rate.append(self.parse_bit_rate(line))
         self.fps.append(self.parse_fps(line))
         self.ref = codec[3]
         self.instance_name = codec[4]

@@ -61,7 +61,7 @@ class Pipeline:
                 print >> sys.stderr, 'codec:%s, at mode:%s, qp:%s, run failed' % (pro.codec_index, pro.mode, pro.qp)
                 self.drop_tag = True
                 break
-            # self.line.add_bitrate(self.line, pro.output)
+            self.line.add_bitrate(self.line, pro.output)
             p = decode(pro.codec_index[3], pro.output, pro.yuv, self.line)
             decode_p_pool.append(p)
             self.line.add_info(info, pro.codec_index)
@@ -88,7 +88,7 @@ class Pipeline:
                 print info
                 self.drop_tag = True
                 break
-            # self.line.add_bitrate(self.line, pro.output)
+            self.line.add_bitrate(self.line, pro.output)
             p = decode(pro.codec_index[3], pro.output, pro.yuv, self.line)
             decode_p_pool.append(p)
             self.line.add_info(info, pro.codec_index)

@@ -152,7 +152,7 @@ def clean_data_dir():
         for f in files:
             apath = os.path.join(root, f)
             ext = os.path.splitext(apath)[1]
-            if ext != '.png' and ext != '.csv':
+            if ext != '.png' and ext != '.csv' and ext != '.log':
                 os.remove(apath)
 
 

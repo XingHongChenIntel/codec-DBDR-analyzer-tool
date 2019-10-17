@@ -164,8 +164,8 @@ class Line:
         pix = self.pix_fmt_dict[pix_key]
         time_b = time.time()
         for out in output:
-            arg = 'ffmpeg -s:w %sx%s -pix_fmt %s -i %s -s:w %sx%s -pix_fmt %s -i %s -lavfi psnr="stats_file=psnr.log" \
-            -f null -' % (width, height, pix, input_url, width, height, pix, out)
+            arg = 'ffmpeg -s:w %sx%s -pix_fmt %s -i %s -s:w %sx%s -pix_fmt %s -i %s -frames %s -lavfi psnr="stats_file=%s/psnr.log" \
+            -f null -' % (width, height, pix, input_url, width, height, pix, out, self.calculate_frame(self), option.proxy)
             p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             info = p.communicate()
             psnr = self.check_blank(re.findall(r'average:[\r\n\t ]*([\.0-9]*)', info[1]))
@@ -387,15 +387,19 @@ class CaseDate:
                     file_line[3] = option.mode[index]
                     file_line[4] = line.qp[i]
                     file_line[5] = line.psnr[i]
-                    file_line[6] = line.bit_rate[i]
-                    file_line[7] = line.fps[i]
-                    file_line[8] = line.bd_rate
-                    file_line[9] = line.bd_psnr
+                    file_line[6] = line.psnr_luam[i]
+                    file_line[7] = line.psnr_charm_cb[i]
+                    file_line[8] = line.psnr_charm_cr[i]
+                    file_line[9] = line.bit_rate[i]
+                    file_line[10] = line.fps[i]
+                    file_line[11] = line.bd_rate
+                    file_line[12] = line.bd_psnr
                     yield file_line
                 index = index + 1
 
     def setup_file(self):
-        header = ['yuv name', 'type', 'encode', 'mode', 'qp', 'psnr', 'bit_rate', 'fps', 'BD_rate', 'Bd_psnr']
+        header = ['yuv name', 'type', 'encode', 'mode', 'qp', 'psnr', 'psnry', 'psnru', 'psnrv',
+                  'bit_rate', 'fps', 'BD_rate', 'Bd_psnr']
         file_contain = []
         with open(self.path, 'w') as f:
             writer = csv.writer(f)

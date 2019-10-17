@@ -164,12 +164,12 @@ class YCbCr:
                 bitsize = 1
             else:
                 bitsize = 2
-            n1 = (os.path.getsize(self.filename[0]) / self.frame_size_in) / bitsize
-            n2 = n1
+            self.origin_yuv_frames = (os.path.getsize(self.filename[0]) / self.frame_size_in) / bitsize
+            self.decode_yuv_frames = self.origin_yuv_frames
             if self.filename_diff:
-                n2 = (os.path.getsize(self.filename_diff[0]) / self.frame_size_in) / bitsize
+                self.decode_yuv_frames = (os.path.getsize(self.filename_diff[0]) / self.frame_size_in) / bitsize
 
-            self.num_frames = min(n1, n2)
+            self.num_frames = self.decode_yuv_frames
             self.layout_in = self.reader.get_layout()
             self.layout_out = self.reader.get_layout()
             self.frame_size_out = self.frame_size_in
@@ -224,6 +224,8 @@ class YCbCr:
         with open(self.filename[in_file_id], 'rb') as fd_1, \
                 open(self.filename_diff[out_file_id], 'rb') as fd_2:
             for i in xrange(self.num_frames):
+                if i is not 0 and i%self.origin_yuv_frames == 0:
+                    fd_1.seek(0)
                 yy_frame, cb_frame, cr_frame = read(fd_1)
                 crp_yy, crp_cb, crp_cr = read(fd_2)
                 # frame2 = self.__copy_planes()[:-1]    # skip whole frame
@@ -383,14 +385,14 @@ class YCbCr:
         if self.height & 0xF != 0:
             print >> sys.stderr, "[WARNING] - hight not divisable by 16"
 
-        size = os.path.getsize(self.filename[0])
-        if not self.num_frames == size / float(self.frame_size_in):
-            print >> sys.stderr, "[WARNING] - # frames not integer"
+        size = os.path.getsize(self.filename_diff[0])
+        if not isinstance(size / self.frame_size_in, int):
+            print >> sys.stderr, "[WARNING] - # frames not integer, please check decode out yuv!"
 
         if self.filename_diff:
-            size_diff = os.path.getsize(self.filename_diff[0])
+            size_diff = os.path.getsize(self.filename[0])
             if not size == size_diff:
-                print >> sys.stderr, "[WARNING] - file-sizes are not equal"
+                print >> sys.stderr, "[WARNING] - two yuv file-sizes are not equal, please check them!"
 
     def __read_frame(self, fd):
         """

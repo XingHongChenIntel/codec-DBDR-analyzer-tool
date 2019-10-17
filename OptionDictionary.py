@@ -25,7 +25,7 @@ codec = [#[[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60 -f 60', 'HM', '26
          # [[25, 29, 34, 38], './TAppEncoderStatic -c %s -fr 60', 'HM', '265', 't3', 'reae', 'None'],
         # [[29, 35, 42, 48], './x265 --fps 60', 'x265', '265', 'test265', 're', 'None'],
         # [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'testmode', 're', 'baseline'],
-        [[22, 27, 32, 37], './SvtHevcEncApp -fps 60 -intra-period 55 ', 'svt', '265', 'vailiate', 're', 'baseline'],
+        [[22, 27, 32, 37], './SvtHevcEncApp -fps 60 -intra-period 55 -n 150', 'svt', '265', 'vailiate', 're', 'baseline'],
         # [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'test', 're', 'None'],
         # [[22, 28, 34, 40], './SvtHevcEncApp', 'svt', '265', 'tes', 're', 'None'],
         # [[22, 28, 34, 40], './aomenc --threads=64', 'AV1', 'AV1', 'testmo', 'rea', 'baseline'],

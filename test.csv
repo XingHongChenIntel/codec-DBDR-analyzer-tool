@@ -4,24 +4,27 @@
 #/home/cxh/experiment/1080p/aspen_1080p_420p.yuv 1920 1080 8 1
 #/home/cxh/experiment/1080p/crowd_1080p_500f.yuv 1920 1080 8 1
 #/home/cxh/experiment/1080p/speed_bag_1080p_420p.yuv 1920 1080 8 1
-/home/cxh/experiment/720p/park_joy_420_720p50.yuv 1280 720 8 1
-/home/cxh/experiment/720p/ducks_take_off_420_720p50.yuv 1280 720 8 1
-/home/cxh/experiment/720p/old_town_cross_420_720p50.yuv 1280 720 8 1
-/home/cxh/code/testDatay4m/shields_640x360_60f.y4m
+#/home/cxh/experiment/720p/park_joy_420_720p50.yuv 1280 720 8 1
+#/home/cxh/experiment/720p/ducks_take_off_420_720p50.yuv 1280 720 8 1
+#/home/cxh/experiment/720p/old_town_cross_420_720p50.yuv 1280 720 8 1
+#/home/cxh/code/testDatay4m/shields_640x360_60f.y4m
 #/home/cxh/code/testDatay4m/speed_bag_640x360_60f.y4m
 #/home/cxh/code/testDatay4m/vidyo1_720p_60fps_60f.y4m
 #/home/cxh/code/testDatay4m/vidyo3_720p_60fps_60f.y4m
 #/home/cxh/code/testdata/YUV/matrix1080P60f.yuv 1920 1080 8 1
-#/home/cxh/code/testdata/YUV/blue_sky_360p_60f.yuv 640 360 8 1
+/home/cxh/code/testdata/YUV/blue_sky_360p_60f.yuv 640 360 8 1
 #/home/cxh/code/testdata/YUV/niklas360p_60f.yuv 640 360 8 1
 #/home/cxh/code/testdata/YUV/thaloundeskmtg360p_60f.yuv 640 360 8 1
 #/home/cxh/code/testdata/YUV/kirland360p_60f.yuv 640 360 8 1
 #/home/cxh/code/testdata/YUV/red_kayak_360p_60f.yuv 640 360 8 1
-/home/cxh/code/testdata/YUV/Netflix_Aerial_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
-/home/cxh/code/testdata/YUV/Netflix_Boat_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
-/home/cxh/code/testdata/YUV/Netflix_Crosswalk_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
-/home/cxh/code/testdata/YUV/Netflix_FoodMarket_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
-/home/cxh/code/testdata/YUV/Netflix_PierSeaside_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
-/home/cxh/code/testdata/YUV/Netflix_TunnelFlag_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
+#/home/cxh/code/testdata/YUV/DucksTakeOff_1280x720_8bit_50Hz_P420.yuv 1280 720 8 1
+#/home/cxh/code/testdata/YUV/ParkJoy_864x480_10bit_50Hz_P420.yuv 864 480 10 1
+
+#/home/cxh/code/testdata/YUV/Netflix_Aerial_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
+#/home/cxh/code/testdata/YUV/Netflix_Boat_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
+#/home/cxh/code/testdata/YUV/Netflix_Crosswalk_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
+#/home/cxh/code/testdata/YUV/Netflix_FoodMarket_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
+#/home/cxh/code/testdata/YUV/Netflix_PierSeaside_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
+#/home/cxh/code/testdata/YUV/Netflix_TunnelFlag_1920x1080_60fps_8bit_420_60f.yuv 1920 1080 8 1
 #/home/cxh/Netflix_Crosswalk_3840x2160_10bit_60Hz_P422.yuv 3840 2160 10 2
-/home/cxh/Netflix_Crosswalk_3840x2160_10bit_60Hz_P444.yuv 3840 2160 10 3
+#/home/cxh/Netflix_Crosswalk_3840x2160_10bit_60Hz_P444.yuv 3840 2160 10 3
